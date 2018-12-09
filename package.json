@@ -1,0 +1,36 @@
+{
+  "name": "dcd-api-http",
+  "version": "0.0.1",
+  "description": "The HTTP API of the Data-Centric Design Hub",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "start": "node index.js",
+    "test": "NODE_ENV=development CRYPTO_KEY=cryptoKeyToChange MODEL_HOST=localhost KAFKA=true KAFKA_HOST=192.168.1.101 KAFKA_PORT=9092 LOG_LEVEL=DEBUG API_URL=http://localhost:4478/api KETO_URL=http://localhost:4466 HYDRA_ADMIN_URL=http://localhost:4445 HYDRA_URL=http://localhost:4444 OAUTH2_TOKEN_URL=http://localhost:4444/oauth2/token OAUTH2_CLIENT_ID=dcd-api-http OAUTH2_CLIENT_SECRET=http-secret PORT=4478 OATHKEEPER_KEY_URL=http://localhost:4456/.well-known/jwks.json OAUTH2_TOKEN_URL=http://localhost:4444/oauth2/token OAUTH2_INTROSPECT_URL=http://localhost:4445/oauth2/introspect node index.js"
+  },
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "cookie-parser": "~1.4.3",
+    "express": "^4.16.4",
+    "express-basic-auth": "^1.1.6",
+    "express-jwt": "^5.3.1",
+    "dcd-model": "^0.0.1",
+    "jwks-rsa": "^1.2.1",
+    "log4js": "^3.0.6",
+    "morgan": "^1.9.1",
+    "node-fetch": "^2.3.0",
+    "serve-favicon": "^2.5.0",
+    "simple-oauth2": "^1.6.0",
+    "swagger-stats": "^0.95.6"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/datacentricdesign/dcd-api-http.git"
+  },
+  "author": "Jacky Bourgeois",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/datacentricdesign/dcd-api-http/issues"
+  },
+  "homepage": "https://github.com/datacentricdesign/dcd-api-http#README"
+}
