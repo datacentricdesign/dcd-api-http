@@ -6,7 +6,7 @@
   "private": true,
   "scripts": {
     "start": "node index.js",
-    "test": "NODE_ENV=development CRYPTO_KEY=cryptoKeyToChange MODEL_HOST=localhost KAFKA=true KAFKA_HOST=192.168.1.101 KAFKA_PORT=9092 LOG_LEVEL=DEBUG API_URL=http://localhost:4478/api KETO_URL=http://localhost:4466 HYDRA_ADMIN_URL=http://localhost:4445 HYDRA_URL=http://localhost:4444 OAUTH2_TOKEN_URL=http://localhost:4444/oauth2/token OAUTH2_CLIENT_ID=dcd-api-http OAUTH2_CLIENT_SECRET=http-secret PORT=4478 OATHKEEPER_KEY_URL=http://localhost:4456/.well-known/jwks.json OAUTH2_TOKEN_URL=http://localhost:4444/oauth2/token OAUTH2_INTROSPECT_URL=http://localhost:4445/oauth2/introspect node index.js"
+    "test": "NODE_ENV=development CRYPTO_KEY=cryptoKeyToChange MODEL_HOST=localhost KAFKA=true KAFKA_HOST=10.0.1.16 KAFKA_PORT=9092 LOG_LEVEL=DEBUG API_URL=http://localhost:4478/api KETO_URL=http://localhost:4466 HYDRA_ADMIN_URL=http://localhost:4445 HYDRA_URL=http://localhost:4444 OAUTH2_TOKEN_URL=http://localhost:4444/oauth2/token OAUTH2_CLIENT_ID=dcd-api-http OAUTH2_CLIENT_SECRET=http-secret PORT=4478 OATHKEEPER_KEY_URL=http://localhost:4456/.well-known/jwks.json OAUTH2_TOKEN_URL=http://localhost:4444/oauth2/token OAUTH2_INTROSPECT_URL=http://localhost:4445/oauth2/introspect node index.js"
   },
   "dependencies": {
     "body-parser": "^1.18.3",
