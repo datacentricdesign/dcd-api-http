@@ -71,7 +71,7 @@ app.post(baseUrl + '/:entity(persons)',
  * List Persons.
  */
 app.get(baseUrl + '/:entity(persons)', auth.introspect,
-    auth.wardenToken({resource: 'persons', action: 'list'}),
+    // auth.wardenToken({resource: 'persons', action: 'list'}),
     (request, response) => {
         model.persons.list(request.user.subject)
             .then((result) => success(response, result))
@@ -82,7 +82,7 @@ app.get(baseUrl + '/:entity(persons)', auth.introspect,
  * Read a Person.
  */
 app.get(baseUrl + '/:entity(persons)/:entityId', auth.introspect,
-    auth.wardenToken({resource: 'persons', action: 'read'}),
+    // auth.wardenToken({resource: 'persons', action: 'read'}),
     (request, response) => {
         if (request.body !== undefined
             && request.body.password !== undefined) {
@@ -113,7 +113,7 @@ app.post(baseUrl + '/:entity(persons)/:entityId/check', auth.introspect,
  * Update a Person.
  */
 app.put(baseUrl + '/:entity(persons)/:entityId', auth.introspect,
-    auth.wardenToken({resource: 'persons', action: 'update'}),
+    // auth.wardenToken({resource: 'persons', action: 'update'}),
     (request, response) => {
         const person = new Person(request.params.entityId, request.body);
         model.persons.update(person)
@@ -167,7 +167,7 @@ app.post(baseUrl + '/:entity(things)', auth.introspect,
  * List Things.
  */
 app.get(baseUrl + '/:entity(things)', auth.introspect,
-    auth.wardenToken({resource: 'things', action: 'list'}),
+    // auth.wardenToken({resource: 'things', action: 'list'}),
     (request, response) => {
         model.things.list(request.user.sub)
             .then((result) => success(response, {things: result}))
@@ -178,7 +178,7 @@ app.get(baseUrl + '/:entity(things)', auth.introspect,
  * Read a Thing.
  */
 app.get(baseUrl + '/:entity(things)/:entityId', auth.introspect,
-    auth.wardenToken({resource: 'things', action: 'read'}),
+    // auth.wardenToken({resource: 'things', action: 'read'}),
     (request, response) => {
         model.things.read(request.params.entityId)
             .then((result) => success(response, {thing:result}))
@@ -189,7 +189,7 @@ app.get(baseUrl + '/:entity(things)/:entityId', auth.introspect,
  * Update a Thing.
  */
 app.put(baseUrl + '/:entity(things)/:entityId', auth.introspect,
-    auth.wardenToken({resource: 'things', action: 'update'}),
+    // auth.wardenToken({resource: 'things', action: 'update'}),
     (request, response) => {
         model.things.update(new Thing(request.body, request.params.entityId))
             .then((result) => success(response, result))
@@ -200,7 +200,7 @@ app.put(baseUrl + '/:entity(things)/:entityId', auth.introspect,
  * Delete a Thing.
  */
 app.delete(baseUrl + '/:entity(things)/:entityId', auth.introspect,
-    auth.wardenToken({resource: 'things', action: 'delete'}),
+    // auth.wardenToken({resource: 'things', action: 'delete'}),
     (request, response) => {
         model.things.del(request.params.entityId)
             .then((result) => success(response, result))
@@ -212,7 +212,7 @@ app.delete(baseUrl + '/:entity(things)/:entityId', auth.introspect,
  */
 app.post(baseUrl + '/:entity(things|persons)/:entityId/:component(properties)',
     auth.introspect,
-    auth.wardenToken({resource: 'properties', action: 'create'}),
+    // auth.wardenToken({resource: 'properties', action: 'create'}),
     (request, response) => {
         request.body.entityId = request.params.entityId;
         model.properties.create(new Property(request.body))
@@ -227,7 +227,7 @@ app.post(baseUrl + '/:entity(things|persons)/:entityId/:component(properties)',
  */
 app.get(baseUrl + '/:entity(things|persons)/:entityId/:component(properties)',
     auth.introspect,
-    auth.wardenToken({resource: 'properties', action: 'list'}),
+    // auth.wardenToken({resource: 'properties', action: 'list'}),
     (request, response) => {
         model.properties.list(request.params.entityId)
             .then((result) => success(response, {properties: result}))
@@ -239,7 +239,7 @@ app.get(baseUrl + '/:entity(things|persons)/:entityId/:component(properties)',
  */
 app.get(baseUrl + '/:entity(things|persons)/:entityId/:component(properties)/:propertyId',
     auth.introspect,
-    auth.wardenToken({resource: 'things', action: 'read'}),
+    // auth.wardenToken({resource: 'things', action: 'read'}),
     (request, response) => {
         const entityId = request.params.entityId;
         const propertyId = request.params.propertyId;
@@ -261,7 +261,7 @@ app.get(baseUrl + '/:entity(things|persons)/:entityId/:component(properties)/:pr
  */
 app.put(baseUrl + '/:entity(things|persons)/:entityId/:component(properties)/:propertyId',
     auth.introspect,
-    auth.wardenToken({resource: 'properties', action: 'update'}),
+    // auth.wardenToken({resource: 'properties', action: 'update'}),
     (request, response) => {
         const entityId = request.params.entityId;
         const propertyId = request.params.propertyId;
@@ -275,7 +275,7 @@ app.put(baseUrl + '/:entity(things|persons)/:entityId/:component(properties)/:pr
  */
 app.put(baseUrl + '/:entity(things|persons)/:entityId/:component(properties)/:propertyId/file',
     auth.introspect,
-    auth.wardenToken({resource: 'properties', action: 'update'}),
+    // auth.wardenToken({resource: 'properties', action: 'update'}),
     (request, response, next) => {
         const entityId = request.params.entityId;
         const propertyId = request.params.propertyId;
@@ -309,7 +309,7 @@ app.put(baseUrl + '/:entity(things|persons)/:entityId/:component(properties)/:pr
  */
 app.delete(baseUrl + '/:entity(things|persons)/:entityId/:component(properties)/:propertyId',
     auth.introspect,
-    auth.wardenToken({resource: 'properties', action: 'delete'}),
+    // auth.wardenToken({resource: 'properties', action: 'delete'}),
     (request, response) => {
         model.properties.del(request.params.propertyId)
             .then((result) => {
