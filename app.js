@@ -125,7 +125,7 @@ app.put(baseUrl + '/:entity(persons)/:entityId', auth.introspect,
  * Delete a Person.
  */
 app.delete(baseUrl + '/:entity(persons)/:entityId', auth.introspect,
-    auth.wardenToken({resource: 'persons', action: 'delete'}),
+    // auth.wardenToken({resource: 'persons', action: 'delete'}),
     (request, response) => {
         const personId = request.params.entityId;
         model.persons.delete(personId)
@@ -144,7 +144,7 @@ app.delete(baseUrl + '/:entity(persons)/:entityId', auth.introspect,
  * @property {Thing} request.body
  */
 app.post(baseUrl + '/:entity(things)', auth.introspect,
-    auth.wardenToken({resource: 'things', action: 'create'}),
+    // auth.wardenToken({resource: 'things', action: 'create'}),
     (request, response) => {
         // Web forms cannot submit PUT methods, we check the flag update
         if (request.query.thingId !== undefined) {
