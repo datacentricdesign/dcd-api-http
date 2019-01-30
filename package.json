@@ -11,17 +11,17 @@
   "dependencies": {
     "body-parser": "^1.18.3",
     "cookie-parser": "~1.4.3",
+    "dcd-model": "^0.0.8",
     "express": "^4.16.4",
     "express-basic-auth": "^1.1.6",
     "express-jwt": "^5.3.1",
-    "dcd-model": "^0.0.7",
     "jwks-rsa": "^1.2.1",
     "log4js": "^3.0.6",
     "morgan": "^1.9.1",
     "node-fetch": "^2.3.0",
     "serve-favicon": "^2.5.0",
     "simple-oauth2": "^1.6.0",
-    "swagger-stats": "^0.95.6"
+    "swagger-stats": "^0.95.7"
   },
   "repository": {
     "type": "git",
