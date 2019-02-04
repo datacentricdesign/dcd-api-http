@@ -84,12 +84,9 @@ app.get(baseUrl + '/:entity(persons)', auth.introspect,
 app.get(baseUrl + '/:entity(persons)/:entityId', auth.introspect,
     // auth.wardenToken({resource: 'persons', action: 'read'}),
     (request, response) => {
-        if (request.body !== undefined
-            && request.body.password !== undefined) {
-            model.persons.read(request.params.entityId)
-                .then((result) => success(response, {person:result}))
-                .catch((error) => fail(response, error));
-        }
+        model.persons.read(request.params.entityId)
+            .then((result) => success(response, {person:result}))
+            .catch((error) => fail(response, error));
     });
 
 /**
