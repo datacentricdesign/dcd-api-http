@@ -249,7 +249,7 @@ app.get(baseUrl + '/:entity(things|persons)/:entityId/:component(properties)/:pr
             to = parseInt(request.query.to);
         }
         model.properties.read(entityId, propertyId, from, to)
-            .then((result) => success(response, result))
+            .then((result) => success(response, {property: result}))
             .catch((error) => fail(response, error));
     });
 
