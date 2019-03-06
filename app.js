@@ -262,6 +262,7 @@ app.put(baseUrl + '/:entity(things|persons)/:entityId/:component(properties)/:pr
     (request, response) => {
         const propertyId = request.params.propertyId;
         const property = request.body;
+        console.log(property);
         if (property.id !== propertyId) {
             model.properties.updateValues(property)
                 .then((result) => success(response, result))
