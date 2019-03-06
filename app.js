@@ -260,12 +260,16 @@ app.put(baseUrl + '/:entity(things|persons)/:entityId/:component(properties)/:pr
     auth.introspect,
     // auth.wardenToken({resource: 'properties', action: 'update'}),
     (request, response) => {
-        const entityId = request.params.entityId;
         const propertyId = request.params.propertyId;
         const property = request.body;
-        model.properties.update(entityId, propertyId, property)
-            .then((result) => success(response, result))
-            .catch((error) => fail(response, error));
+        if (property.id !== propertyId) {
+            model.properties.updateValues(property)
+                .then((result) => success(response, result))
+                .catch( (error) => fail(response, error));
+        } else{
+            fail(response, {message: 'property id not matching'})
+        }
+
     });
 /**
  * Update a property with a CSV file of values.
