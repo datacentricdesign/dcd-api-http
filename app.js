@@ -53,7 +53,7 @@ const fail = (response, error) => {
  */
 app.post(baseUrl + '/health',
     (request, response) => {
-        success(response, {status: 0});
+        success(response, {status: 0, message: 'OK'});
     });
 
 /**
