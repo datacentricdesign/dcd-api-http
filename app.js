@@ -51,7 +51,7 @@ const fail = (response, error) => {
 /**
  * API Health status
  */
-app.post(baseUrl + '/health',
+app.get(baseUrl + '/health',
     (request, response) => {
         success(response, {status: 0, message: 'OK'});
     });
