@@ -7,6 +7,8 @@ const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 
+const multer = require('multer');
+
 // Setting the logs
 const log4js = require('log4js');
 const logger = log4js.getLogger('[dcd-api-http:app]');
@@ -29,6 +31,7 @@ const DCDModel = require('dcd-model');
 const Thing = require('dcd-model/entities/Thing');
 const Person = require('dcd-model/entities/Person');
 const Property = require('dcd-model/entities/Property');
+const Class = require('dcd-model/entities/Class');
 
 const model = new DCDModel();
 model.init();
@@ -85,7 +88,7 @@ app.get(baseUrl + '/:entity(persons)/:entityId', auth.introspect,
     // auth.wardenToken({resource: 'persons', action: 'read'}),
     (request, response) => {
         model.persons.read(request.params.entityId)
-            .then((result) => success(response, {person:result}))
+            .then((result) => success(response, {person: result}))
             .catch((error) => fail(response, error));
     });
 
@@ -101,7 +104,7 @@ app.post(baseUrl + '/:entity(persons)/:entityId/check', auth.introspect,
         if (request.body !== undefined
             && request.body.password !== undefined) {
             model.persons.check(request.params.entityId, request.body.password)
-                .then((result) => success(response, {person:result}))
+                .then((result) => success(response, {person: result}))
                 .catch((error) => fail(response, error));
         }
     });
@@ -156,7 +159,7 @@ app.post(baseUrl + '/:entity(things)', auth.introspect,
         const jwt = request.query.jwt !== undefined
             ? request.query.jwt === 'true' : false;
         model.things.create(personId, thing, jwt)
-            .then((result) => success(response, {thing:result}))
+            .then((result) => success(response, {thing: result}))
             .catch((error) => fail(response, error));
     });
 
@@ -178,7 +181,7 @@ app.get(baseUrl + '/:entity(things)/:entityId', auth.introspect,
     // auth.wardenToken({resource: 'things', action: 'read'}),
     (request, response) => {
         model.things.read(request.params.entityId)
-            .then((result) => success(response, {thing:result}))
+            .then((result) => success(response, {thing: result}))
             .catch((error) => fail(response, error));
     });
 
@@ -217,6 +220,33 @@ app.post(baseUrl + '/:entity(things|persons)/:entityId/:component(properties)',
                 success(response, {property: result});
             })
             .catch((error) => fail(response, error));
+    });
+
+/**
+ * Create Dimension Classes.
+ */
+app.post(baseUrl + '/:entity(things|persons)/:entityId/:component(properties)/:componentId/classes',
+    auth.introspect,
+    // auth.wardenToken({resource: 'classes', action: 'create'}),
+    (request, response) => {
+        if (request.body.classes !== undefined || request.body.classes.length === 0) {
+            return fail(response, {msg: 'Missing or empty classes array'});
+        }
+        model.properties.readProperty(
+            request.params.entityId,
+            request.params.componentId)
+            .then((property) => {
+                if (property.type === 'CLASS') {
+                    const classes = [];
+                    request.body.classes.forEach((clazz) => {
+                        clazz.propertyId = property.id;
+                        classes.push(new Class(clazz));
+                    });
+                    model.properties.createClasses(propertyId, classes)
+                        .then((result) => success(response, {property: result}))
+                        .catch((error) => fail(response, error));
+                }
+            });
     });
 
 /**
@@ -265,8 +295,8 @@ app.put(baseUrl + '/:entity(things|persons)/:entityId/:component(properties)/:pr
         if (property.id === propertyId) {
             model.properties.updateValues(property)
                 .then((result) => success(response, result))
-                .catch( (error) => fail(response, error));
-        } else{
+                .catch((error) => fail(response, error));
+        } else {
             fail(response, {message: 'property id not matching'})
         }
 
@@ -322,6 +352,60 @@ app.delete(baseUrl + '/:entity(things|persons)/:entityId/:component(properties)/
             })
             .catch((error) => fail(response, error));
     });
+
+/**
+ * Post video
+ */
+app.post(baseUrl + '/video', (req, res) => {
+    upload(req, res, (err) => {
+        if (err) {
+            console.log(err);
+            res.json({msg: err});
+        } else {
+            if (req.file === undefined) {
+                res.json({msg: 'Error: No File Selected!'});
+            } else {
+                res.json({
+                    msg: 'File Uploaded!',
+                    file: `uploads/${req.file.filename}`
+                });
+            }
+        }
+    });
+});
+
+// Set The Storage Engine
+const storage = multer.diskStorage({
+    destination: './uploads/',
+    filename: function(req, file, cb) {
+        cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+    }
+});
+
+// Init Upload
+const upload = multer({
+    storage: storage,
+    limits: {fileSize: 1000000000},
+    fileFilter: function(req, file, cb) {
+        checkFileType(file, cb);
+    }
+}).single('video');
+
+// Check File Type
+function checkFileType(file, cb) {
+    // Allowed ext
+    const filetypes = /mp4/;
+    // Check ext
+    const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+    // Check mime
+    const mimetype = filetypes.test(file.mimetype);
+
+    if (mimetype && extname) {
+        return cb(null, true);
+    } else {
+        cb('Error: MP4 video Only!');
+    }
+}
 
 /**
  *
