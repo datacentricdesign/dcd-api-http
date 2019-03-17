@@ -6,6 +6,7 @@ const favicon = require('serve-favicon');
 const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
+const fs = require('fs');
 
 const multer = require('multer');
 
@@ -356,7 +357,7 @@ app.post(baseUrl + '/:entity(things|persons)/:entityId/:component(properties)/:p
                 property.values = [values];
                 return model.dao.updatePropertyValues(property);
             })
-            .then( () => {
+            .then(() => {
                 upload(request, response, (error) => {
                     if (error) {
                         return fail(response, error)
@@ -372,11 +373,56 @@ app.post(baseUrl + '/:entity(things|persons)/:entityId/:component(properties)/:p
             .catch((error) => fail(response, error));
     });
 
+/**
+ * Get video
+ */
+app.get(baseUrl + '/:entity(things|persons)/:entityId/:component(properties)/:propertyId/values/:ts',
+    auth.introspect,
+    (request, response) => {
+        const path = "./files/" + request.params.entityId + "-"
+            + request.params.propertyId + "-" + request.params.ts + ".mp4";
+        console.log(path);
+        const stat = fs.statSync(path);
+        const fileSize = stat.size;
+        const range = request.headers.range;
+
+        if (range) {
+            const parts = range.replace(/bytes=/, "").split("-");
+            const start = parseInt(parts[0], 10);
+            const end = parts[1]
+                ? parseInt(parts[1], 10)
+                : fileSize - 1;
+
+            const chunksize = (end - start) + 1;
+            const file = fs.createReadStream(path, {start, end});
+            const head = {
+                'Content-Range': `bytes ${start}-${end}/${fileSize}`,
+                'Accept-Ranges': 'bytes',
+                'Content-Length': chunksize,
+                'Content-Type': 'video/mp4',
+            };
+
+            response.writeHead(206, head);
+            file.pipe(response)
+        } else {
+            const head = {
+                'Content-Length': fileSize,
+                'Content-Type': 'video/mp4',
+            };
+            response.writeHead(200, head);
+            fs.createReadStream(path).pipe(response)
+        }
+    });
+
 // Set The Storage Engine
 const storage = multer.diskStorage({
     destination: './files/',
     filename: function(req, file, cb) {
-        cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+        const thingId = req.params.thingId;
+        const propertyId = req.params.propertyId;
+        const values = req.params.values.split(',').map(Number);
+        cb(null, thingId + '-' + propertyId + '-' + values[0]
+            + path.extname(file.originalname).toLowerCase());
     }
 });
 
