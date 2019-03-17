@@ -223,13 +223,15 @@ app.post(baseUrl + '/:entity(things|persons)/:entityId/:component(properties)',
     });
 
 /**
- * Create Dimension Classes.
+ * Create Classes.
  */
 app.post(baseUrl + '/:entity(things|persons)/:entityId/:component(properties)/:componentId/classes',
     auth.introspect,
     // auth.wardenToken({resource: 'classes', action: 'create'}),
     (request, response) => {
-        if (request.body.classes !== undefined && request.body.classes.length === 0) {
+        console.log('body');
+        console.log(request.body);
+        if (request.body.classes === undefined || request.body.classes.length === 0) {
             return fail(response, {msg: 'Missing or empty classes array'});
         }
         model.properties.createClasses(request.params.entityId,
