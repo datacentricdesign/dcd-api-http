@@ -351,18 +351,10 @@ app.post(baseUrl + '/:entity(things|persons)/:entityId/:component(properties)/:p
     auth.introspect,
     (request, response) => {
         const values = request.params.values.split(',');
-        model.dao.readProperty(request.params.entityId, request.params.componentId)
+        model.dao.readProperty(request.params.entityId, request.params.propertyId)
             .then((property) => {
-                const ts = parseInt(values[0]);
-                return model.dao.readPropertyValues(property, ts, ts)
-            })
-            .then((propertyWithValues) => {
-                if (propertyWithValues.values.length > 1
-                    && propertyWithValues.values[0][1] === parseFloat(values[0])) {
-                    return Promise.resolve(propertyWithValues);
-                } else {
-                    return Promise.reject({error: 'Values not found, rejecting file.'})
-                }
+                property.values = [values];
+                return model.dao.updatePropertyValues(property);
             })
             .then( () => {
                 upload(request, response, (error) => {
