@@ -31,7 +31,6 @@ const DCDModel = require('dcd-model');
 const Thing = require('dcd-model/entities/Thing');
 const Person = require('dcd-model/entities/Person');
 const Property = require('dcd-model/entities/Property');
-const Class = require('dcd-model/entities/Class');
 
 const model = new DCDModel();
 model.init();
@@ -230,21 +229,10 @@ app.post(baseUrl + '/:entity(things|persons)/:entityId/:component(properties)/:c
         if (request.body.classes !== undefined && request.body.classes.length === 0) {
             return fail(response, {msg: 'Missing or empty classes array'});
         }
-        model.properties.readProperty(
-            request.params.entityId,
-            request.params.componentId)
-            .then((property) => {
-                if (property.type === 'CLASS') {
-                    const classes = [];
-                    request.body.classes.forEach((clazz) => {
-                        clazz.propertyId = property.id;
-                        classes.push(new Class(clazz));
-                    });
-                    model.properties.createClasses(propertyId, classes)
-                        .then((result) => success(response, {property: result}))
-                        .catch((error) => fail(response, error));
-                }
-            });
+        model.properties.createClasses(request.params.entityId,
+            request.params.componentId, request.body.classes)
+            .then((result) => success(response, {property: result}))
+            .catch((error) => fail(response, error));
     });
 
 /**
