@@ -367,7 +367,7 @@ app.post(baseUrl + '/video', (req, res) => {
 
 // Set The Storage Engine
 const storage = multer.diskStorage({
-    destination: './uploads/',
+    destination: './files/',
     filename: function(req, file, cb) {
         cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
     }
