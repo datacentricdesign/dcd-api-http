@@ -293,6 +293,24 @@ app.put(baseUrl + '/:entity(things|persons)/:entityId/:component(properties)/:pr
         }
 
     });
+
+/**
+ * Update a property.
+ */
+app.put(baseUrl + '/:entity(things|persons)/:entityId/:component(properties)/:propertyId/values/:values',
+    auth.introspect,
+    // auth.wardenToken({resource: 'properties', action: 'update'}),
+    (request, response) => {
+        const propertyId = request.params.propertyId;
+        const property = {
+            id: propertyId,
+            values: [request.params.values.split(',').map(Number)]
+        };
+        model.properties.updateValues(property)
+            .then((result) => success(response, result))
+            .catch((error) => fail(response, error));
+    });
+
 /**
  * Update a property with a CSV file of values.
  */
