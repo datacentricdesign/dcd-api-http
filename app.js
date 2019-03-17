@@ -216,9 +216,7 @@ app.post(baseUrl + '/:entity(things|persons)/:entityId/:component(properties)',
     (request, response) => {
         request.body.entityId = request.params.entityId;
         model.properties.create(new Property(request.body))
-            .then((result) => {
-                success(response, {property: result});
-            })
+            .then((result) => success(response, {property: result}))
             .catch((error) => fail(response, error));
     });
 
@@ -229,7 +227,7 @@ app.post(baseUrl + '/:entity(things|persons)/:entityId/:component(properties)/:c
     auth.introspect,
     // auth.wardenToken({resource: 'classes', action: 'create'}),
     (request, response) => {
-        if (request.body.classes !== undefined || request.body.classes.length === 0) {
+        if (request.body.classes !== undefined && request.body.classes.length === 0) {
             return fail(response, {msg: 'Missing or empty classes array'});
         }
         model.properties.readProperty(
