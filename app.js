@@ -377,7 +377,7 @@ app.post(baseUrl + '/:entity(things|persons)/:entityId/:component(properties)/:p
  * Get video
  */
 app.get(baseUrl + '/:entity(things|persons)/:entityId/:component(properties)/:propertyId/values/:ts',
-    auth.introspect,
+    // auth.introspect,
     (request, response) => {
         const path = "./files/" + request.params.entityId + "-"
             + request.params.propertyId + "-" + request.params.ts + ".mp4";
