@@ -236,7 +236,7 @@ app.post(baseUrl + '/:entity(things|persons)/:entityId/:component(properties)/:c
         }
         model.properties.createClasses(request.params.entityId,
             request.params.componentId, request.body.classes)
-            .then((result) => success(response, {property: result}))
+            .then((result) => success(response, {classes: result}))
             .catch((error) => fail(response, error));
     });
 
