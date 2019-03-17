@@ -345,25 +345,40 @@ app.delete(baseUrl + '/:entity(things|persons)/:entityId/:component(properties)/
     });
 
 /**
- * Post video
+ * Post files
  */
-app.post(baseUrl + '/video', (req, res) => {
-    upload(req, res, (err) => {
-        if (err) {
-            console.log(err);
-            res.json({msg: err});
-        } else {
-            if (req.file === undefined) {
-                res.json({msg: 'Error: No File Selected!'});
-            } else {
-                res.json({
-                    msg: 'File Uploaded!',
-                    file: `uploads/${req.file.filename}`
+app.post(baseUrl + '/:entity(things|persons)/:entityId/:component(properties)/:propertyId/values/:values/file',
+    auth.introspect,
+    (request, response) => {
+        const values = request.params.values.split(',');
+        model.dao.readProperty(request.params.entityId, request.params.componentId)
+            .then((property) => {
+                const ts = parseInt(values[0]);
+                return model.dao.readPropertyValues(property, ts, ts)
+            })
+            .then((propertyWithValues) => {
+                if (propertyWithValues.values.length > 1
+                    && propertyWithValues.values[0][1] === parseFloat(values[0])) {
+                    return Promise.resolve(propertyWithValues);
+                } else {
+                    return Promise.reject({error: 'Values not found, rejecting file.'})
+                }
+            })
+            .then( () => {
+                upload(request, response, (error) => {
+                    if (error) {
+                        return fail(response, error)
+                    } else {
+                        if (request.file === undefined) {
+                            return fail(response, {error: 'Missing file.'})
+                        } else {
+                            return success(response, {success: true});
+                        }
+                    }
                 });
-            }
-        }
+            })
+            .catch((error) => fail(response, error));
     });
-});
 
 // Set The Storage Engine
 const storage = multer.diskStorage({
