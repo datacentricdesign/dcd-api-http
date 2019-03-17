@@ -350,7 +350,7 @@ app.delete(baseUrl + '/:entity(things|persons)/:entityId/:component(properties)/
 app.post(baseUrl + '/:entity(things|persons)/:entityId/:component(properties)/:propertyId/values/:values/file',
     auth.introspect,
     (request, response) => {
-        const values = request.params.values.split(',');
+        const values = request.params.values.split(',').map(Number);
         model.dao.readProperty(request.params.entityId, request.params.propertyId)
             .then((property) => {
                 property.values = [values];
