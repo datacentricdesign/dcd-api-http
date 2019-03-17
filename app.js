@@ -180,7 +180,10 @@ app.get(baseUrl + '/:entity(things)/:entityId', auth.introspect,
     // auth.wardenToken({resource: 'things', action: 'read'}),
     (request, response) => {
         model.things.read(request.params.entityId)
-            .then((result) => success(response, {thing: result}))
+            .then((result) => {
+                console.log(result);
+                success(response, {thing: result})
+            })
             .catch((error) => fail(response, error));
     });
 
@@ -243,10 +246,7 @@ app.get(baseUrl + '/:entity(things|persons)/:entityId/:component(properties)',
     // auth.wardenToken({resource: 'properties', action: 'list'}),
     (request, response) => {
         model.properties.list(request.params.entityId)
-            .then((result) => {
-                console.log(result);
-                success(response, {properties: result})
-            })
+            .then((result) => success(response, {properties: result}))
             .catch((error) => fail(response, error));
     });
 
