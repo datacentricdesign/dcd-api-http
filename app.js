@@ -418,10 +418,10 @@ app.get(baseUrl + '/:entity(things|persons)/:entityId/:component(properties)/:pr
 const storage = multer.diskStorage({
     destination: './files/',
     filename: function(req, file, cb) {
-        const thingId = req.params.thingId;
+        const entityId = req.params.entityId;
         const propertyId = req.params.propertyId;
         const values = req.params.values.split(',').map(Number);
-        cb(null, thingId + '-' + propertyId + '-' + values[0]
+        cb(null, entityId + '-' + propertyId + '-' + values[0]
             + path.extname(file.originalname).toLowerCase());
     }
 });
