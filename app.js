@@ -286,7 +286,7 @@ app.put(baseUrl + '/:entity(things|persons)/:entityId/:component(properties)/:pr
         const property = request.body;
         if (property.id === propertyId) {
             model.properties.updateValues(property)
-                .then((result) => success(response, result))
+                .then(() => success(response, property))
                 .catch((error) => fail(response, error));
         } else {
             fail(response, {message: 'property id not matching'})
