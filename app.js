@@ -286,7 +286,22 @@ app.put(baseUrl + '/:entity(things|persons)/:entityId/:component(properties)/:pr
         const property = request.body;
         if (property.id === propertyId) {
             model.properties.updateValues(property)
-                .then(() => success(response, property))
+                .then(() => {
+                    if (request.files.video === undefined) {
+                        return success(response, property)
+                    }
+                    upload(request, response, (error) => {
+                        if (error) {
+                            return fail(response, error)
+                        } else {
+                            if (request.file === undefined) {
+                                return fail(response, {error: 'Missing file.'})
+                            } else {
+                                return success(response, {success: true});
+                            }
+                        }
+                    });
+                })
                 .catch((error) => fail(response, error));
         } else {
             fail(response, {message: 'property id not matching'})
@@ -342,34 +357,6 @@ app.delete(baseUrl + '/:entity(things|persons)/:entityId/:component(properties)/
                 } else {
                     fail(response, {error: 'Property to delete not found'});
                 }
-            })
-            .catch((error) => fail(response, error));
-    });
-
-/**
- * Post files
- */
-app.post(baseUrl + '/:entity(things|persons)/:entityId/:component(properties)/:propertyId/values/:values/file',
-    auth.introspect,
-    (request, response) => {
-        const values = request.params.values.split(',').map(Number);
-        model.dao.readProperty(request.params.entityId, request.params.propertyId)
-            .then((property) => {
-                property.values = [values];
-                return model.dao.updatePropertyValues(property);
-            })
-            .then(() => {
-                upload(request, response, (error) => {
-                    if (error) {
-                        return fail(response, error)
-                    } else {
-                        if (request.file === undefined) {
-                            return fail(response, {error: 'Missing file.'})
-                        } else {
-                            return success(response, {success: true});
-                        }
-                    }
-                });
             })
             .catch((error) => fail(response, error));
     });
