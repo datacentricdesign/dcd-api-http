@@ -311,6 +311,38 @@ app.put(baseUrl + '/:entity(things|persons)/:entityId/:component(properties)/:pr
     });
 
 /**
+ * Update a property.
+ */
+app.post(baseUrl + '/:entity(things|persons)/:entityId/:component(properties)/:propertyId/values/:values/file',
+    auth.introspect,
+    // auth.wardenToken({resource: 'properties', action: 'update'}),
+    (request, response) => {
+        const values = request.params.values.split(',').map(Number);
+        model.dao.readProperty(request.params.entityId, request.params.propertyId)
+            .then((property) => {
+                property.values = [values];
+                return model.dao.updatePropertyValues(property);
+            })
+            .then(() => {
+                if (request.files.video === undefined) {
+                    return success(response, property)
+                }
+                upload(request, response, (error) => {
+                    if (error) {
+                        return fail(response, error)
+                    } else {
+                        if (request.file === undefined) {
+                            return fail(response, {error: 'Missing file.'})
+                        } else {
+                            return success(response, {success: true});
+                        }
+                    }
+                });
+            })
+            .catch((error) => fail(response, error));
+    });
+
+/**
  * Update a property with a CSV file of values.
  */
 app.put(baseUrl + '/:entity(things|persons)/:entityId/:component(properties)/:propertyId/file',
