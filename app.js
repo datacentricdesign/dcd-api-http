@@ -324,9 +324,6 @@ app.post(baseUrl + '/:entity(things|persons)/:entityId/:component(properties)/:p
                 return model.dao.updatePropertyValues(property);
             })
             .then(() => {
-                if (request.files.video === undefined) {
-                    return success(response, property)
-                }
                 upload(request, response, (error) => {
                     if (error) {
                         return fail(response, error)
