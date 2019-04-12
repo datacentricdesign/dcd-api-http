@@ -29,6 +29,7 @@ exports.introspect = (req, res, next) => {
       return model.auth
         .checkJWTAuth(token, req.params.entityId)
         .then(token => {
+          req.entityType = req.params.entity;
           req.user = { entityId: req.params.entityId, token: token };
           next();
         })
@@ -41,6 +42,7 @@ exports.introspect = (req, res, next) => {
       return model.auth
         .introspect(token)
         .then(user => {
+          req.entityType = req.params.entity;
           req.user = user;
           next();
         })
@@ -119,7 +121,7 @@ exports.wardenSubject = ({ resource, action }) => (req, res, next) => {
   const acp = {
     resource: acpResource,
     action: "dcd:actions:" + action,
-    subject: "dcd:" + req.user
+    subject: "dcd:" + req.entityType + ":" + req.user
   };
 
   model.auth
