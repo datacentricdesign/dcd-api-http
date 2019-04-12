@@ -123,6 +123,7 @@ exports.wardenSubject = ({ resource, action }) => (req, res, next) => {
     action: "dcd:actions:" + action,
     subject: req.user.sub
   };
+  logger.info(acp);
   model.auth
     .wardenSubject(acp)
     .then(user => {
