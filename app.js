@@ -163,7 +163,7 @@ app.delete(
 app.post(
   baseUrl + "/:entity(things)",
   auth.introspect,
-  auth.wardenToken({ resource: "things", action: "create" }),
+  auth.wardenSubject({ resource: "things", action: "create" }),
   (request, response) => {
     // Web forms cannot submit PUT methods, we check the flag update
     if (request.query.thingId !== undefined) {
@@ -191,7 +191,7 @@ app.post(
 app.get(
   baseUrl + "/:entity(things)",
   auth.introspect,
-  auth.wardenToken({resource: 'things', action: 'list'}),
+  auth.wardenSubject({resource: 'things', action: 'list'}),
   (request, response) => {
     model.things
       .list(request.user.sub)
