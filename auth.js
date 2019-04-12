@@ -123,16 +123,9 @@ exports.wardenSubject = ({ resource, action }) => (req, res, next) => {
     action: "dcd:actions:" + action,
     subject: req.user.sub
   };
-  logger.info("user after introspect");
-  logger.info(req.user);
   model.auth
     .wardenSubject(acp)
-    .then(user => {
-      logger.info("user from keto");
-      logger.info(user);
-      req.user = user;
-      next();
-    })
+    .then(next())
     .catch(error => {
       next(error);
     });
