@@ -191,7 +191,7 @@ app.post(
 app.get(
   baseUrl + "/:entity(things)",
   auth.introspect,
-  // auth.wardenToken({resource: 'things', action: 'list'}),
+  auth.wardenToken({resource: 'things', action: 'list'}),
   (request, response) => {
     model.things
       .list(request.user.sub)
