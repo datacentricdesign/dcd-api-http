@@ -119,7 +119,7 @@ exports.wardenSubject = ({ resource, action }) => (req, res, next) => {
   const acp = {
     resource: acpResource,
     action: "dcd:actions:" + action,
-    subject: "dcd:" + req.auth.user
+    subject: "dcd:" + req.user
   };
 
   model.auth
