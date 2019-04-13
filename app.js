@@ -299,7 +299,10 @@ app.get(
   (request, response) => {
     model.properties
       .list(request.params.entityId)
-      .then(result => success(response, { properties: result }))
+      .then(result => {
+        logger.info(result);
+        success(response, { properties: result })
+      })
       .catch(error => fail(response, error));
   }
 );
