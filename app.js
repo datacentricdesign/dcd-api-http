@@ -78,7 +78,7 @@ app.get(
   auth.wardenSubject({resource: 'persons', action: 'list'}),
   (request, response) => {
     model.persons
-      .list(request.user.subject)
+      .list(request.user.sub)
       .then(result => success(response, result))
       .catch(error => fail(response, error));
   }
