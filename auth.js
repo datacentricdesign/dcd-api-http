@@ -111,6 +111,7 @@ exports.wardenToken = ({ resource, action, scope = [] }) => (
 };
 
 exports.wardenSubject = ({ resource, action }) => (req, res, next) => {
+  logger.info("warden subject");
   let acpResource = "dcd:" + resource;
   if (req.params.entityId !== undefined) {
     acpResource += ":" + req.params.entityId;
@@ -125,8 +126,14 @@ exports.wardenSubject = ({ resource, action }) => (req, res, next) => {
   };
   model.auth
     .wardenSubject(acp)
-    .then(next())
+    .then(result => {
+      logger.info("warden subject positive response, continue ");
+      logger.info(result);
+      next();
+    })
     .catch(error => {
+      logger.error("warden subject negative response");
+      logger.error(error);
       next(error);
     });
 };
