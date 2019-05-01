@@ -72,7 +72,7 @@ exports.wardenToken = ({ resource, action, scope = [] }) => (
     acpResource += ":" + req.params.component;
   }
   if (req.params.propertyId !== undefined) {
-    acpResource += ":properties:" + req.params.entityId;
+    acpResource += ":" + req.params.entityId;
   }
 
   const token = req.get("Authorization").replace(/bearer\s/gi, "");
@@ -115,11 +115,17 @@ exports.wardenToken = ({ resource, action, scope = [] }) => (
 exports.wardenSubject = ({ resource, action }) => (req, res, next) => {
   logger.info("warden subject, acp:");
   let acpResource = "dcd:" + resource;
+  if (req.params.entity !== undefined) {
+    acpResource += ":" + req.params.entity;
+  }
   if (req.params.entityId !== undefined) {
     acpResource += ":" + req.params.entityId;
   }
+  if (req.params.component !== undefined) {
+    acpResource += ":" + req.params.component;
+  }
   if (req.params.propertyId !== undefined) {
-    acpResource += ":properties:" + req.params.entityId;
+    acpResource += ":" + req.params.entityId;
   }
   const acp = {
     resource: acpResource,
