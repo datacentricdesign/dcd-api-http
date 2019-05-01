@@ -31,6 +31,8 @@ exports.introspect = (req, res, next) => {
         .then(token => {
           req.entityType = req.params.entity;
           req.user = { entityId: req.params.entityId, token: token };
+          logger.info('introspect thing result, req.user:');
+          logger.info(req.user);
           next();
         })
         .catch(error => {
