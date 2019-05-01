@@ -30,7 +30,7 @@ exports.introspect = (req, res, next) => {
         .checkJWTAuth(token, req.params.entityId)
         .then(token => {
           req.entityType = req.params.entity;
-          req.user = { entityId: req.params.entityId, token: token };
+          req.user = { entityId: req.params.entityId, token: token, sub: "dcd:things:" + req.params.entityId };
           logger.info('introspect thing result, req.user:');
           logger.info(req.user);
           next();
