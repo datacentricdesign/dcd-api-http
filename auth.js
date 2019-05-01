@@ -111,7 +111,7 @@ exports.wardenToken = ({ resource, action, scope = [] }) => (
 };
 
 exports.wardenSubject = ({ resource, action }) => (req, res, next) => {
-  logger.info("warden subject");
+  logger.info("warden subject, acp:");
   let acpResource = "dcd:" + resource;
   if (req.params.entityId !== undefined) {
     acpResource += ":" + req.params.entityId;
@@ -124,6 +124,7 @@ exports.wardenSubject = ({ resource, action }) => (req, res, next) => {
     action: "dcd:actions:" + action,
     subject: req.user.sub
   };
+  logger.info(acp);
   model.auth
     .wardenSubject(acp)
     .then(result => {
