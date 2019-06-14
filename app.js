@@ -7,6 +7,7 @@ const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 const fs = require("fs");
+const cors = require("cors");
 
 const multer = require("multer");
 
@@ -40,6 +41,8 @@ const auth = require("./auth");
 auth.setModel(model);
 const swStats = require("swagger-stats");
 app.use(baseUrl, swStats.getMiddleware());
+
+app.use(cors());
 
 const success = (response, result) => {
   logger.debug(result);
