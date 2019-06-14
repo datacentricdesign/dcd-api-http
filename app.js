@@ -166,9 +166,10 @@ app.post(
   auth.wardenSubject({ resource: "things", action: "create" }),
   (request, response) => {
     // Web forms cannot submit PUT methods, we check the flag update
+    logger.info("#####");
     if (request.query.thingId !== undefined) {
       request.body.entityId = request.query.thingId;
-      logger.debug(request.body.entityId);
+      logger.info(request.body);
       return model.things
         .update(new Thing(request.body))
         .then(result => success(response, result))
