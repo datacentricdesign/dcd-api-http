@@ -168,6 +168,7 @@ app.post(
     // Web forms cannot submit PUT methods, we check the flag update
     if (request.query.thingId !== undefined) {
       request.body.entityId = request.query.thingId;
+      logger.debug(request.body.entityId);
       return model.things
         .update(new Thing(request.body))
         .then(result => success(response, result))
