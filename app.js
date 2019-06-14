@@ -177,6 +177,7 @@ app.post(
     }
 
     const personId = request.user.sub;
+    logger.info(request.body);
     const thing = new Thing(request.body);
     const jwt =
       request.query.jwt !== undefined ? request.query.jwt === "true" : false;
