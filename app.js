@@ -315,6 +315,10 @@ app.get(
 
 /**
  * Read a Property.
+ *
+ * Optional parameters:
+ * - from: start time to get historical values, UNIX timestamp (in ms)
+ * - to: end time to get historical values, UNIX timestamp (in ms)
  */
 app.get(
   baseUrl +
@@ -334,7 +338,10 @@ app.get(
     }
     model.properties
       .read(entityId, propertyId, from, to)
-      .then(result => success(response, { property: result }))
+      .then(result => {
+        logger.debug(result);
+        return success(response, {property: result})
+      })
       .catch(error => fail(response, error));
   }
 );
