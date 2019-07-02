@@ -468,7 +468,7 @@ propertyRouter.put([
 /**
  * Delete a property.
  */
-propertyRouter.get([
+propertyRouter.delete([
   "/:entity(things|persons)/:entityId/:component(properties)/:propertyId",
   "/:entity(things|persons)/:entityId/interactions/interactionId/:component(properties)/:propertyId"
 ],
