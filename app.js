@@ -559,7 +559,7 @@ app.post(
     const interaction = new Interaction(request.body);
     model.interactions
       .create(interaction)
-      .then(result => success(response, {interactionId: result}))
+      .then(result => success(response, {interaction: result}))
       .catch(error => fail(response, error));
   }
 );
