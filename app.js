@@ -289,7 +289,11 @@ propertyRouter.post([
   auth.introspect,
   auth.wardenSubject({resource: 'properties', action: 'create'}),
   (request, response) => {
-    request.body.entityId = request.params.entityId;
+    if (request.params.interactionId !== undefined) {
+      request.body.entityId = request.params.interactionId;
+    } else {
+      request.body.entityId = request.params.entityId;
+    }
     model.properties
       .create(new Property(request.body))
       .then(result => success(response, {property: result}))
@@ -307,8 +311,12 @@ propertyRouter.get([
   auth.introspect,
   auth.wardenSubject({resource: 'properties', action: 'list'}),
   (request, response) => {
+    let entityId = request.params.entityId;
+    if (request.params.interactionId !== undefined) {
+      entityId = request.params.interactionId;
+    }
     model.properties
-      .list(request.params.entityId)
+      .list(entityId)
       .then(result => {
         logger.info(result);
         success(response, {properties: result})
@@ -331,7 +339,10 @@ propertyRouter.get([
   auth.introspect,
   auth.wardenSubject({resource: 'things', action: 'read'}),
   (request, response) => {
-    const entityId = request.params.entityId;
+    let entityId = request.params.entityId;
+    if (request.params.interactionId !== undefined) {
+      entityId = request.params.interactionId;
+    }
     const propertyId = request.params.propertyId;
     let from;
     let to;
@@ -403,8 +414,12 @@ propertyRouter.post([
   auth.wardenSubject({resource: 'properties', action: 'update'}),
   (request, response) => {
     const values = request.params.values.split(",").map(Number);
+    let entityId = request.params.entityId;
+    if (request.params.interactionId !== undefined) {
+      entityId = request.params.interactionId;
+    }
     model.dao
-      .readProperty(request.params.entityId, request.params.propertyId)
+      .readProperty(entityId, request.params.propertyId)
       .then(property => {
         property.values = [values];
         return model.dao.updatePropertyValues(property);
@@ -436,7 +451,10 @@ propertyRouter.put([
   auth.introspect,
   auth.wardenSubject({resource: 'properties', action: 'update'}),
   (request, response, next) => {
-    const entityId = request.params.entityId;
+    let entityId = request.params.entityId;
+    if (request.params.interactionId !== undefined) {
+      entityId = request.params.interactionId;
+    }
     const propertyId = request.params.propertyId;
 
     const form = new multiparty.Form();
