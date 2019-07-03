@@ -284,7 +284,7 @@ const propertyRouter = express.Router();
  */
 propertyRouter.post([
     "/:entity(things|persons)/:entityId/:component(properties)",
-    "/:entity(things|persons)/:entityId/interactions/interactionId/:component(properties)"
+    "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)"
 ],
   auth.introspect,
   auth.wardenSubject({resource: 'properties', action: 'create'}),
@@ -302,7 +302,7 @@ propertyRouter.post([
  */
 propertyRouter.get([
     "/:entity(things|persons)/:entityId/:component(properties)",
-    "/:entity(things|persons)/:entityId/interactions/interactionId/:component(properties)"
+    "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)"
 ],
   auth.introspect,
   auth.wardenSubject({resource: 'properties', action: 'list'}),
@@ -326,7 +326,7 @@ propertyRouter.get([
  */
 propertyRouter.get([
   "/:entity(things|persons)/:entityId/:component(properties)/:propertyId",
-  "/:entity(things|persons)/:entityId/interactions/interactionId/:component(properties)/:propertyId"
+  "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)/:propertyId"
 ],
   auth.introspect,
   auth.wardenSubject({resource: 'things', action: 'read'}),
@@ -356,7 +356,7 @@ propertyRouter.get([
  */
 propertyRouter.put([
   "/:entity(things|persons)/:entityId/:component(properties)/:propertyId",
-  "/:entity(things|persons)/:entityId/interactions/interactionId/:component(properties)/:propertyId"
+  "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)/:propertyId"
 ],
   auth.introspect,
   auth.wardenSubject({resource: 'properties', action: 'update'}),
@@ -397,7 +397,7 @@ propertyRouter.put([
  */
 propertyRouter.post([
     "/:entity(things|persons)/:entityId/:component(properties)/:propertyId/values/:values/file",
-    "/:entity(things|persons)/:entityId/interactions/interactionId/:component(properties)/:propertyId/values/:values/file",
+    "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)/:propertyId/values/:values/file",
   ],
   auth.introspect,
   auth.wardenSubject({resource: 'properties', action: 'update'}),
@@ -431,7 +431,7 @@ propertyRouter.post([
  */
 propertyRouter.put([
     "/:entity(things|persons)/:entityId/:component(properties)/:propertyId/file",
-    "/:entity(things|persons)/:entityId/interactions/interactionId/:component(properties)/:propertyId/file"
+    "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)/:propertyId/file"
   ],
   auth.introspect,
   auth.wardenSubject({resource: 'properties', action: 'update'}),
@@ -470,7 +470,7 @@ propertyRouter.put([
  */
 propertyRouter.delete([
   "/:entity(things|persons)/:entityId/:component(properties)/:propertyId",
-  "/:entity(things|persons)/:entityId/interactions/interactionId/:component(properties)/:propertyId"
+  "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)/:propertyId"
 ],
   auth.introspect,
   auth.wardenSubject({resource: 'properties', action: 'delete'}),
