@@ -294,6 +294,8 @@ propertyRouter.post([
     } else {
       request.body.entityId = request.params.entityId;
     }
+    logger.debug(request.body);
+    logger.debug(new Property(request.body));
     model.properties
       .create(new Property(request.body))
       .then(result => success(response, {property: result}))
