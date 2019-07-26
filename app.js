@@ -604,11 +604,11 @@ app.get(
   auth.wardenSubject({ resource: "interactions", action: "list" }),
   (request, response) => {
     let entityDestId;
-    if (request.query.thing !== undefined) {
+    if (request.query.entity !== undefined) {
       entityDestId = parseInt(request.query.entity);
     }
     model.interactions
-      .list(request.user.sub, entityDestId)
+      .list(request.user.sub, request.params.entityId, entityDestId)
       .then(result => success(response, result))
       .catch(error => fail(response, error));
   }
