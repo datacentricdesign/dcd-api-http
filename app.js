@@ -25,7 +25,7 @@ const app = express();
 app.use(favicon(path.join(__dirname, "public", "favicon.ico")));
 app.use(morgan("dev"));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
@@ -59,7 +59,7 @@ const fail = (response, error) => {
  * API Health status
  */
 app.get(baseUrl + "/health", (request, response) => {
-  success(response, {status: 0, message: "OK"});
+  success(response, { status: 0, message: "OK" });
 });
 
 /**
@@ -69,7 +69,7 @@ app.post(baseUrl + "/:entity(persons)", (request, response) => {
   const person = new Person(request.body);
   model.persons
     .create(person)
-    .then(result => success(response, {personId: result}))
+    .then(result => success(response, { personId: result }))
     .catch(error => fail(response, error));
 });
 
@@ -79,7 +79,7 @@ app.post(baseUrl + "/:entity(persons)", (request, response) => {
 app.get(
   baseUrl + "/:entity(persons)",
   auth.introspect,
-  auth.wardenSubject({resource: 'persons', action: 'list'}),
+  auth.wardenSubject({ resource: "persons", action: "list" }),
   (request, response) => {
     model.persons
       .list(request.user.sub)
@@ -94,11 +94,11 @@ app.get(
 app.get(
   baseUrl + "/:entity(persons)/:entityId",
   auth.introspect,
-  auth.wardenSubject({resource: 'persons', action: 'read'}),
+  auth.wardenSubject({ resource: "persons", action: "read" }),
   (request, response) => {
     model.persons
       .read(request.params.entityId)
-      .then(result => success(response, {person: result}))
+      .then(result => success(response, { person: result }))
       .catch(error => fail(response, error));
   }
 );
@@ -117,7 +117,7 @@ app.post(
     if (request.body !== undefined && request.body.password !== undefined) {
       model.persons
         .check(request.params.entityId, request.body.password)
-        .then(result => success(response, {person: result}))
+        .then(result => success(response, { person: result }))
         .catch(error => fail(response, error));
     }
   }
@@ -129,7 +129,7 @@ app.post(
 app.put(
   baseUrl + "/:entity(persons)/:entityId",
   auth.introspect,
-  auth.wardenSubject({resource: 'persons', action: 'update'}),
+  auth.wardenSubject({ resource: "persons", action: "update" }),
   (request, response) => {
     const person = new Person(request.params.entityId, request.body);
     model.persons
@@ -145,7 +145,7 @@ app.put(
 app.delete(
   baseUrl + "/:entity(persons)/:entityId",
   auth.introspect,
-  auth.wardenSubject({resource: 'persons', action: 'delete'}),
+  auth.wardenSubject({ resource: "persons", action: "delete" }),
   (request, response) => {
     const personId = request.params.entityId;
     model.persons
@@ -167,7 +167,7 @@ app.delete(
 app.post(
   baseUrl + "/:entity(things)",
   auth.introspect,
-  auth.wardenSubject({resource: "things", action: "create"}),
+  auth.wardenSubject({ resource: "things", action: "create" }),
   (request, response) => {
     // Web forms cannot submit PUT methods, we check the flag update
     if (request.query.thingId !== undefined) {
@@ -184,7 +184,7 @@ app.post(
       request.query.jwt !== undefined ? request.query.jwt === "true" : false;
     model.things
       .create(personId, thing, jwt)
-      .then(result => success(response, {thing: result}))
+      .then(result => success(response, { thing: result }))
       .catch(error => fail(response, error));
   }
 );
@@ -195,11 +195,11 @@ app.post(
 app.get(
   baseUrl + "/:entity(things)",
   auth.introspect,
-  auth.wardenSubject({resource: 'things', action: 'list'}),
+  auth.wardenSubject({ resource: "things", action: "list" }),
   (request, response) => {
     model.things
       .list(request.user.sub)
-      .then(result => success(response, {things: result}))
+      .then(result => success(response, { things: result }))
       .catch(error => fail(response, error));
   }
 );
@@ -210,12 +210,12 @@ app.get(
 app.get(
   baseUrl + "/:entity(things)/:entityId",
   auth.introspect,
-  auth.wardenSubject({resource: 'things', action: 'read'}),
+  auth.wardenSubject({ resource: "things", action: "read" }),
   (request, response) => {
     model.things
       .read(request.params.entityId)
       .then(result => {
-        success(response, {thing: result});
+        success(response, { thing: result });
       })
       .catch(error => fail(response, error));
   }
@@ -227,7 +227,7 @@ app.get(
 app.put(
   baseUrl + "/:entity(things)/:entityId",
   auth.introspect,
-  auth.wardenSubject({resource: 'things', action: 'update'}),
+  auth.wardenSubject({ resource: "things", action: "update" }),
   (request, response) => {
     model.things
       .update(new Thing(request.body, request.params.entityId))
@@ -242,7 +242,7 @@ app.put(
 app.delete(
   baseUrl + "/:entity(things)/:entityId",
   auth.introspect,
-  auth.wardenSubject({resource: 'things', action: 'delete'}),
+  auth.wardenSubject({ resource: "things", action: "delete" }),
   (request, response) => {
     model.things
       .del(request.params.entityId)
@@ -256,15 +256,15 @@ app.delete(
  */
 app.post(
   baseUrl +
-  "/:entity(things|persons)/:entityId/:component(properties)/:componentId/classes",
+    "/:entity(things|persons)/:entityId/:component(properties)/:componentId/classes",
   auth.introspect,
-  auth.wardenSubject({resource: 'classes', action: 'create'}),
+  auth.wardenSubject({ resource: "classes", action: "create" }),
   (request, response) => {
     if (
       request.body.classes === undefined ||
       request.body.classes.length === 0
     ) {
-      return fail(response, {msg: "Missing or empty classes array"});
+      return fail(response, { msg: "Missing or empty classes array" });
     }
     model.properties
       .createClasses(
@@ -272,7 +272,7 @@ app.post(
         request.params.componentId,
         request.body.classes
       )
-      .then(result => success(response, {classes: result}))
+      .then(result => success(response, { classes: result }))
       .catch(error => fail(response, error));
   }
 );
@@ -282,12 +282,13 @@ const propertyRouter = express.Router();
 /**
  * Create a Property.
  */
-propertyRouter.post([
+propertyRouter.post(
+  [
     "/:entity(things|persons)/:entityId/:component(properties)",
     "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)"
-],
+  ],
   auth.introspect,
-  auth.wardenSubject({resource: 'properties', action: 'create'}),
+  auth.wardenSubject({ resource: "properties", action: "create" }),
   (request, response) => {
     if (request.params.interactionId !== undefined) {
       request.body.entityId = request.params.interactionId;
@@ -298,7 +299,7 @@ propertyRouter.post([
     logger.debug(new Property(request.body));
     model.properties
       .create(new Property(request.body))
-      .then(result => success(response, {property: result}))
+      .then(result => success(response, { property: result }))
       .catch(error => fail(response, error));
   }
 );
@@ -306,12 +307,13 @@ propertyRouter.post([
 /**
  * List Properties.
  */
-propertyRouter.get([
+propertyRouter.get(
+  [
     "/:entity(things|persons)/:entityId/:component(properties)",
     "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)"
-],
+  ],
   auth.introspect,
-  auth.wardenSubject({resource: 'properties', action: 'list'}),
+  auth.wardenSubject({ resource: "properties", action: "list" }),
   (request, response) => {
     let entityId = request.params.entityId;
     if (request.params.interactionId !== undefined) {
@@ -321,7 +323,7 @@ propertyRouter.get([
       .list(entityId)
       .then(result => {
         logger.info(result);
-        success(response, {properties: result})
+        success(response, { properties: result });
       })
       .catch(error => fail(response, error));
   }
@@ -334,12 +336,13 @@ propertyRouter.get([
  * - from: start time to get historical values, UNIX timestamp (in ms)
  * - to: end time to get historical values, UNIX timestamp (in ms)
  */
-propertyRouter.get([
-  "/:entity(things|persons)/:entityId/:component(properties)/:propertyId",
-  "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)/:propertyId"
-],
+propertyRouter.get(
+  [
+    "/:entity(things|persons)/:entityId/:component(properties)/:propertyId",
+    "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)/:propertyId"
+  ],
   auth.introspect,
-  auth.wardenSubject({resource: 'things', action: 'read'}),
+  auth.wardenSubject({ resource: "things", action: "read" }),
   (request, response) => {
     let entityId = request.params.entityId;
     if (request.params.interactionId !== undefined) {
@@ -358,7 +361,7 @@ propertyRouter.get([
       .read(entityId, propertyId, from, to)
       .then(result => {
         logger.debug(result);
-        return success(response, {property: result})
+        return success(response, { property: result });
       })
       .catch(error => fail(response, error));
   }
@@ -367,12 +370,13 @@ propertyRouter.get([
 /**
  * Update a property.
  */
-propertyRouter.put([
-  "/:entity(things|persons)/:entityId/:component(properties)/:propertyId",
-  "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)/:propertyId"
-],
+propertyRouter.put(
+  [
+    "/:entity(things|persons)/:entityId/:component(properties)/:propertyId",
+    "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)/:propertyId"
+  ],
   auth.introspect,
-  auth.wardenSubject({resource: 'properties', action: 'update'}),
+  auth.wardenSubject({ resource: "properties", action: "update" }),
   (request, response) => {
     const propertyId = request.params.propertyId;
     const property = request.body;
@@ -391,16 +395,16 @@ propertyRouter.put([
               return fail(response, error);
             } else {
               if (request.file === undefined) {
-                return fail(response, {error: "Missing file."});
+                return fail(response, { error: "Missing file." });
               } else {
-                return success(response, {success: true});
+                return success(response, { success: true });
               }
             }
           });
         })
         .catch(error => fail(response, error));
     } else {
-      fail(response, {message: "property id not matching"});
+      fail(response, { message: "property id not matching" });
     }
   }
 );
@@ -408,12 +412,13 @@ propertyRouter.put([
 /**
  * Update a property.
  */
-propertyRouter.post([
+propertyRouter.post(
+  [
     "/:entity(things|persons)/:entityId/:component(properties)/:propertyId/values/:values/file",
-    "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)/:propertyId/values/:values/file",
+    "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)/:propertyId/values/:values/file"
   ],
   auth.introspect,
-  auth.wardenSubject({resource: 'properties', action: 'update'}),
+  auth.wardenSubject({ resource: "properties", action: "update" }),
   (request, response) => {
     const values = request.params.values.split(",").map(Number);
     let entityId = request.params.entityId;
@@ -432,9 +437,9 @@ propertyRouter.post([
             return fail(response, error);
           } else {
             if (request.file === undefined) {
-              return fail(response, {error: "Missing file."});
+              return fail(response, { error: "Missing file." });
             } else {
-              return success(response, {success: true});
+              return success(response, { success: true });
             }
           }
         });
@@ -446,12 +451,13 @@ propertyRouter.post([
 /**
  * Update a property with a CSV file of values.
  */
-propertyRouter.put([
+propertyRouter.put(
+  [
     "/:entity(things|persons)/:entityId/:component(properties)/:propertyId/file",
     "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)/:propertyId/file"
   ],
   auth.introspect,
-  auth.wardenSubject({resource: 'properties', action: 'update'}),
+  auth.wardenSubject({ resource: "properties", action: "update" }),
   (request, response, next) => {
     let entityId = request.params.entityId;
     if (request.params.interactionId !== undefined) {
@@ -484,39 +490,38 @@ propertyRouter.put([
   }
 );
 
-
 /**
  * Delete a property.
  */
-propertyRouter.delete([
-  "/:entity(things|persons)/:entityId/:component(properties)/:propertyId",
-  "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)/:propertyId"
-],
+propertyRouter.delete(
+  [
+    "/:entity(things|persons)/:entityId/:component(properties)/:propertyId",
+    "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)/:propertyId"
+  ],
   auth.introspect,
-  auth.wardenSubject({resource: 'properties', action: 'delete'}),
+  auth.wardenSubject({ resource: "properties", action: "delete" }),
   (request, response) => {
     model.properties
       .del(request.params.propertyId)
       .then(result => {
         if (result.affectedRows === 1) {
-          success(response, {success: true});
+          success(response, { success: true });
         } else {
-          fail(response, {error: "Property to delete not found"});
+          fail(response, { error: "Property to delete not found" });
         }
       })
       .catch(error => fail(response, error));
-  });
+  }
+);
 
 app.use(baseUrl, propertyRouter);
-
-
 
 /**
  * Get video
  */
 app.get(
   baseUrl +
-  "/:entity(things|persons)/:entityId/:component(properties)/:propertyId/values/:ts",
+    "/:entity(things|persons)/:entityId/:component(properties)/:propertyId/values/:ts",
   auth.introspect,
   (request, response) => {
     const path =
@@ -537,7 +542,7 @@ app.get(
       const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
 
       const chunksize = end - start + 1;
-      const file = fs.createReadStream(path, {start, end});
+      const file = fs.createReadStream(path, { start, end });
       const head = {
         "Content-Range": `bytes ${start}-${end}/${fileSize}`,
         "Accept-Ranges": "bytes",
@@ -562,24 +567,30 @@ app.get(
  * Create an interaction.
  *
  * Body:
- * - entityId1: id of the first interacting thing
- * - entityId2: id of the second interacting thing
+ * - entity_id_1: id of the first interacting thing
+ * - entity_id_2: id of the second interacting thing
  */
 app.post(
   baseUrl + "/:entity(things|persons)/:entityId/:component(interactions)",
   auth.introspect,
-  auth.wardenSubject({resource: 'interactions', action: 'create'}),
+  auth.wardenSubject({ resource: "interactions", action: "create" }),
   (request, response) => {
-    if (request.body === undefined
-      || (request.body.entityId1 !== request.params.entityId
-          && request.body.entityId2 !== request.params.entityId)) {
-      return fail(new Error('Missing body with entityId1 and entityId2,' +
-        ' or mismatch with requester thing id.'))
+    if (
+      request.body === undefined ||
+      (request.body.entity_id_1 !== request.params.entityId &&
+        request.body.entity_id_2 !== request.params.entityId)
+    ) {
+      return fail(
+        new Error(
+          "Missing body with entityId1 and entityId2," +
+            " or mismatch with requester thing id."
+        )
+      );
     }
     const interaction = new Interaction(request.body);
     model.interactions
       .create(interaction)
-      .then(result => success(response, {interaction: result}))
+      .then(result => success(response, { interaction: result }))
       .catch(error => fail(response, error));
   }
 );
@@ -590,7 +601,7 @@ app.post(
 app.get(
   baseUrl + "/:entity(things|persons)/:entityId/:component(interactions)",
   auth.introspect,
-  auth.wardenSubject({resource: 'interactions', action: 'list'}),
+  auth.wardenSubject({ resource: "interactions", action: "list" }),
   (request, response) => {
     let entityDestId;
     if (request.query.thing !== undefined) {
@@ -608,13 +619,13 @@ app.get(
  */
 app.get(
   baseUrl +
-  "/:entity(things|persons)/:entityId/:component(interactions)/:componentId",
+    "/:entity(things|persons)/:entityId/:component(interactions)/:componentId",
   auth.introspect,
-  auth.wardenSubject({resource: 'interactions', action: 'read'}),
+  auth.wardenSubject({ resource: "interactions", action: "read" }),
   (request, response) => {
     model.interactions
       .read(request.params.componentId)
-      .then(result => success(response, {interaction: result}))
+      .then(result => success(response, { interaction: result }))
       .catch(error => fail(response, error));
   }
 );
@@ -629,11 +640,11 @@ const storage = multer.diskStorage({
     cb(
       null,
       entityId +
-      "-" +
-      propertyId +
-      "-" +
-      values[0] +
-      path.extname(file.originalname).toLowerCase()
+        "-" +
+        propertyId +
+        "-" +
+        values[0] +
+        path.extname(file.originalname).toLowerCase()
     );
   }
 });
@@ -641,7 +652,7 @@ const storage = multer.diskStorage({
 // Init Upload
 const upload = multer({
   storage: storage,
-  limits: {fileSize: 1000000000},
+  limits: { fileSize: 1000000000 },
   fileFilter: function(req, file, cb) {
     checkFileType(file, cb);
   }
