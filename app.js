@@ -630,6 +630,39 @@ app.get(
   }
 );
 
+/**
+ * Get stats property type stats
+ * Optional parameters:
+ * - from: start time to get historical values, UNIX timestamp (in ms)
+ * - to: end time to get historical values, UNIX timestamp (in ms)
+ */
+
+ app.get(
+   baseUrl +
+    "/stats/:propertyType",
+    auth.introspect,
+    (request, response) => {
+    const propertyType = request.params.propertyType;
+    let from;
+    let to;
+    if (request.query.from !== undefined) {
+      from = parseInt(request.query.from);
+    }
+    if (request.query.to !== undefined) {
+      to = parseInt(request.query.to);
+    }
+    model.stats
+      .getTypeStats(propertyType, from, to)
+      .then(result => {
+        logger.debug(result);
+        return success(response, { stat: result });
+      })
+      .catch(error => fail(response, error));
+    }
+ );
+
+
+
 // Set The Storage Engine
 const storage = multer.diskStorage({
   destination: "./files/",
