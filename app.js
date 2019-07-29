@@ -631,6 +631,25 @@ app.get(
 );
 
 /**
+ * Get global stats
+ */
+
+app.get(
+  baseUrl +
+   "/stats",
+   auth.introspect,
+   (request, response) => {
+   model.stats
+     .getGlobalStats()
+     .then(result => {
+       logger.debug(result);
+       return success(response, { stat: result });
+     })
+     .catch(error => fail(response, error));
+   }
+);
+
+/**
  * Get stats property type stats
  * Optional parameters:
  * - from: start time to get historical values, UNIX timestamp (in ms)
