@@ -62,98 +62,11 @@ app.get(baseUrl + "/health", (request, response) => {
   success(response, { status: 0, message: "OK" });
 });
 
-/**
- * Create a person.
- */
-app.post(baseUrl + "/:entity(persons)", (request, response) => {
-  const person = new Person(request.body);
-  model.persons
-    .create(person)
-    .then(result => success(response, { personId: result }))
-    .catch(error => fail(response, error));
-});
+const personsRoute = require("./routes/persons");
+personsRoute.setModel(model);
+personsRoute.setAuth(auth);
 
-/**
- * List Persons.
- */
-app.get(
-  baseUrl + "/:entity(persons)",
-  auth.introspect,
-  auth.wardenSubject({ resource: "persons", action: "list" }),
-  (request, response) => {
-    model.persons
-      .list(request.user.sub)
-      .then(result => success(response, result))
-      .catch(error => fail(response, error));
-  }
-);
-
-/**
- * Read a Person.
- */
-app.get(
-  baseUrl + "/:entity(persons)/:entityId",
-  auth.introspect,
-  auth.wardenSubject({ resource: "persons", action: "read" }),
-  (request, response) => {
-    model.persons
-      .read(request.params.entityId)
-      .then(result => success(response, { person: result }))
-      .catch(error => fail(response, error));
-  }
-);
-
-/**
- * Check a Person's credentials.
- */
-app.post(
-  baseUrl + "/:entity(persons)/:entityId/check",
-  auth.introspect,
-  // auth.wardenToken({
-  //     resource: 'persons',
-  //     scope: ['dcd:auth'], action: 'check'
-  // }),
-  (request, response) => {
-    if (request.body !== undefined && request.body.password !== undefined) {
-      model.persons
-        .check(request.params.entityId, request.body.password)
-        .then(result => success(response, { person: result }))
-        .catch(error => fail(response, error));
-    }
-  }
-);
-
-/**
- * Update a Person.
- */
-app.put(
-  baseUrl + "/:entity(persons)/:entityId",
-  auth.introspect,
-  auth.wardenSubject({ resource: "persons", action: "update" }),
-  (request, response) => {
-    const person = new Person(request.params.entityId, request.body);
-    model.persons
-      .update(person)
-      .then(result => success(response, result))
-      .catch(error => fail(response, error));
-  }
-);
-
-/**
- * Delete a Person.
- */
-app.delete(
-  baseUrl + "/:entity(persons)/:entityId",
-  auth.introspect,
-  auth.wardenSubject({ resource: "persons", action: "delete" }),
-  (request, response) => {
-    const personId = request.params.entityId;
-    model.persons
-      .delete(personId)
-      .then(result => success(response, result))
-      .catch(error => fail(response, error));
-  }
-);
+app.use(baseUrl + "/persons", personsRoute);
 
 /**
  * Create a Thing.

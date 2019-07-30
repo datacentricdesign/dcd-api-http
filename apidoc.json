@@ -1,0 +1,10 @@
+{
+  "name": "DCD Hub - API",
+  "title": "DCD Hub - API",
+  "url" : "https://dwd.tudelft.nl/api",
+
+  "header": {
+    "title": "General Concepts",
+    "filename": "docs/header.md"
+  }
+}
