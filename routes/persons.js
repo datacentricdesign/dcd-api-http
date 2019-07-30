@@ -143,4 +143,4 @@ const fail = (response, error) => {
   utils.writeJson(response, error);
 };
 
-module.exports = router;
+exports.router = router;
