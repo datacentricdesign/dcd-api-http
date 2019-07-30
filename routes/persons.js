@@ -20,7 +20,7 @@ exports.setModel = newModel => {
 
 let auth = null;
 exports.setAuth = newAuth => {
-  model = newAuth;
+  auth = newAuth;
 };
 
 const success = (response, result) => {
