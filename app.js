@@ -62,9 +62,9 @@ app.get(baseUrl + "/health", (request, response) => {
   success(response, { status: 0, message: "OK" });
 });
 
-const personsRoute = require("./routes/persons");
-personsRoute.init(model, auth);
-app.use(baseUrl + "/persons", personsRoute);
+const PersonHttp = require("./routes/persons");
+const personHttp = new PersonHttp(model, auth);
+app.use(baseUrl + "/persons", personHttp.router);
 
 /**
  * Create a Thing.
