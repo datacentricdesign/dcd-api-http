@@ -14,13 +14,11 @@ const utils = require("../utils/writer.js");
 const Person = require("dcd-model/entities/Person");
 
 let model = null;
-exports.setModel = newModel => {
-  model = newModel;
-};
-
 let auth = null;
-exports.setAuth = newAuth => {
+exports.setModelAndAuth = (newModel, newAuth) => {
+  model = newModel;
   auth = newAuth;
+  return Promise.resolve();
 };
 
 const success = (response, result) => {

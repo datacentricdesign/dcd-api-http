@@ -63,10 +63,9 @@ app.get(baseUrl + "/health", (request, response) => {
 });
 
 const personsRoute = require("./routes/persons");
-personsRoute.setModel(model);
-personsRoute.setAuth(auth);
-
-app.use(baseUrl + "/persons", personsRoute);
+personsRoute.setModelAndAuth(model, auth).then(() => {
+  app.use(baseUrl + "/persons", personsRoute);
+});
 
 /**
  * Create a Thing.
@@ -547,20 +546,15 @@ app.get(
  * Get global stats
  */
 
-app.get(
-  baseUrl +
-   "/stats",
-   auth.introspect,
-   (request, response) => {
-   model.stats
-     .getGlobalStats()
-     .then(result => {
-       logger.debug(result);
-       return success(response, { stat: result });
-     })
-     .catch(error => fail(response, error));
-   }
-);
+app.get(baseUrl + "/stats", auth.introspect, (request, response) => {
+  model.stats
+    .getGlobalStats()
+    .then(result => {
+      logger.debug(result);
+      return success(response, { stat: result });
+    })
+    .catch(error => fail(response, error));
+});
 
 /**
  * Get stats property type stats
@@ -569,11 +563,10 @@ app.get(
  * - to: end time to get historical values, UNIX timestamp (in ms)
  */
 
- app.get(
-   baseUrl +
-    "/stats/:propertyType",
-    auth.introspect,
-    (request, response) => {
+app.get(
+  baseUrl + "/stats/:propertyType",
+  auth.introspect,
+  (request, response) => {
     const propertyType = request.params.propertyType;
     let from;
     let to;
@@ -590,10 +583,8 @@ app.get(
         return success(response, { stat: result });
       })
       .catch(error => fail(response, error));
-    }
- );
-
-
+  }
+);
 
 // Set The Storage Engine
 const storage = multer.diskStorage({
