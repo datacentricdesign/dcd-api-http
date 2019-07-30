@@ -15,7 +15,7 @@ const Person = require("dcd-model/entities/Person");
 
 let model = null;
 let auth = null;
-exports.setModelAndAuth = (newModel, newAuth) => {
+exports.init = (newModel, newAuth) => {
   model = newModel;
   auth = newAuth;
 
