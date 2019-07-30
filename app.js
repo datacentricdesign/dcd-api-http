@@ -27,7 +27,7 @@ app.use(morgan("dev"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, "public")));
+app.use(baseUrl, express.static(path.join(__dirname, "public")));
 
 const DCDModel = require("dcd-model");
 const Thing = require("dcd-model/entities/Thing");
