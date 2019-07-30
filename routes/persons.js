@@ -9,7 +9,7 @@ logger.level = process.env.LOG_LEVEL || "INFO";
 const express = require("express");
 const router = express.Router();
 
-const utils = require("./utils/writer.js");
+const utils = require("../utils/writer.js");
 
 const Person = require("dcd-model/entities/Person");
 
