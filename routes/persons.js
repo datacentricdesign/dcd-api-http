@@ -24,6 +24,8 @@ class PersonAPI {
      * @apiGroup Person
      * @apiDescription Create a Person.
      *
+     * @apiHeader {String} Content-type application/json
+     *
      * @apiSuccess {object} personId Id of the created Person
      */
     this.router.post("/", (request, response) => {
@@ -38,6 +40,8 @@ class PersonAPI {
      * @api {get} /persons List
      * @apiGroup Person
      * @apiDescription List Persons.
+     *
+     * @apiHeader {String} Authorization TOKEN ID
      *
      * @apiSuccess {array} persons Array of Persons found.
      */
@@ -58,6 +62,8 @@ class PersonAPI {
      * @apiGroup Person
      * @apiDescription Read a Person.
      *
+     * @apiHeader {String} Authorization TOKEN ID
+     *
      * @apiSuccess {object} person Person found.
      */
     this.router.get(
@@ -76,6 +82,9 @@ class PersonAPI {
      * @api {put} /persons/:personId Update
      * @apiGroup Person
      * @apiDescription Update a Person.
+     *
+     * @apiHeader {String} Content-type application/json
+     * @apiHeader {String} Authorization TOKEN ID
      */
     this.router.put(
       "/:entityId",
@@ -94,6 +103,8 @@ class PersonAPI {
      * @api {delete} / Delete
      * @apiGroup Person
      * @apiDescription Delete a Person.
+     *
+     * @apiHeader {String} Authorization TOKEN ID
      */
     this.router.delete(
       "/:entityId",
@@ -112,6 +123,9 @@ class PersonAPI {
      * @api {post} /persons/:personId/check Check
      * @apiGroup Person
      * @apiDescription Check a Person's credentials.
+     *
+     * @apiHeader {String} Content-type application/json
+     * @apiHeader {String} Authorization TOKEN ID
      *
      * @apiSuccess {object} person Person found.
      */
