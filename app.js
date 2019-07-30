@@ -63,10 +63,8 @@ app.get(baseUrl + "/health", (request, response) => {
 });
 
 const personsRoute = require("./routes/persons");
-console.log(auth);
-personsRoute.setModelAndAuth(model, auth).then(() => {
-  app.use(baseUrl + "/persons", personsRoute);
-});
+personsRoute.init(model, auth);
+app.use(baseUrl + "/persons", personsRoute);
 
 /**
  * Create a Thing.

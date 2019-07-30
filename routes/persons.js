@@ -131,8 +131,6 @@ exports.setModelAndAuth = (newModel, newAuth) => {
       }
     }
   );
-
-  return Promise.resolve();
 };
 
 const success = (response, result) => {
@@ -144,3 +142,5 @@ const fail = (response, error) => {
   logger.error(error);
   utils.writeJson(response, error);
 };
+
+module.exports = router;
