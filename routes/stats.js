@@ -22,11 +22,8 @@ this.router.get("/",
 this.auth.introspect, (request, response) => {
     this.model.stats
       .getGlobalStats()
-      .then(result => {
-        logger.debug(result);
-        return success(response, { stat: result });
-      })
-      .catch(error => fail(response, error));
+      .then(result => API.success(response, { stat: result }))
+      .catch(error => API.fail(response, error));
   });
 
 /**
@@ -55,11 +52,8 @@ this.router.get("/:propertyType",
       }
       this.model.stats
         .getTypeStats(propertyType, from, to)
-        .then(result => {
-          logger.debug(result);
-          return success(response, { stat: result });
-        })
-        .catch(error => fail(response, error));
+        .then(result => API.success(response, { stat: result }))
+        .catch(error => API.fail(response, error));
     }
   );
 
@@ -67,13 +61,3 @@ this.router.get("/:propertyType",
 }
 
 module.exports = StatAPI;
-
-const success = (response, result) => {
-  logger.debug(result);
-  utils.writeJson(response, result);
-};
-
-const fail = (response, error) => {
-  logger.error(error);
-  utils.writeJson(response, error);
-};
