@@ -69,20 +69,20 @@ help you manage them. To do so click "Allow access".
 Once the consent succeeded, you can click on '+' button and create a first one.
 
 <p align="center">
-<IMG SRC="../images/create_thing_button.png" width=100>
+<IMG SRC="../images/create_thing_button.png">
 </p>
 
 For example with the name 'my wheelchair', type 'Wheelchair', and a
 description 'An Internet-connected wheelchair'.
 
 <p align="center">
-<IMG SRC="../images/create_thing_dialog.png" width=100>
+<IMG SRC="../images/create_thing_dialog.png">
 </p>
 
 The process may take a few seconds, as the hub generates an access token for your Thing.
 
 <p align="center">
-<IMG SRC="../images/create_thing_jwt.png" width=100>
+<IMG SRC="../images/create_thing_jwt.png">
 </p>
 
 **COPY AND SAVE THIS TOKEN** in a text file, it will be shown only once and enables
