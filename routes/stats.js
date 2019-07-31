@@ -36,8 +36,8 @@ this.auth.introspect, (request, response) => {
 *
 * @apiHeader {String} Authorization TOKEN ID
 * @apiParam {String} propertyType   Property type, ex : "LOCATION".
-* @apiParam {Number} (Query) [from]  Optional timestamp from of the range date.
-* @apiParam {Number} (Query) [to]    Optional timestamp to of the range date.
+* @apiParam {Number} [from] Optional Query timestamp from of the range date.
+* @apiParam {Number} [to] Optional Query timestamp to of the range date.
 *
 * @apiSuccess {json} Json of a property type stats.
 */
