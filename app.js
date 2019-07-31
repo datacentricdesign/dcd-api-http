@@ -62,105 +62,13 @@ app.get(baseUrl + "/health", (request, response) => {
   success(response, { status: 0, message: "OK" });
 });
 
-const PersonHttp = require("./routes/persons");
-const personHttp = new PersonHttp(model, auth);
-app.use(baseUrl + "/persons", personHttp.router);
+const PersonAPI = require("./routes/persons");
+const personAPI = new PersonAPI(model, auth);
+app.use(baseUrl + "/persons", personAPI.router);
 
-/**
- * Create a Thing.
- *
- * @property {String} request.query.jwt (true|false, default: false)
- *           Need to generate a JWT
- * @property {Boolean} request.query.thingId (optional, default: undefined)
- *           Forward to update (Web forms cannot submit PUT methods)
- * @property {Thing} request.body
- */
-app.post(
-  baseUrl + "/:entity(things)",
-  auth.introspect,
-  auth.wardenSubject({ resource: "things", action: "create" }),
-  (request, response) => {
-    // Web forms cannot submit PUT methods, we check the flag update
-    if (request.query.thingId !== undefined) {
-      request.body.entityId = request.query.thingId;
-      return model.things
-        .update(new Thing(request.body))
-        .then(result => success(response, result))
-        .catch(error => fail(response, error));
-    }
-
-    const personId = request.user.sub;
-    const thing = new Thing(request.body);
-    const jwt =
-      request.query.jwt !== undefined ? request.query.jwt === "true" : false;
-    model.things
-      .create(personId, thing, jwt)
-      .then(result => success(response, { thing: result }))
-      .catch(error => fail(response, error));
-  }
-);
-
-/**
- * List Things.
- */
-app.get(
-  baseUrl + "/:entity(things)",
-  auth.introspect,
-  auth.wardenSubject({ resource: "things", action: "list" }),
-  (request, response) => {
-    model.things
-      .list(request.user.sub)
-      .then(result => success(response, { things: result }))
-      .catch(error => fail(response, error));
-  }
-);
-
-/**
- * Read a Thing.
- */
-app.get(
-  baseUrl + "/:entity(things)/:entityId",
-  auth.introspect,
-  auth.wardenSubject({ resource: "things", action: "read" }),
-  (request, response) => {
-    model.things
-      .read(request.params.entityId)
-      .then(result => {
-        success(response, { thing: result });
-      })
-      .catch(error => fail(response, error));
-  }
-);
-
-/**
- * Update a Thing.
- */
-app.put(
-  baseUrl + "/:entity(things)/:entityId",
-  auth.introspect,
-  auth.wardenSubject({ resource: "things", action: "update" }),
-  (request, response) => {
-    model.things
-      .update(new Thing(request.body, request.params.entityId))
-      .then(result => success(response, result))
-      .catch(error => fail(response, error));
-  }
-);
-
-/**
- * Delete a Thing.
- */
-app.delete(
-  baseUrl + "/:entity(things)/:entityId",
-  auth.introspect,
-  auth.wardenSubject({ resource: "things", action: "delete" }),
-  (request, response) => {
-    model.things
-      .del(request.params.entityId)
-      .then(result => success(response, result))
-      .catch(error => fail(response, error));
-  }
-);
+const ThingAPI = require("./routes/things");
+const thingAPI = new ThingAPI(model, auth);
+app.use(baseUrl + "/things", thingAPI.router);
 
 /**
  * Create Classes.

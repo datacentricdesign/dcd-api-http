@@ -42,3 +42,8 @@ has:
   * a list of classes (optional): if the property type is 'CLASS', you can associate
   text to the values. This is useful when using a property as data label.
 
+
+## Sign Up
+
+
+## API

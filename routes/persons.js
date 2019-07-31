@@ -1,21 +1,11 @@
 "use strict";
 
-// Setting the logs
-const log4js = require("log4js");
-const logger = log4js.getLogger("[dcd-api-http:persons]");
-logger.level = process.env.LOG_LEVEL || "INFO";
-
-// Express router
-const express = require("express");
-const utils = require("../utils/writer.js");
+const API = require("./API");
 const Person = require("dcd-model/entities/Person");
 
-class PersonAPI {
+class PersonAPI extends API {
   constructor(model, auth) {
-    this.model = model;
-    this.auth = auth;
-    this.router = express.Router();
-    this.init();
+    super(model, auth);
   }
 
   init() {
@@ -26,14 +16,16 @@ class PersonAPI {
      *
      * @apiHeader {String} Content-type application/json
      *
+     * @apiParam (Body) {Person} person Person to create as JSON.
+     *
      * @apiSuccess {object} personId Id of the created Person
      */
     this.router.post("/", (request, response) => {
       const person = new Person(request.body);
       this.model.persons
         .create(person)
-        .then(result => success(response, { personId: result }))
-        .catch(error => fail(response, error));
+        .then(result => API.success(response, { personId: result }))
+        .catch(error => API.fail(response, error));
     });
 
     /**
@@ -52,8 +44,8 @@ class PersonAPI {
       (request, response) => {
         this.model.persons
           .list(request.user.sub)
-          .then(result => success(response, result))
-          .catch(error => fail(response, error));
+          .then(result => API.success(response, result))
+          .catch(error => API.fail(response, error));
       }
     );
 
@@ -64,6 +56,8 @@ class PersonAPI {
      *
      * @apiHeader {String} Authorization TOKEN ID
      *
+     * @apiParam {String} personId Id of the Person to read.
+     *
      * @apiSuccess {object} person Person found.
      */
     this.router.get(
@@ -73,8 +67,8 @@ class PersonAPI {
       (request, response) => {
         this.model.persons
           .read(request.params.entityId)
-          .then(result => success(response, { person: result }))
-          .catch(error => fail(response, error));
+          .then(result => API.success(response, { person: result }))
+          .catch(error => API.fail(response, error));
       }
     );
 
@@ -94,8 +88,8 @@ class PersonAPI {
         const person = new Person(request.params.entityId, request.body);
         this.model.persons
           .update(person)
-          .then(result => success(response, result))
-          .catch(error => fail(response, error));
+          .then(result => API.success(response, result))
+          .catch(error => API.fail(response, error));
       }
     );
 
@@ -114,8 +108,8 @@ class PersonAPI {
         const personId = request.params.entityId;
         this.model.persons
           .delete(personId)
-          .then(result => success(response, result))
-          .catch(error => fail(response, error));
+          .then(result => API.success(response, result))
+          .catch(error => API.fail(response, error));
       }
     );
 
@@ -140,8 +134,8 @@ class PersonAPI {
         if (request.body !== undefined && request.body.password !== undefined) {
           this.model.persons
             .check(request.params.entityId, request.body.password)
-            .then(result => success(response, { person: result }))
-            .catch(error => fail(response, error));
+            .then(result => API.success(response, { person: result }))
+            .catch(error => API.fail(response, error));
         }
       }
     );
@@ -149,13 +143,3 @@ class PersonAPI {
 }
 
 module.exports = PersonAPI;
-
-const success = (response, result) => {
-  logger.debug(result);
-  utils.writeJson(response, result);
-};
-
-const fail = (response, error) => {
-  logger.error(error);
-  utils.writeJson(response, error);
-};
