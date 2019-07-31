@@ -23,12 +23,12 @@ class API {
 
   init() {}
 
-  static success(response, result) {
+  success(response, result) {
     this.logger.debug(result);
     utils.writeJson(response, result);
   }
 
-  static fail(response, error) {
+  fail(response, error) {
     this.logger.error(error);
     utils.writeJson(response, error);
   }
