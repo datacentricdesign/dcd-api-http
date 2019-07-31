@@ -10,22 +10,17 @@ class ThingAPI extends API {
 
   init() {
     /**
-     * Create a Thing.
-     *
-     * @property {Thing} request.body
-     */
-    /**
      * @api {post} /things Create
      * @apiGroup Thing
      * @apiDescription Create a Thing.
      *
+     * @apiParam (Body) {Thing} thing Thing to create as JSON.
      *
-     * @property {String} request.query.jwt (true|false, default: false)
-     *           Need to generate a JWT
-     * @property {Boolean} request.query.thingId (optional, default: undefined)
-     *           Forward to update (Web forms cannot submit PUT methods)
+     * @apiParam (Query) {Boolean} [jwt=false] Need to generate a JWT
+     * @apiParam (Query) {Boolean} [thingId] Forward to update (Web forms cannot submit PUT methods)
      *
      * @apiHeader {String} Content-type application/json
+     * @apiHeader {String} Authorization TOKEN ID
      *
      * @apiSuccess {object} thing The created Thing
      */
@@ -57,7 +52,13 @@ class ThingAPI extends API {
     );
 
     /**
-     * List Things.
+     * @api {get} /things List
+     * @apiGroup Thing
+     * @apiDescription List Things.
+     *
+     * @apiHeader {String} Authorization TOKEN ID
+     *
+     * @apiSuccess {object} things The retrieved Things
      */
     this.router.get(
       "/",
@@ -72,7 +73,15 @@ class ThingAPI extends API {
     );
 
     /**
-     * Read a Thing.
+     * @api {get} /things/thingId Read
+     * @apiGroup Thing
+     * @apiDescription Read a Thing.
+     *
+     * @apiHeader {String} Authorization TOKEN ID
+     *
+     * @apiParam {String} thingId Id of the Thing to read.
+     *
+     * @apiSuccess {object} thing The retrieved Thing
      */
     this.router.get(
       "/:entityId",
@@ -89,7 +98,13 @@ class ThingAPI extends API {
     );
 
     /**
-     * Update a Thing.
+     * @api {put} /things/thingId Update
+     * @apiGroup Thing
+     * @apiDescription Update a Thing.
+     *
+     * @apiHeader {String} Authorization TOKEN ID
+     *
+     * @apiParam {String} thingId Id of the Thing to update.
      */
     this.router.put(
       "/:entityId",
@@ -104,7 +119,13 @@ class ThingAPI extends API {
     );
 
     /**
-     * Delete a Thing.
+     * @api {delete} /things/thingId Delete
+     * @apiGroup Thing
+     * @apiDescription Delete a Thing.
+     *
+     * @apiHeader {String} Authorization TOKEN ID
+     *
+     * @apiParam {String} thingId Id of the Thing to delete.
      */
     this.router.delete(
       "/:entityId",
