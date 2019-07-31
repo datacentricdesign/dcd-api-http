@@ -50,8 +50,8 @@ class PropertyAPI extends API {
         this.logger.debug(new Property(request.body));
         this.model.properties
           .create(new Property(request.body))
-          .then(result => API.success(response, { property: result }))
-          .catch(error => API.fail(response, error));
+          .then(result => this.success(response, { property: result }))
+          .catch(error => this.fail(response, error));
       }
     );
 
@@ -82,9 +82,9 @@ class PropertyAPI extends API {
           .list(entityId)
           .then(result => {
             this.logger.info(result);
-            API.success(response, { properties: result });
+            this.success(response, { properties: result });
           })
-          .catch(error => API.fail(response, error));
+          .catch(error => this.fail(response, error));
       }
     );
 
@@ -128,9 +128,9 @@ class PropertyAPI extends API {
           .read(entityId, propertyId, from, to)
           .then(result => {
             this.logger.debug(result);
-            return API.success(response, { property: result });
+            return this.success(response, { property: result });
           })
-          .catch(error => API.fail(response, error));
+          .catch(error => this.fail(response, error));
       }
     );
 
@@ -160,23 +160,23 @@ class PropertyAPI extends API {
                 request.files === undefined ||
                 request.files.video === undefined
               ) {
-                return API.success(response, property);
+                return this.success(response, property);
               }
               upload(request, response, error => {
                 if (error) {
-                  return API.fail(response, error);
+                  return this.fail(response, error);
                 } else {
                   if (request.file === undefined) {
-                    return API.fail(response, { error: "Missing file." });
+                    return this.fail(response, { error: "Missing file." });
                   } else {
-                    return API.success(response, { success: true });
+                    return this.success(response, { success: true });
                   }
                 }
               });
             })
-            .catch(error => API.fail(response, error));
+            .catch(error => this.fail(response, error));
         } else {
-          API.fail(response, { message: "property id not matching" });
+          this.fail(response, { message: "property id not matching" });
         }
       }
     );
@@ -212,17 +212,17 @@ class PropertyAPI extends API {
           .then(() => {
             upload(request, response, error => {
               if (error) {
-                return API.fail(response, error);
+                return this.fail(response, error);
               } else {
                 if (request.file === undefined) {
-                  return API.fail(response, { error: "Missing file." });
+                  return this.fail(response, { error: "Missing file." });
                 } else {
-                  return API.success(response, { success: true });
+                  return this.success(response, { success: true });
                 }
               }
             });
           })
-          .catch(error => API.fail(response, error));
+          .catch(error => this.fail(response, error));
       }
     );
 
@@ -260,8 +260,8 @@ class PropertyAPI extends API {
           );
           this.model.properties
             .update(entityId, propertyId, property)
-            .then(result => API.success(response, result))
-            .catch(error => API.fail(response, error));
+            .then(result => this.success(response, result))
+            .catch(error => this.fail(response, error));
         });
 
         // listen on part event for data file
@@ -299,12 +299,12 @@ class PropertyAPI extends API {
           .del(request.params.propertyId)
           .then(result => {
             if (result.affectedRows === 1) {
-              API.success(response, { success: true });
+              this.success(response, { success: true });
             } else {
-              API.fail(response, { error: "Property to delete not found" });
+              this.fail(response, { error: "Property to delete not found" });
             }
           })
-          .catch(error => API.fail(response, error));
+          .catch(error => this.fail(response, error));
       }
     );
 
@@ -387,7 +387,7 @@ class PropertyAPI extends API {
           request.body.classes === undefined ||
           request.body.classes.length === 0
         ) {
-          return API.fail(response, { msg: "Missing or empty classes array" });
+          return this.fail(response, { msg: "Missing or empty classes array" });
         }
         this.model.properties
           .createClasses(
@@ -395,8 +395,8 @@ class PropertyAPI extends API {
             request.params.componentId,
             request.body.classes
           )
-          .then(result => API.success(response, { classes: result }))
-          .catch(error => API.fail(response, error));
+          .then(result => this.success(response, { classes: result }))
+          .catch(error => this.fail(response, error));
       }
     );
   }

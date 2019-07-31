@@ -38,7 +38,7 @@ class InteractionAPI extends API {
           (request.body.entity_id_1 !== request.params.entityId &&
             request.body.entity_id_2 !== request.params.entityId)
         ) {
-          return API.fail(
+          return this.fail(
             new Error(
               "Missing body with entityId1 and entityId2," +
                 " or mismatch with requester thing id."
@@ -48,8 +48,8 @@ class InteractionAPI extends API {
         const interaction = new Interaction(request.body);
         this.model.interactions
           .create(interaction)
-          .then(result => API.success(response, { interaction: result }))
-          .catch(error => API.fail(response, error));
+          .then(result => this.success(response, { interaction: result }))
+          .catch(error => this.fail(response, error));
       }
     );
 
@@ -76,8 +76,8 @@ class InteractionAPI extends API {
         }
         this.model.interactions
           .list(request.user.sub, request.params.entityId, entityDestId)
-          .then(result => API.success(response, { interactions: result }))
-          .catch(error => API.fail(response, error));
+          .then(result => this.success(response, { interactions: result }))
+          .catch(error => this.fail(response, error));
       }
     );
 
@@ -100,8 +100,8 @@ class InteractionAPI extends API {
       (request, response) => {
         this.model.interactions
           .read(request.params.componentId)
-          .then(result => API.success(response, { interaction: result }))
-          .catch(error => API.fail(response, error));
+          .then(result => this.success(response, { interaction: result }))
+          .catch(error => this.fail(response, error));
       }
     );
   }

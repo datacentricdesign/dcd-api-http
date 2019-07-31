@@ -40,8 +40,8 @@ class ThingAPI extends API {
           request.body.entityId = request.query.thingId;
           return this.model.things
             .update(new Thing(request.body))
-            .then(result => API.success(response, result))
-            .catch(error => API.fail(response, error));
+            .then(result => this.success(response, result))
+            .catch(error => this.fail(response, error));
         }
 
         const actorId = request.user.sub;
@@ -52,8 +52,8 @@ class ThingAPI extends API {
             : false;
         this.model.things
           .create(actorId, thing, jwt)
-          .then(result => API.success(response, { thing: result }))
-          .catch(error => API.fail(response, error));
+          .then(result => this.success(response, { thing: result }))
+          .catch(error => this.fail(response, error));
       }
     );
 
@@ -73,8 +73,8 @@ class ThingAPI extends API {
       (request, response) => {
         this.model.things
           .list(request.user.sub)
-          .then(result => API.success(response, { things: result }))
-          .catch(error => API.fail(response, error));
+          .then(result => this.success(response, { things: result }))
+          .catch(error => this.fail(response, error));
       }
     );
 
@@ -97,9 +97,9 @@ class ThingAPI extends API {
         this.model.things
           .read(request.params.entityId)
           .then(result => {
-            API.success(response, { thing: result });
+            this.success(response, { thing: result });
           })
-          .catch(error => API.fail(response, error));
+          .catch(error => this.fail(response, error));
       }
     );
 
@@ -119,8 +119,8 @@ class ThingAPI extends API {
       (request, response) => {
         this.model.things
           .update(new Thing(request.body, request.params.entityId))
-          .then(result => API.success(response, result))
-          .catch(error => API.fail(response, error));
+          .then(result => this.success(response, result))
+          .catch(error => this.fail(response, error));
       }
     );
 
@@ -140,8 +140,8 @@ class ThingAPI extends API {
       (request, response) => {
         this.model.things
           .del(request.params.entityId)
-          .then(result => API.success(response, result))
-          .catch(error => API.fail(response, error));
+          .then(result => this.success(response, result))
+          .catch(error => this.fail(response, error));
       }
     );
   }

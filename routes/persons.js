@@ -24,8 +24,8 @@ class PersonAPI extends API {
       const person = new Person(request.body);
       this.model.persons
         .create(person)
-        .then(result => API.success(response, { personId: result }))
-        .catch(error => API.fail(response, error));
+        .then(result => this.success(response, { personId: result }))
+        .catch(error => this.fail(response, error));
     });
 
     /**
@@ -44,8 +44,8 @@ class PersonAPI extends API {
       (request, response) => {
         this.model.persons
           .list(request.user.sub)
-          .then(result => API.success(response, result))
-          .catch(error => API.fail(response, error));
+          .then(result => this.success(response, result))
+          .catch(error => this.fail(response, error));
       }
     );
 
@@ -67,8 +67,8 @@ class PersonAPI extends API {
       (request, response) => {
         this.model.persons
           .read(request.params.entityId)
-          .then(result => API.success(response, { person: result }))
-          .catch(error => API.fail(response, error));
+          .then(result => this.success(response, { person: result }))
+          .catch(error => this.fail(response, error));
       }
     );
 
@@ -88,8 +88,8 @@ class PersonAPI extends API {
         const person = new Person(request.params.entityId, request.body);
         this.model.persons
           .update(person)
-          .then(result => API.success(response, result))
-          .catch(error => API.fail(response, error));
+          .then(result => this.success(response, result))
+          .catch(error => this.fail(response, error));
       }
     );
 
@@ -108,8 +108,8 @@ class PersonAPI extends API {
         const personId = request.params.entityId;
         this.model.persons
           .delete(personId)
-          .then(result => API.success(response, result))
-          .catch(error => API.fail(response, error));
+          .then(result => this.success(response, result))
+          .catch(error => this.fail(response, error));
       }
     );
 
@@ -134,8 +134,8 @@ class PersonAPI extends API {
         if (request.body !== undefined && request.body.password !== undefined) {
           this.model.persons
             .check(request.params.entityId, request.body.password)
-            .then(result => API.success(response, { person: result }))
-            .catch(error => API.fail(response, error));
+            .then(result => this.success(response, { person: result }))
+            .catch(error => this.fail(response, error));
         }
       }
     );

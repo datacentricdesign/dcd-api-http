@@ -22,8 +22,8 @@ this.router.get("/",
 this.auth.introspect, (request, response) => {
     this.model.stats
       .getGlobalStats()
-      .then(result => API.success(response, { stat: result }))
-      .catch(error => API.fail(response, error));
+      .then(result => this.success(response, { stat: result }))
+      .catch(error => this.fail(response, error));
   });
 
 /**
@@ -52,8 +52,8 @@ this.router.get("/:propertyType",
       }
       this.model.stats
         .getTypeStats(propertyType, from, to)
-        .then(result => API.success(response, { stat: result }))
-        .catch(error => API.fail(response, error));
+        .then(result => this.success(response, { stat: result }))
+        .catch(error => this.fail(response, error));
     }
   );
 
