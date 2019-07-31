@@ -16,7 +16,7 @@ class HealthAPI extends API {
      * @apiSuccess {object} status The status of the DCD Hub
      */
     this.router.get("/", (request, response) => {
-      API.success(response, { status: 0, message: "OK" });
+      this.success(response, { status: 0, message: "OK" });
     });
   }
 }
