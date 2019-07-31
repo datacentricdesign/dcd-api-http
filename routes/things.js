@@ -15,6 +15,12 @@ class ThingAPI extends API {
      * @apiDescription Create a Thing.
      *
      * @apiParam (Body) {Thing} thing Thing to create as JSON.
+     * @apiParamExample {json} thing:
+     *     {
+     *       "name": "My Thing",
+     *       "description": "A description of my thing.",
+     *       "type": "Test Thing"
+     *     }
      *
      * @apiParam (Query) {Boolean} [jwt=false] Need to generate a JWT
      * @apiParam (Query) {Boolean} [thingId] Forward to update (Web forms cannot submit PUT methods)
@@ -38,14 +44,14 @@ class ThingAPI extends API {
             .catch(error => API.fail(response, error));
         }
 
-        const personId = request.user.sub;
+        const actorId = request.user.sub;
         const thing = new Thing(request.body);
         const jwt =
           request.query.jwt !== undefined
             ? request.query.jwt === "true"
             : false;
         this.model.things
-          .create(personId, thing, jwt)
+          .create(actorId, thing, jwt)
           .then(result => API.success(response, { thing: result }))
           .catch(error => API.fail(response, error));
       }
