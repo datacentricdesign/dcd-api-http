@@ -33,3 +33,5 @@ class API {
     utils.writeJson(response, error);
   }
 }
+
+module.exports = API;
