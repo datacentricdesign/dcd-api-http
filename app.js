@@ -70,6 +70,10 @@ const ThingAPI = require("./routes/things");
 const thingAPI = new ThingAPI(model, auth);
 app.use(baseUrl + "/things", thingAPI.router);
 
+const StatAPI = require("./routes/stats");
+const statAPI = new StatAPI(model, auth);
+app.use(baseUrl + "/stats", statAPI.router);
+
 /**
  * Create Classes.
  */
@@ -445,50 +449,6 @@ app.get(
     model.interactions
       .read(request.params.componentId)
       .then(result => success(response, { interaction: result }))
-      .catch(error => fail(response, error));
-  }
-);
-
-/**
- * Get global stats
- */
-
-app.get(baseUrl + "/stats", auth.introspect, (request, response) => {
-  model.stats
-    .getGlobalStats()
-    .then(result => {
-      logger.debug(result);
-      return success(response, { stat: result });
-    })
-    .catch(error => fail(response, error));
-});
-
-/**
- * Get stats property type stats
- * Optional parameters:
- * - from: start time to get historical values, UNIX timestamp (in ms)
- * - to: end time to get historical values, UNIX timestamp (in ms)
- */
-
-app.get(
-  baseUrl + "/stats/:propertyType",
-  auth.introspect,
-  (request, response) => {
-    const propertyType = request.params.propertyType;
-    let from;
-    let to;
-    if (request.query.from !== undefined) {
-      from = parseInt(request.query.from);
-    }
-    if (request.query.to !== undefined) {
-      to = parseInt(request.query.to);
-    }
-    model.stats
-      .getTypeStats(propertyType, from, to)
-      .then(result => {
-        logger.debug(result);
-        return success(response, { stat: result });
-      })
       .catch(error => fail(response, error));
   }
 );
