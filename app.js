@@ -59,6 +59,10 @@ const StatAPI = require("./routes/stats");
 const statAPI = new StatAPI(model, auth);
 app.use(baseUrl + "/stats", statAPI.router);
 
+const InteractionAPI = require('./routes/interactions')
+const interactionAPI = new InteractionAPI(model,auth)
+app.use(baseUrl, interactionAPI.router);
+
 // catch 404 and forward to error handler
 app.use(function(request, response, next) {
   const err = new Error("Not Found");
