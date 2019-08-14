@@ -29,7 +29,7 @@ this.auth.introspect, (request, response) => {
 /**
 * @api {get} /stats/:propertyType Property Type
 * @apiGroup Stat
-* @apiDescription Get number of properties, entities and values of a property type in a range date.
+* @apiDescription Get number of properties, entities and values of a property type in a range date. There must be values for the property entities to be counted in the range.
 *
 * @apiHeader {String} Authorization TOKEN ID
 * @apiParam {String} propertyType   Property type, ex : "LOCATION".
