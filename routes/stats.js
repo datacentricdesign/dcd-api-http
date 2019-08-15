@@ -22,7 +22,7 @@ this.router.get("/",
 this.auth.introspect, (request, response) => {
     this.model.stats
       .getGlobalStats()
-      .then(result => this.success(response, { stat: result }))
+      .then(result => this.success(response, { stats: result }))
       .catch(error => this.fail(response, error));
   });
 
@@ -52,7 +52,7 @@ this.router.get("/propertyTypes/:propertyType",
       }
       this.model.stats
         .getTypeStats(propertyType, from, to)
-        .then(result => this.success(response, { stat: result }))
+        .then(result => this.success(response, { stats: result }))
         .catch(error => this.fail(response, error));
     }
   );
@@ -105,7 +105,7 @@ this.router.get("/propertyTypes",
 
       this.model.stats
         .getTypesStats(propertyTypes, from, to)
-        .then(result => this.success(response, { stat: result }))
+        .then(result => this.success(response, { stats: result }))
         .catch(error => this.fail(response, error));
     }
   );
