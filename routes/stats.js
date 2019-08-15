@@ -64,9 +64,8 @@ this.router.get("/propertyTypes",
         .getTypesStats(propertyTypes, from, to)
         .then(result => this.success(response, { stats: result }))
         .catch(error => this.fail(response, error));
-      }
+    }
   );
-
   }
 }
 
