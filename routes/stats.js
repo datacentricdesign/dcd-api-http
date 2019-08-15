@@ -42,13 +42,11 @@ this.auth.introspect, (request, response) => {
 this.router.get("/propertyTypes",
     this.auth.introspect,
     (request, response) => {
-      console.log(request.query.types)
       if (!request.query.types) {
-        return this.fail(
+        this.fail(
           new Error("types is undefined")
         );
-      }
-
+      }else{
       let propertyTypes = request.query.types.split(',')
       let from;
       let to;
@@ -63,6 +61,7 @@ this.router.get("/propertyTypes",
         .getTypesStats(propertyTypes, from, to)
         .then(result => this.success(response, { stats: result }))
         .catch(error => this.fail(response, error));
+      }
     }
   );
   }
