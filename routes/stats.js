@@ -92,8 +92,16 @@ this.router.get("/propertyTypes",
           )
         );
       }
-      
+
       let propertyTypes = request.body.propertyTypes
+      let from;
+      let to;
+      if (request.query.from !== undefined) {
+        from = parseInt(request.query.from);
+      }
+      if (request.query.to !== undefined) {
+        to = parseInt(request.query.to);
+      }
 
       this.model.stats
         .getTypesStats(propertyTypes, from, to)
