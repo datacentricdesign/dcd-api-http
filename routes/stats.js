@@ -38,7 +38,7 @@ this.auth.introspect, (request, response) => {
 *
 * @apiSuccess {json} Json of a property type stats.
 */
-this.router.get("/:propertyType",
+this.router.get("/propertyTypes/:propertyType",
     this.auth.introspect,
     (request, response) => {
       const propertyType = request.params.propertyType;
