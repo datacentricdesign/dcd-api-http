@@ -94,7 +94,6 @@ this.router.get("/propertyTypes",
       }
 
       let propertyTypes = request.body.propertyTypes
-      console.log(propertyTypes)
       let from;
       let to;
       if (request.query.from !== undefined) {
