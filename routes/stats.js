@@ -27,7 +27,7 @@ this.auth.introspect, (request, response) => {
   });
 
 /**
-* @api {get} /stats/:propertyType Property Type
+* @api {get} /stats/propertyTypes/:propertyType Property Type
 * @apiGroup Stat
 * @apiDescription Get number of properties, entities and values of a property type in a range date. There must be values for the property entities to be counted in the range.
 *
@@ -92,6 +92,8 @@ this.router.get("/propertyTypes",
           )
         );
       }
+      
+      let propertyTypes = request.body.propertyTypes
 
       this.model.stats
         .getTypesStats(propertyTypes, from, to)
