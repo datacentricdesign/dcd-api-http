@@ -42,9 +42,8 @@ this.auth.introspect, (request, response) => {
 this.router.get("/propertyTypes",
     this.auth.introspect,
     (request, response) => {
-      if (
-        request.query.types === undefined 
-        ) {
+      console.log(request.query.types)
+      if (request.query.types) {
         return this.fail(
           new Error("types is undefined")
         );
