@@ -36,6 +36,6 @@ const writeJson = (exports.writeJson = function(response, arg1, arg2) {
   if (typeof payload === "object") {
     payload = JSON.stringify(payload, null, 2);
   }
-  response.writeHead(code, { "Content-Type": "application/json" });
-  response.end(payload);
+  response.set({ "Content-Type": "application/json" });
+  response.send(code,payload);
 });
