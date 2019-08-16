@@ -39,6 +39,7 @@ class InteractionAPI extends API {
             request.body.entity_id_2 !== request.params.entityId)
         ) {
           return this.fail(
+            response,
             new Error(
               "Missing body with entityId1 and entityId2," +
                 " or mismatch with requester thing id."
