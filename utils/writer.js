@@ -37,5 +37,5 @@ const writeJson = (exports.writeJson = function(response, arg1, arg2) {
     payload = JSON.stringify(payload, null, 2);
   }
   response.set({ "Content-Type": "application/json" });
-  response.send(code,payload);
+  response.status(code).send(payload);
 });
