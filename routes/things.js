@@ -1,7 +1,7 @@
 "use strict";
 
 const API = require("./API");
-const Thing = require("dcd-model/entities/Thing");
+const Thing = require("@datacentricdesign/model/entities/Thing");
 
 class ThingAPI extends API {
   constructor(model, auth) {

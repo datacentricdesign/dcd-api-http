@@ -5,7 +5,7 @@ const path = require("path");
 const multer = require("multer");
 
 const API = require("./API");
-const Property = require("dcd-model/entities/Property");
+const Property = require("@datacentricdesign/model/entities/Property");
 
 class PropertyAPI extends API {
   constructor(model, auth) {

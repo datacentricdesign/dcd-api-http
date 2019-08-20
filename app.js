@@ -24,7 +24,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(baseUrl, express.static(path.join(__dirname, "public")));
 
-const DCDModel = require("dcd-model");
+const DCDModel = require("@datacentricdesign/model");
 
 // test
 
@@ -62,6 +62,10 @@ app.use(baseUrl + "/stats", statAPI.router);
 const InteractionAPI = require('./routes/interactions')
 const interactionAPI = new InteractionAPI(model,auth)
 app.use(baseUrl, interactionAPI.router);
+
+const TaskAPI = require('./routes/tasks')
+const taskAPI = new TaskAPI(model,auth)
+app.use(baseUrl+"/tasks",taskAPI.router)
 
 // catch 404 and forward to error handler
 app.use(function(request, response, next) {

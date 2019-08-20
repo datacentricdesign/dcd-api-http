@@ -1,7 +1,7 @@
 "use strict";
 
 const API = require("./API");
-const Interaction = require("dcd-model/entities/Interaction");
+const Interaction = require("@datacentricdesign/model/entities/Interaction");
 
 class InteractionAPI extends API {
   constructor(model, auth) {
