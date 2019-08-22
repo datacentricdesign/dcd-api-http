@@ -20,7 +20,7 @@ class TaskAPI extends API {
      *     {
      *       "name": "My Task",
      *       "description": "A description of my task.",
-     *       "types": ["LOCATION","ACCELEROMETTER"],
+     *       "types": ["LOCATION","ACCELEROMETER"],
      *       "from" : 1483228800000,
      *       "to" : 1566286292578,
      *       "actor_entity_id" : "your_person_id"
@@ -42,6 +42,7 @@ class TaskAPI extends API {
           if(request.body === undefined ||
               actorId != request.body.actor_entity_id){
             this.fail(
+              response,
                 new Error("Missing body with actor_entity_id" +
                 " or mismatch with request user sub")
               );
@@ -49,7 +50,7 @@ class TaskAPI extends API {
             const task = new Task(request.body);
 
             this.model.task
-             .create(/*actorId,*/ task)
+             .create(task)
              .then(result => this.success(response, { task: result }))
              .catch(error => this.fail(response, error));
             }
@@ -118,7 +119,7 @@ class TaskAPI extends API {
         //this.auth.wardenSubject({ resource: "tasks", action: "delete" }),
         (request, response) => {
           this.model.tasks
-            .del(request.params.taskId)
+            .del(request.params.taskId,request.user.sub)
             .then(result => this.success(response, result))
             .catch(error => this.fail(response, error));
         }
@@ -159,8 +160,64 @@ class TaskAPI extends API {
       );
 
 
+    /**
+     * @api {post} /tasks/:taskId/resources/:resourceId/milestones Add milestones
+     * @apiGroup Task
+     * @apiDescription Add milestones to a resource of a task.
+     *
+     * @apiParam (Body) {json} json Json with status and shared_properties.
+     * @apiParamExample {json} task:
+     *     {
+     *       "shared_properties": ["shared-property-id-1","shared-property-id-2"],
+     *       "status": "read"
+     *     }
+     *
+     * @apiHeader {String} Content-type application/json
+     * @apiHeader {String} Authorization TOKEN ID
+     *
+     * @apiSuccess {boolean} true
+     */
+    this.router.post(
+      "/:taskId/resources/:resourceId/milestones",
+      this.auth.introspect,
+      //this.auth.wardenSubject({ resource: "task", action: "create" }), //Not sure it will works
+      (request, response) => {
+        
+        const personId = request.user.sub;
 
+         if(request.body === undefined ||
+          request.body.shared_properties === undefined ||
+          request.body.status === undefined
+          ){
+        this.fail(response,
+            new Error("Missing body" +
+            " or missing body.shared_properties"+
+            " or missing body.status")
+          );
+        }else {
 
+          let shared_properties
+
+          if(Array.isArray(request.body.shared_properties)){
+            shared_properties = request.body.shared_properties.join()
+          }else{
+            shared_properties = request.body.shared_properties
+          }
+
+          const milestone = {
+            resource_id : request.params.resourceId,
+            timestamp : Date.now(),
+            shared_properties : shared_properties,
+            status : request.body.status
+          }
+
+        this.model.tasks
+         .addMilestone(milestone,personId)
+         .then(() => this.success(response, { success: true }))
+         .catch(error => this.fail(response, error));
+        }
+      }
+    );
     }
   }
   

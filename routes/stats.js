@@ -44,6 +44,7 @@ this.router.get("/propertyTypes",
     (request, response) => {
       if (!request.query.types) {
         this.fail(
+          response,
           new Error("types is undefined")
         );
       }else{
