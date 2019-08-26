@@ -166,10 +166,10 @@ class TaskAPI extends API {
      * @apiDescription Add milestones to a resource of a task.
      *
      * @apiParam (Body) {json} json Json with status and shared_properties.
-     * @apiParamExample {json} task:
+     * @apiParamExample {json} milestone:
      *     {
      *       "shared_properties": ["shared-property-id-1","shared-property-id-2"],
-     *       "status": "read"
+     *       "status": "read" // There are 4 status "unread","read","accepted","refused"
      *     }
      *
      * @apiHeader {String} Content-type application/json
@@ -183,7 +183,7 @@ class TaskAPI extends API {
       //this.auth.wardenSubject({ resource: "task", action: "create" }), //Not sure it will works
       (request, response) => {
         
-        const personId = request.user.sub;
+        const subjectId = request.user.sub;
 
          if(request.body === undefined ||
           request.body.shared_properties === undefined ||
@@ -212,7 +212,7 @@ class TaskAPI extends API {
           }
 
         this.model.tasks
-         .addMilestone(milestone,personId)
+         .addMilestone(milestone,subjectId)
          .then(() => this.success(response, { success: true }))
          .catch(error => this.fail(response, error));
         }
