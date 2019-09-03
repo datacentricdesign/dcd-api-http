@@ -1,4 +1,9 @@
-# dcd-api-http
+# DCD API - HTTP
+
+![GitHub package.json version](https://img.shields.io/github/package-json/v/datacentricdesign/dcd-api-http)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/datacentricdesign/dcd-api-http)
+![Docker Build Status](https://img.shields.io/docker/build/datacentricdesign/dcd-api-http)
+
 A NodeJS REST API for the Data-Centric Design Hub
 
 # Changelog
