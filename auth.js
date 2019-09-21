@@ -117,10 +117,7 @@ exports.wardenToken = ({ resource, action, scope = [] }) => (
 
 exports.wardenSubject = ({ resource, action }) => (req, res, next) => {
   logger.info("warden subject, acp:");
-  let acpResource = "dcd";
-  if (req.params.entity !== undefined) {
-    acpResource += ":" + req.params.entity;
-  }
+  let acpResource = "dcd:" + resource;
   if (req.params.entityId !== undefined) {
     acpResource += ":" + req.params.entityId;
   }
