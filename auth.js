@@ -5,6 +5,9 @@ const log4js = require("log4js");
 const logger = log4js.getLogger("[dcd-api-http:auth]");
 logger.level = process.env.LOG_LEVEL || "INFO";
 
+
+const fetch = require("node-fetch");
+
 let model = null;
 exports.setModel = newModel => {
   model = newModel;
