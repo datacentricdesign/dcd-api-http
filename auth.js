@@ -134,17 +134,16 @@ exports.wardenSubject = ({ resource, action }) => (req, res, next) => {
   };
   logger.info(acp);
 
-  next();
-  // model.auth
-  //   .wardenSubject(acp)
-  //   .then(result => {
-  //     logger.info("warden subject positive response, continue ");
-  //     logger.info(result);
-  //     next();
-  //   })
-  //   .catch(error => {
-  //     logger.error("warden subject negative response");
-  //     logger.error(error);
-  //     next(error);
-  //   });
+  model.auth
+    .wardenSubject(acp)
+    .then(result => {
+      logger.info("warden subject positive response, continue ");
+      logger.info(result);
+      next();
+    })
+    .catch(error => {
+      logger.error("warden subject negative response");
+      logger.error(error);
+      next(error);
+    });
 };
