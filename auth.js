@@ -150,7 +150,7 @@ exports.wardenSubject = ({ resource, action }) => (req, res, next) => {
 };
 
 function ketoRequest(acp) {
-  const url = process.env.KETO_URL + "/engines/acp/ory/regex/allowed";
+  const url = process.env.KETO_URL + "/engines/acp/ory/exact/allowed";
   logger.debug("ketoRequest() => " + url);
   const options = {
     headers: {
@@ -173,10 +173,6 @@ function ketoRequest(acp) {
         return res.json();
       }
       return Promise.reject(new Error(res.statusText));
-    })
-    .catch(error => {
-      logger.error(error);
-      return Promise.reject(error);
     })
     .then(body => {
       if (!body.allowed) {
