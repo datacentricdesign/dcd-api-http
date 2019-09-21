@@ -145,7 +145,7 @@ class ThingAPI extends API {
       }
     );
 
-    this.router.grant(
+    this.router.put(
       "/:entityId/grant/:role/:entityType/:actorId",
       this.auth.introspect,
       this.auth.wardenSubject({ resource: "things", action: "grant" }),
@@ -162,7 +162,7 @@ class ThingAPI extends API {
       }
     );
 
-    this.router.revoke(
+    this.router.put(
       "/:entityId/revoke/:role/:entityType/:actorId",
       this.auth.introspect,
       this.auth.wardenSubject({ resource: "things", action: "revoke" }),
