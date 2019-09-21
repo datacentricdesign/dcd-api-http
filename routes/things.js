@@ -144,6 +144,40 @@ class ThingAPI extends API {
           .catch(error => this.fail(response, error));
       }
     );
+
+    this.router.grant(
+      "/:entityId/grant/:role/:entityType/:actorId",
+      this.auth.introspect,
+      this.auth.wardenSubject({ resource: "things", action: "grant" }),
+      (request, response) => {
+        this.model.things
+          .grant(
+            request.params.entityType,
+            request.params.actorId,
+            request.params.entityId,
+            request.params.role
+          )
+          .then(result => this.success(response, result))
+          .catch(error => this.fail(response, error));
+      }
+    );
+
+    this.router.revoke(
+      "/:entityId/revoke/:role/:entityType/:actorId",
+      this.auth.introspect,
+      this.auth.wardenSubject({ resource: "things", action: "revoke" }),
+      (request, response) => {
+        this.model.things
+          .revoke(
+            request.params.entityType,
+            request.params.actorId,
+            request.params.entityId,
+            request.params.role
+          )
+          .then(result => this.success(response, result))
+          .catch(error => this.fail(response, error));
+      }
+    );
   }
 }
 
