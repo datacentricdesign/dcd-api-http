@@ -63,7 +63,7 @@ exports.introspect = (req, res, next) => {
   });
 };
 
-exports.wardenToken = ({ resource, action, scope = [] }) => (
+exports.wardenToken = ({resource, action, scope = []}) => (
   req,
   res,
   next
@@ -107,7 +107,7 @@ exports.wardenToken = ({ resource, action, scope = [] }) => (
   }
 };
 
-exports.wardenSubject = ({ resource, action }) => (req, res, next) => {
+exports.wardenSubject = ({resource, action}) => (req, res, next) => {
   logger.info("warden subject, acp:");
   const acpResource = buildACPResource(resource, req);
   const acp = {
@@ -117,9 +117,8 @@ exports.wardenSubject = ({ resource, action }) => (req, res, next) => {
   };
   logger.info(acp);
 
-  // model.auth
-  //   .wardenSubject(acp)
-  ketoRequest(acp)
+  model.auth
+    .wardenSubject(acp)
     .then(result => {
       logger.info("warden subject positive response, continue ");
       logger.info(result);
@@ -131,42 +130,6 @@ exports.wardenSubject = ({ resource, action }) => (req, res, next) => {
       next(error);
     });
 };
-
-function ketoRequest(acp) {
-  const url = process.env.KETO_URL + "/engines/acp/ory/regex/allowed";
-  logger.debug("ketoRequest() => " + url);
-  const options = {
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json"
-    },
-    method: "POST"
-  };
-  logger.debug("HTTPS: " + process.env.HTTPS);
-  if (process.env.HTTPS !== undefined) {
-    logger.debug("HTTPS on, adding XFP header");
-    options.headers["X-Forwarded-Proto"] = "https";
-  }
-  const bodyStr = JSON.stringify(acp);
-  options.headers["Content-Length"] = bodyStr.length;
-  options.body = bodyStr;
-  return fetch(url, options)
-    .then(res => {
-      if (res.ok) {
-        return res.json();
-      }
-      return Promise.reject(new Error(res.statusText));
-    })
-    .then(body => {
-      if (!body.allowed) {
-        return Promise.reject(new Error("Request was not allowed"));
-      }
-      return Promise.resolve(body);
-    })
-    .catch(error => {
-      return Promise.reject(error);
-    });
-}
 
 function buildACPResource(resource, req) {
   let acpResource = "dcd";
