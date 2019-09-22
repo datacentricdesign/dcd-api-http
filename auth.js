@@ -169,7 +169,12 @@ function ketoRequest(acp) {
 }
 
 function buildACPResource(resource, req) {
-  let acpResource = "dcd:" + resource;
+  let acpResource = "dcd";
+  if (req.params.entity !== undefined) {
+    acpResource += ":" + req.params.entity;
+  } else {
+    acpResource += ":" + resource;
+  }
   if (req.params.entityId !== undefined) {
     acpResource += ":" + req.params.entityId;
   }
