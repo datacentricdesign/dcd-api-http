@@ -5,7 +5,6 @@ const log4js = require("log4js");
 const logger = log4js.getLogger("[dcd-api-http:auth]");
 logger.level = process.env.LOG_LEVEL || "INFO";
 
-
 const fetch = require("node-fetch");
 
 let model = null;
@@ -26,6 +25,7 @@ exports.introspect = (req, res, next) => {
     );
   }
   const token = req.get("Authorization").replace(/bearer\s/gi, "");
+  logger.debug(token);
   return model.auth.refresh().then(() => {
     // Token with 3 dots are JWT
     if (token.split(".").length === 3 && req.params.entityId !== undefined) {
@@ -33,8 +33,12 @@ exports.introspect = (req, res, next) => {
         .checkJWTAuth(token, req.params.entityId)
         .then(token => {
           req.entityType = req.params.entity;
-          req.user = { entityId: req.params.entityId, token: token, sub: "dcd:things:" + req.params.entityId };
-          logger.info('introspect thing result, req.user:');
+          req.user = {
+            entityId: req.params.entityId,
+            token: token,
+            sub: "dcd:things:" + req.params.entityId
+          };
+          logger.info("introspect thing result, req.user:");
           logger.info(req.user);
           next();
         })
@@ -64,19 +68,7 @@ exports.wardenToken = ({ resource, action, scope = [] }) => (
   res,
   next
 ) => {
-  let acpResource = "dcd";
-  if (req.params.entity !== undefined) {
-    acpResource += ":" + req.params.entity;
-  }
-  if (req.params.entityId !== undefined) {
-    acpResource += ":" + req.params.entityId;
-  }
-  if (req.params.component !== undefined) {
-    acpResource += ":" + req.params.component;
-  }
-  if (req.params.propertyId !== undefined) {
-    acpResource += ":" + req.params.entityId;
-  }
+  const acpResource = buildACPResource(resource, req);
 
   const token = req.get("Authorization").replace(/bearer\s/gi, "");
 
@@ -117,16 +109,7 @@ exports.wardenToken = ({ resource, action, scope = [] }) => (
 
 exports.wardenSubject = ({ resource, action }) => (req, res, next) => {
   logger.info("warden subject, acp:");
-  let acpResource = "dcd:" + resource;
-  if (req.params.entityId !== undefined) {
-    acpResource += ":" + req.params.entityId;
-  }
-  if (req.params.component !== undefined) {
-    acpResource += ":" + req.params.component;
-  }
-  if (req.params.propertyId !== undefined) {
-    acpResource += ":" + req.params.propertyId;
-  }
+  const acpResource = buildACPResource(resource, req);
   const acp = {
     resource: acpResource,
     action: "dcd:actions:" + action,
@@ -183,4 +166,18 @@ function ketoRequest(acp) {
     .catch(error => {
       return Promise.reject(error);
     });
+}
+
+function buildACPResource(resource, req) {
+  let acpResource = "dcd:" + resource;
+  if (req.params.entityId !== undefined) {
+    acpResource += ":" + req.params.entityId;
+  }
+  if (req.params.component !== undefined) {
+    acpResource += ":" + req.params.component;
+  }
+  if (req.params.propertyId !== undefined) {
+    acpResource += ":" + req.params.propertyId;
+  }
+  return acpResource;
 }
