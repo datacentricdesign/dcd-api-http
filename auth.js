@@ -20,9 +20,11 @@ exports.setModel = newModel => {
 exports.introspect = (req, res, next) => {
   // Check and extract the token from the header
   if (req.get("Authorization") === undefined) {
-    return next(
-      new Error("Request not allowed " + '- Missing "Authorization" header.')
+    const error = new Error(
+      "Request not allowed - Missing Authorization header."
     );
+    error.status = 403;
+    return next(error);
   }
   const token = req.get("Authorization").replace(/bearer\s/gi, "");
   logger.debug(token);

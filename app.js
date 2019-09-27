@@ -59,8 +59,8 @@ const StatAPI = require("./routes/stats");
 const statAPI = new StatAPI(model, auth);
 app.use(baseUrl + "/stats", statAPI.router);
 
-const InteractionAPI = require('./routes/interactions')
-const interactionAPI = new InteractionAPI(model,auth)
+const InteractionAPI = require("./routes/interactions");
+const interactionAPI = new InteractionAPI(model, auth);
 app.use(baseUrl, interactionAPI.router);
 
 // catch 404 and forward to error handler
@@ -75,7 +75,7 @@ app.use(function(request, response, next) {
 // development error handler
 // will print stacktrace
 if (app.get("env") === "development") {
-  app.use((error, request, response) => {
+  app.use((error, request, response, next) => {
     response.status(error.status || 500);
     response.json({
       message: error.message,
@@ -86,7 +86,8 @@ if (app.get("env") === "development") {
 
 // production error handler
 // no stacktraces leaked to user
-app.use((error, request, response) => {
+app.use((error, request, response, next) => {
+  logger.debug("Error handler");
   response.status(error.status || 500);
   response.json({
     message: error.message,
