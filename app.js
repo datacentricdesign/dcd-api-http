@@ -73,7 +73,7 @@ app.use(function(request, response, next) {
 // Error handler
 
 app.use((error, request, response, next) => {
-  logger.error(error);
+  logger.error(JSON.stringify(error));
   response.status(error.status || 500);
   const errorResponse = { message: error.message};
   if (error.code !== undefined) {
