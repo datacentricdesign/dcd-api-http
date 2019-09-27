@@ -20,7 +20,7 @@ const app = express();
 app.use(favicon(path.join(__dirname, "public", "favicon.ico")));
 app.use(morgan("dev"));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(baseUrl, express.static(path.join(__dirname, "public")));
 
@@ -63,36 +63,25 @@ const InteractionAPI = require("./routes/interactions");
 const interactionAPI = new InteractionAPI(model, auth);
 app.use(baseUrl, interactionAPI.router);
 
-// catch 404 and forward to error handler
+// Catch 404 and forward to error handler
 app.use(function(request, response, next) {
   const err = new Error("Not Found");
   err.status = 404;
   next(err);
 });
 
-// error handlers
+// Error handler
 
-// development error handler
-// will print stacktrace
-if (app.get("env") === "development") {
-  app.use((error, request, response, next) => {
-    response.status(error.status || 500);
-    response.json({
-      message: error.message,
-      error: error
-    });
-  });
-}
-
-// production error handler
-// no stacktraces leaked to user
 app.use((error, request, response, next) => {
-  logger.debug("Error handler");
+  logger.error(error);
   response.status(error.status || 500);
-  response.json({
-    message: error.message,
-    error: {}
-  });
+  const errorResponse = { message: error.message};
+  if (error.code !== undefined) {
+    errorResponse.code = error.code;
+  } else if (error.status !== undefined) {
+    errorResponse.code = error.status;
+  }
+  response.json(errorResponse);
 });
 
 module.exports = app;
