@@ -20,12 +20,12 @@ class PersonAPI extends API {
      *
      * @apiSuccess {object} personId Id of the created Person
      */
-    this.router.post("/", (request, response) => {
+    this.router.post("/", (request, response, next) => {
       const person = new Person(request.body);
       this.model.persons
         .create(person)
         .then(result => this.success(response, { personId: result }))
-        .catch(error => this.fail(response, error));
+        .catch(error => next(error));
     });
 
     /**
