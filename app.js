@@ -65,15 +65,20 @@ app.use(baseUrl, interactionAPI.router);
 
 // Catch 404 and forward to error handler
 app.use(function(request, response, next) {
-  const err = new Error("Not Found");
-  err.status = 404;
-  next(err);
+  const error = new Error("Path not found: " + request.path);
+  error.status = 404;
+  error.code = 404;
+  next(error);
 });
 
 // Error handler
 
 app.use((error, request, response, next) => {
-  logger.error(JSON.stringify(error, Object.getOwnPropertyNames(error)));
+  if (error.code !== undefined) {
+    logger.error({ code: error.code, message: error.message})
+  } else {
+    logger.error(JSON.stringify(error, Object.getOwnPropertyNames(error)));
+  }
   response.status(error.status || 500);
   const errorResponse = { message: error.message};
   if (error.code !== undefined) {
@@ -81,6 +86,7 @@ app.use((error, request, response, next) => {
   } else if (error.status !== undefined) {
     errorResponse.code = error.status;
   }
+  response.set({ "Content-Type": "application/json" });
   response.json(errorResponse);
 });
 
