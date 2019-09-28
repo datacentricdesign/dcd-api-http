@@ -18,6 +18,7 @@ exports.setModel = newModel => {
  * @return {Promise}
  */
 exports.introspect = (req, res, next) => {
+  logger.debug("auth introspect");
   const token = extractToken(req);
   return model.auth
     .refresh()
@@ -32,6 +33,7 @@ exports.introspect = (req, res, next) => {
           return Promise.resolve(user);
         });
       } else {
+        logger.debug("forward to introspect model");
         return model.auth.introspect(token);
       }
     })
