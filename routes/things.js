@@ -10,6 +10,14 @@ class ThingAPI extends API {
 
   init() {
     /**
+     * Add the entity Type 'persons' to all request of this router.
+     */
+    this.router.use((req, res, next) => {
+      req.entityType = "things";
+      next();
+    });
+
+    /**
      * @api {post} /things Create
      * @apiGroup Thing
      * @apiDescription Create a Thing.

@@ -20,11 +20,12 @@ const app = express();
 app.use(favicon(path.join(__dirname, "public", "favicon.ico")));
 app.use(morgan("dev"));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(baseUrl, express.static(path.join(__dirname, "public")));
 
 const DCDModel = require("dcd-model");
+const DCDError = require("dcd-model/lib/Error");
 
 // test
 
@@ -37,7 +38,6 @@ const swStats = require("swagger-stats");
 app.use(baseUrl, swStats.getMiddleware());
 
 app.use(cors());
-
 
 const HealthAPI = require("./routes/health");
 const healthAPI = new HealthAPI(model, auth);
@@ -73,14 +73,15 @@ app.use(function(request, response, next) {
 
 // Error handler
 
+// eslint-disable-next-line no-unused-vars
 app.use((error, request, response, next) => {
-  if (error.code !== undefined) {
-    logger.error({ code: error.code, message: error.message})
+  if (error instanceof DCDError) {
+    logger.error({ code: error.code, message: error.message });
   } else {
     logger.error(JSON.stringify(error, Object.getOwnPropertyNames(error)));
   }
   response.status(error.status || 500);
-  const errorResponse = { message: error.message};
+  const errorResponse = { message: error.message };
   if (error.code !== undefined) {
     errorResponse.code = error.code;
   } else if (error.status !== undefined) {

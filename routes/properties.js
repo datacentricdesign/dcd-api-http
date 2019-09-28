@@ -14,6 +14,14 @@ class PropertyAPI extends API {
 
   init() {
     /**
+     * Add the entity Type to all request of this router.
+     */
+    this.router.use((req, res, next) => {
+      req.entityType = req.params.entity;
+      next();
+    });
+
+    /**
      * @api {post} /things|persons/:entityId/properties Create
      * @apiGroup Property
      * @apiDescription Create a Property.
@@ -248,6 +256,7 @@ class PropertyAPI extends API {
         }
         const propertyId = request.params.propertyId;
 
+        // eslint-disable-next-line no-undef
         const form = new multiparty.Form();
         let dataStr = "";
 

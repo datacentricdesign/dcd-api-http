@@ -10,6 +10,14 @@ class InteractionAPI extends API {
 
   init() {
     /**
+     * Add the entity Type to all request of this router.
+     */
+    this.router.use((req, res, next) => {
+      req.entityType = req.params.entity;
+      next();
+    });
+
+    /**
      * @api {post} /things|persons/:entityId/interactions Create
      * @apiGroup Interaction
      * @apiDescription Create an Interaction.

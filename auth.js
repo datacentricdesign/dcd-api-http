@@ -5,6 +5,8 @@ const log4js = require("log4js");
 const logger = log4js.getLogger("[dcd-api-http:auth]");
 logger.level = process.env.LOG_LEVEL || "INFO";
 
+const DCDError = require("dcd-model/lib/Error");
+
 let model = null;
 exports.setModel = newModel => {
   model = newModel;
@@ -16,51 +18,28 @@ exports.setModel = newModel => {
  * @return {Promise}
  */
 exports.introspect = (req, res, next) => {
-  // Check and extract the token from the header
-  if (req.get("Authorization") === undefined) {
-    const error = new Error(
-      "Request not allowed - Missing Authorization header."
-    );
-    error.status = 403;
-    return next(error);
-  }
-  const token = req.get("Authorization").replace(/bearer\s/gi, "");
-  logger.debug(token);
-  return model.auth.refresh().then(() => {
-    // Token with 3 dots are JWT
-    if (token.split(".").length === 3 && req.params.entityId !== undefined) {
-      return model.auth
-        .checkJWTAuth(token, req.params.entityId)
-        .then(token => {
-          req.entityType = req.params.entity;
-          req.user = {
+  const token = extractToken(req);
+  return model.auth
+    .refresh()
+    .then(() => {
+      if (token.split(".").length === 3 && req.params.entityId !== undefined) {
+        return model.auth.checkJWTAuth(token).then(token => {
+          const user = {
             entityId: req.params.entityId,
             token: token,
-            sub: "dcd:things:" + req.params.entityId
+            sub: "dcd:" + req.entityType + ":" + req.params.entityId
           };
-          logger.info("introspect thing result, req.user:");
-          logger.info(req.user);
-          next();
-        })
-        .catch(error => {
-          logger.error(error);
-          next(error);
+          return Promise.resolve(user);
         });
-    } else {
-      // Otherwise it is a Bearer token
-      return model.auth
-        .introspect(token)
-        .then(user => {
-          req.entityType = req.params.entity;
-          req.user = user;
-          next();
-        })
-        .catch(error => {
-          logger.error(error);
-          next(error);
-        });
-    }
-  });
+      } else {
+        return model.auth.introspect(token);
+      }
+    })
+    .then(user => {
+      req.user = user;
+      next();
+    })
+    .catch(error => next(error));
 };
 
 exports.wardenToken = ({ resource, action, scope = [] }) => (
@@ -68,19 +47,21 @@ exports.wardenToken = ({ resource, action, scope = [] }) => (
   res,
   next
 ) => {
-  const acpResource = buildACPResource(resource, req);
-
-  const token = req.get("Authorization").replace(/bearer\s/gi, "");
-
+  logger.debug("warden Token");
+  const token = extractToken(req);
+  logger.debug("extracted token");
+  logger.debug(token);
   const acp = {
-    resource: acpResource,
+    resource: buildACPResource(resource, req),
     action: "dcd:actions:" + action,
     scope: scope,
     token: token
   };
+  logger.debug("acp");
+  logger.debug(acp);
 
   if (token.split(".").length === 3 && req.params.entityId !== undefined) {
-    acp.subject = "dcd:things:" + req.params.entityId;
+    acp.subject = "dcd:" + req.entityType + ":" + req.params.entityId;
     model.auth
       .checkJWT(acp, req.params.entityId)
       .then(user => {
@@ -88,12 +69,10 @@ exports.wardenToken = ({ resource, action, scope = [] }) => (
           req.user = user;
           next();
         } else {
-          next(new Error("Not Allowed"));
+          next(new DCDError(4031, "The user is undefined"));
         }
       })
-      .catch(error => {
-        next(error);
-      });
+      .catch(error => next(error));
   } else {
     model.auth
       .wardenToken(acp)
@@ -101,40 +80,34 @@ exports.wardenToken = ({ resource, action, scope = [] }) => (
         req.user = user;
         next();
       })
-      .catch(error => {
-        next(error);
-      });
+      .catch(error => next(error));
   }
 };
 
 exports.wardenSubject = ({ resource, action }) => (req, res, next) => {
-  logger.info("warden subject, acp:");
   const acpResource = buildACPResource(resource, req);
   const acp = {
     resource: acpResource,
     action: "dcd:actions:" + action,
     subject: req.user.sub
   };
-  logger.info(acp);
 
   model.auth
     .wardenSubject(acp)
-    .then(result => {
-      logger.info("warden subject positive response, continue ");
-      logger.info(result);
-      next();
-    })
-    .catch(error => {
-      logger.error("warden subject negative response");
-      logger.error(error);
-      next(error);
-    });
+    .then(() => next())
+    .catch(error => next(error));
 };
 
+/**
+ * Build ACP resource from request path
+ * @param resource
+ * @param req
+ * @return {string}
+ */
 function buildACPResource(resource, req) {
   let acpResource = "dcd";
-  if (req.params.entity !== undefined) {
-    acpResource += ":" + req.params.entity;
+  if (req.entityType !== undefined) {
+    acpResource += ":" + req.entityType;
   } else {
     acpResource += ":" + resource;
   }
@@ -148,4 +121,21 @@ function buildACPResource(resource, req) {
     acpResource += ":" + req.params.propertyId;
   }
   return acpResource;
+}
+
+/**
+ * Check and extract the token from the header
+ * @param req
+ * @return {*|void|string}
+ */
+function extractToken(req) {
+  if (req.get("Authorization") === undefined) {
+    throw new DCDError(4031, "Add 'Authorization' header.");
+  } else if (req.get("Authorization").startsWith("bearer ")) {
+    throw new DCDError(
+      4031,
+      "Add 'bearer ' in front of your 'Authorization' token."
+    );
+  }
+  return req.get("Authorization").replace(/bearer\s/gi, "");
 }
