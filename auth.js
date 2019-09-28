@@ -135,7 +135,7 @@ function buildACPResource(resource, req) {
 function extractToken(req) {
   if (req.get("Authorization") === undefined) {
     throw new DCDError(4031, "Add 'Authorization' header.");
-  } else if (req.get("Authorization").startsWith("bearer ")) {
+  } else if (!req.get("Authorization").startsWith("bearer ")) {
     throw new DCDError(
       4031,
       "Add 'bearer ' in front of your 'Authorization' token."
