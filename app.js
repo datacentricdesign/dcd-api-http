@@ -65,15 +65,11 @@ app.use(baseUrl, interactionAPI.router);
 
 // Catch 404 and forward to error handler
 app.use(function(request, response, next) {
-  const error = new Error("Path not found: " + request.path);
-  error.status = 404;
-  error.code = 404;
-  next(error);
+  next(new DCDError(404, "Path not found: " + request.path));
 });
 
 // Error handler
 
-// eslint-disable-next-line no-unused-vars
 app.use((error, request, response, next) => {
   if (error instanceof DCDError) {
     logger.error(JSON.stringify(error));

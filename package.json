@@ -11,13 +11,11 @@
   },
   "dependencies": {
     "apidoc": "0.17.7",
-    "babel-eslint": "10.0.2",
     "body-parser": "1.19.0",
     "cookie-parser": "1.4.4",
     "cors": "2.8.5",
-    "dcd-model": "0.0.154-grant-revoke",
+    "dcd-model": "0.0.155-grant-revoke",
     "dotenv": "8.1.0",
-    "eslint": "6.1.0",
     "express": "4.17.1",
     "express-basic-auth": "1.2.0",
     "express-jwt": "5.3.1",
@@ -26,14 +24,18 @@
     "morgan": "1.9.1",
     "multer": "1.4.2",
     "node-fetch": "2.6.0",
-    "prettier": "1.18.2",
     "serve-favicon": "2.5.0",
     "simple-oauth2": "2.2.1",
     "swagger-stats": "0.95.11"
   },
+  "devDependencies": {
+    "prettier": "1.18.2",
+    "eslint": "6.4.0",
+    "babel-eslint": "10.0.3"
+  },
   "optionalDependencies": {
-    "eslint-config-prettier": "6.0.0",
-    "eslint-plugin-prettier": "3.1.0"
+    "eslint-config-prettier": "6.3.0",
+    "eslint-plugin-prettier": "3.1.1"
   },
   "repository": {
     "type": "git",
