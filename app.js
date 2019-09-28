@@ -76,7 +76,7 @@ app.use(function(request, response, next) {
 // eslint-disable-next-line no-unused-vars
 app.use((error, request, response, next) => {
   if (error instanceof DCDError) {
-    logger.error({ code: error.code, message: error.message });
+    logger.error(error);
   } else {
     logger.error(JSON.stringify(error, Object.getOwnPropertyNames(error)));
   }
