@@ -23,7 +23,9 @@ exports.introspect = (req, res, next) => {
   return model.auth
     .refresh()
     .then(() => {
+      logger.debug("successful token refresh");
       if (token.split(".").length === 3 && req.params.entityId !== undefined) {
+        logger.debug("token is JWT");
         return model.auth.checkJWTAuth(token).then(token => {
           const user = {
             entityId: req.params.entityId,
