@@ -15,9 +15,8 @@ exports.setModel = newModel => {
 /**
  * Introspect the token from the 'Authorization' HTTP header to
  * determined if it is valid and who it belongs to.
- * @return {Promise}
  */
-exports.introspect = (req, res, next) => {
+exports.introspect = ({ requiredScope = [] }) => (req, res, next) => {
   logger.debug("auth introspect");
   const token = extractToken(req);
   return model.auth
@@ -36,7 +35,7 @@ exports.introspect = (req, res, next) => {
         });
       } else {
         logger.debug("forward to introspect model");
-        return model.auth.introspect(token);
+        return model.auth.introspect(token, requiredScope);
       }
     })
     .then(user => {

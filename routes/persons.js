@@ -28,6 +28,8 @@ class PersonAPI extends API {
      * @apiParam (Body) {string} name The name of the person
      * @apiParam (Body) {string} password A minimum 8-character long password
      *
+     * @apiPermission Requirs scope 'dcd:persons'
+     *
      * @apiSuccess {object} personId Id of the created Person
      */
     this.router.post("/", (request, response, next) => {
@@ -45,11 +47,13 @@ class PersonAPI extends API {
      *
      * @apiHeader {String} Authorization TOKEN ID
      *
+     * @apiPermission Requires scope 'dcd:persons'
+     *
      * @apiSuccess {array} persons Array of Persons found.
      */
     this.router.get(
       "/",
-      this.auth.introspect,
+      this.auth.introspect({ requiredScope: ["dcd:persons"] }),
       this.auth.wardenSubject({ resource: "persons", action: "list" }),
       (request, response, next) => {
         this.model.persons
@@ -66,13 +70,15 @@ class PersonAPI extends API {
      *
      * @apiHeader {String} Authorization TOKEN ID
      *
+     * @apiPermission Requires scope 'dcd:persons'
+     *
      * @apiParam {String} personId Id of the Person to read.
      *
      * @apiSuccess {object} person Person found.
      */
     this.router.get(
       "/:entityId",
-      this.auth.introspect,
+      this.auth.introspect({ requiredScope: ["dcd:persons"] }),
       this.auth.wardenSubject({ resource: "persons", action: "read" }),
       (request, response, next) => {
         this.model.persons
@@ -89,10 +95,13 @@ class PersonAPI extends API {
      *
      * @apiHeader {String} Content-type application/json
      * @apiHeader {String} Authorization TOKEN ID
+     *
+     * @apiPermission Requires scope 'dcd:persons'
+     *
      */
     this.router.put(
       "/:entityId",
-      this.auth.introspect,
+      this.auth.introspect({ requiredScope: ["dcd:persons"] }),
       this.auth.wardenSubject({ resource: "persons", action: "update" }),
       (request, response, next) => {
         const person = new Person(request.params.entityId, request.body);
@@ -109,10 +118,12 @@ class PersonAPI extends API {
      * @apiDescription Delete a Person.
      *
      * @apiHeader {String} Authorization TOKEN ID
+     *
+     * @apiPermission Requires scope 'dcd:persons'
      */
     this.router.delete(
       "/:entityId",
-      this.auth.introspect,
+      this.auth.introspect({ requiredScope: ["dcd:persons"] }),
       this.auth.wardenSubject({ resource: "persons", action: "delete" }),
       (request, response, next) => {
         const personId = request.params.entityId;
@@ -131,16 +142,13 @@ class PersonAPI extends API {
      * @apiHeader {String} Content-type application/json
      * @apiHeader {String} Authorization TOKEN ID
      *
+     * @apiPermission Requires scope 'dcd:persons' and 'dcd:auth'
+     *
      * @apiSuccess {object} person Person found.
      */
     this.router.post(
       "/:entityId/check",
-      this.auth.introspect,
-      this.auth.wardenToken({
-        resource: "persons",
-        scope: ["dcd:auth"],
-        action: "check"
-      }),
+      this.auth.introspect({ requiredScope: ["dcd:persons", "dcd:auth"] }),
       (request, response, next) => {
         if (request.body !== undefined && request.body.password !== undefined) {
           this.model.persons
