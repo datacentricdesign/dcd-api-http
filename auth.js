@@ -51,10 +51,7 @@ exports.wardenToken = ({ resource, action, scope = [] }) => (
   res,
   next
 ) => {
-  logger.debug("warden Token");
   const token = extractToken(req);
-  logger.debug("extracted token");
-  logger.debug(token);
   const acp = {
     resource: buildACPResource(resource, req),
     action: "dcd:actions:" + action,
