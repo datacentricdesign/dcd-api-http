@@ -160,7 +160,15 @@ class ThingAPI extends API {
       (request, response, next) => {
         this.model.things
           .del(request.params.entityId)
-          .then(result => this.success(response, result))
+          .then(result => {
+            this.success(
+              response,
+              {
+                message: result.affectedRows + " Thing deleted."
+              },
+              204
+            );
+          })
           .catch(error => next(error));
       }
     );

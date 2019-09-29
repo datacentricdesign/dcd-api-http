@@ -75,7 +75,7 @@ class PersonAPI extends API {
         this.logger.debug("GET /persons list");
         this.model.persons
           .list(request.user.sub)
-          .then(result => this.success(response, result))
+          .then(result => this.success(response, { persons: result }))
           .catch(error => next(error));
       }
     );
@@ -122,7 +122,7 @@ class PersonAPI extends API {
       "/:entityId",
       this.formatEntityId,
       this.introspectToken(["dcd:persons"]),
-      this.checkPolicy({resource: "persons", action: "update"}),
+      this.checkPolicy("persons", "update"),
       (request, response, next) => {
         const person = new Person(request.params.entityId, request.body);
         this.model.persons
@@ -145,7 +145,7 @@ class PersonAPI extends API {
       "/:entityId",
       this.formatEntityId,
       this.introspectToken(["dcd:persons"]),
-      this.checkPolicy({resource: "persons", action: "delete"}),
+      this.checkPolicy("persons", "delete"),
       (request, response, next) => {
         const personId = request.params.entityId;
         this.model.persons
