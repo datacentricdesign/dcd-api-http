@@ -8,7 +8,6 @@ class PersonAPI extends API {
     super(model);
   }
 
-  // warden subject
   formatEntityId(request, response, next) {
     if (request.params.entityId !== undefined) {
       if (!request.params.entityId.startsWith("dcd:persons:")) {

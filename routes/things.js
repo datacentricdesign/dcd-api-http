@@ -8,6 +8,15 @@ class ThingAPI extends API {
     super(model);
   }
 
+  formatEntityId(request, response, next) {
+    if (request.params.entityId !== undefined) {
+      if (!request.params.entityId.startsWith("dcd:things:")) {
+        request.params.entityId = "dcd:things:" + request.params.entityId;
+      }
+    }
+    next();
+  }
+
   init() {
     /**
      * Add the entity Type 'persons' to all request of this router.
@@ -99,6 +108,7 @@ class ThingAPI extends API {
      */
     this.router.get(
       "/:entityId",
+      this.formatEntityId,
       this.introspectToken(["dcd:things"]),
       this.checkPolicy("things", "read"),
       (request, response, next) => {
@@ -122,6 +132,7 @@ class ThingAPI extends API {
      */
     this.router.put(
       "/:entityId",
+      this.formatEntityId,
       this.introspectToken(["dcd:things"]),
       this.checkPolicy("things", "update"),
       (request, response, next) => {
@@ -143,6 +154,7 @@ class ThingAPI extends API {
      */
     this.router.delete(
       "/:entityId",
+      this.formatEntityId,
       this.introspectToken(["dcd:things"]),
       this.checkPolicy("things", "delete"),
       (request, response, next) => {
@@ -155,6 +167,7 @@ class ThingAPI extends API {
 
     this.router.put(
       "/:entityId/grant/:role/:entityType/:subjectId",
+      this.formatEntityId,
       this.introspectToken(["dcd:things", "dcd:roles"]),
       this.checkPolicy("things", "grant"),
       (request, response, next) => {
@@ -171,6 +184,7 @@ class ThingAPI extends API {
 
     this.router.put(
       "/:entityId/revoke/:role/:entityType/:subjectId",
+      this.formatEntityId,
       this.introspectToken(["dcd:things", "dcd:roles"]),
       this.checkPolicy("things", "revoke"),
       (request, response, next) => {
