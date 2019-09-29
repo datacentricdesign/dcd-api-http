@@ -18,7 +18,7 @@ class StatAPI extends API {
      *
      * @apiSuccess {json} Json of global stats.
      */
-    this.router.get("/", this.auth.introspect, (request, response, next) => {
+    this.router.get("/", this.introspectToken, (request, response, next) => {
       this.model.stats
         .getGlobalStats()
         .then(result => this.success(response, { stats: result }))
