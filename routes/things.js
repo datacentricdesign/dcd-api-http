@@ -4,8 +4,8 @@ const API = require("./API");
 const Thing = require("dcd-model/entities/Thing");
 
 class ThingAPI extends API {
-  constructor(model, auth) {
-    super(model, auth);
+  constructor(model) {
+    super(model);
   }
 
   init() {
@@ -40,8 +40,8 @@ class ThingAPI extends API {
      */
     this.router.post(
       "/",
-      this.auth.introspect({ requiredScope: ["dcd:things"] }),
-      this.policies.check({ resource: "things", action: "create" }),
+      this.introspectToken({ requiredScope: ["dcd:things"] }),
+      this.checkPolicy({ resource: "things", action: "create" }),
       (request, response, next) => {
         // Web forms cannot submit PUT methods, we check the flag update
         if (request.query.thingId !== undefined) {
@@ -76,8 +76,8 @@ class ThingAPI extends API {
      */
     this.router.get(
       "/",
-      this.auth.introspect({ requiredScope: ["dcd:things"] }),
-      this.policies.check({ resource: "things", action: "list" }),
+      this.introspectToken({ requiredScope: ["dcd:things"] }),
+      this.checkPolicy({ resource: "things", action: "list" }),
       (request, response, next) => {
         this.model.things
           .list(request.user.sub)
@@ -99,8 +99,8 @@ class ThingAPI extends API {
      */
     this.router.get(
       "/:entityId",
-      this.auth.introspect({ requiredScope: ["dcd:things"] }),
-      this.policies.check({ resource: "things", action: "read" }),
+      this.introspectToken({ requiredScope: ["dcd:things"] }),
+      this.checkPolicy({ resource: "things", action: "read" }),
       (request, response, next) => {
         this.model.things
           .read(request.params.entityId)
@@ -122,8 +122,8 @@ class ThingAPI extends API {
      */
     this.router.put(
       "/:entityId",
-      this.auth.introspect({ requiredScope: ["dcd:things"] }),
-      this.policies.check({ resource: "things", action: "update" }),
+      this.introspectToken({ requiredScope: ["dcd:things"] }),
+      this.checkPolicy({ resource: "things", action: "update" }),
       (request, response, next) => {
         this.model.things
           .update(new Thing(request.body, request.params.entityId))
@@ -143,8 +143,8 @@ class ThingAPI extends API {
      */
     this.router.delete(
       "/:entityId",
-      this.auth.introspect({ requiredScope: ["dcd:things"] }),
-      this.policies.check({ resource: "things", action: "delete" }),
+      this.introspectToken({ requiredScope: ["dcd:things"] }),
+      this.checkPolicy({ resource: "things", action: "delete" }),
       (request, response, next) => {
         this.model.things
           .del(request.params.entityId)
@@ -154,14 +154,13 @@ class ThingAPI extends API {
     );
 
     this.router.put(
-      "/:entityId/grant/:role/:entityType/:actorId",
-      this.auth.introspect({ requiredScope: ["dcd:things", "dcd:roles"] }),
-      this.policies.check({ resource: "things", action: "grant" }),
+      "/:entityId/grant/:role/:entityType/:subjectId",
+      this.introspectToken({ requiredScope: ["dcd:things", "dcd:roles"] }),
+      this.checkPolicy({ resource: "things", action: "grant" }),
       (request, response, next) => {
-        this.model.things
+        this.model.policies
           .grant(
-            request.params.entityType,
-            request.params.actorId,
+            request.params.subjectId,
             request.params.entityId,
             request.params.role
           )
@@ -171,14 +170,13 @@ class ThingAPI extends API {
     );
 
     this.router.put(
-      "/:entityId/revoke/:role/:entityType/:actorId",
-      this.auth.introspect({ requiredScope: ["dcd:things", "dcd:roles"] }),
-      this.policies.check({ resource: "things", action: "revoke" }),
+      "/:entityId/revoke/:role/:entityType/:subjectId",
+      this.introspectToken({ requiredScope: ["dcd:things", "dcd:roles"] }),
+      this.checkPolicy({ resource: "things", action: "revoke" }),
       (request, response, next) => {
-        this.model.things
+        this.model.policies
           .revoke(
-            request.params.entityType,
-            request.params.actorId,
+            request.params.subjectId,
             request.params.entityId,
             request.params.role
           )

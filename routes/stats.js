@@ -4,8 +4,8 @@ const API = require("./API");
 const DCDError = require("dcd-model/lib/Error");
 
 class StatAPI extends API {
-  constructor(model, auth) {
-    super(model, auth);
+  constructor(model) {
+    super(model);
   }
 
   init() {
@@ -40,7 +40,7 @@ class StatAPI extends API {
      */
     this.router.get(
       "/propertyTypes",
-      this.auth.introspect,
+      this.introspectToken,
       (request, response, next) => {
         if (!request.query.types) {
           this.next(new DCDError(400, "Add 'types' query param"));

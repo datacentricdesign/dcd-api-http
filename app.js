@@ -32,35 +32,33 @@ const DCDError = require("dcd-model/lib/Error");
 const model = new DCDModel();
 model.init();
 
-const auth = require("./auth");
-auth.setModel(model);
 const swStats = require("swagger-stats");
 app.use(baseUrl, swStats.getMiddleware());
 
 app.use(cors());
 
 const HealthAPI = require("./routes/health");
-const healthAPI = new HealthAPI(model, auth);
+const healthAPI = new HealthAPI(model);
 app.use(baseUrl + "/health", healthAPI.router);
 
 const PersonAPI = require("./routes/persons");
-const personAPI = new PersonAPI(model, auth);
+const personAPI = new PersonAPI(model);
 app.use(baseUrl + "/persons", personAPI.router);
 
 const ThingAPI = require("./routes/things");
-const thingAPI = new ThingAPI(model, auth);
+const thingAPI = new ThingAPI(model);
 app.use(baseUrl + "/things", thingAPI.router);
 
 const PropertyAPI = require("./routes/properties");
-const propertyAPI = new PropertyAPI(model, auth);
+const propertyAPI = new PropertyAPI(model);
 app.use(baseUrl, propertyAPI.router);
 
 const StatAPI = require("./routes/stats");
-const statAPI = new StatAPI(model, auth);
+const statAPI = new StatAPI(model);
 app.use(baseUrl + "/stats", statAPI.router);
 
 const InteractionAPI = require("./routes/interactions");
-const interactionAPI = new InteractionAPI(model, auth);
+const interactionAPI = new InteractionAPI(model);
 app.use(baseUrl, interactionAPI.router);
 
 // Catch 404 and forward to error handler

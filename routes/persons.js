@@ -4,8 +4,8 @@ const API = require("./API");
 const Person = require("dcd-model/entities/Person");
 
 class PersonAPI extends API {
-  constructor(model, auth) {
-    super(model, auth);
+  constructor(model) {
+    super(model);
   }
 
   init() {
@@ -53,8 +53,8 @@ class PersonAPI extends API {
      */
     this.router.get(
       "/",
-      this.auth.introspect({ requiredScope: ["dcd:persons"] }),
-      this.policies.check({ resource: "persons", action: "list" }),
+      this.introspectToken({ requiredScope: ["dcd:persons"] }),
+      this.checkPolicy({ resource: "persons", action: "list" }),
       (request, response, next) => {
         this.model.persons
           .list(request.user.sub)
@@ -78,8 +78,8 @@ class PersonAPI extends API {
      */
     this.router.get(
       "/:entityId",
-      this.auth.introspect({ requiredScope: ["dcd:persons"] }),
-      this.policies.check({ resource: "persons", action: "read" }),
+      this.introspectToken({ requiredScope: ["dcd:persons"] }),
+      this.checkPolicy({ resource: "persons", action: "read" }),
       (request, response, next) => {
         this.model.persons
           .read(request.params.entityId)
@@ -101,8 +101,8 @@ class PersonAPI extends API {
      */
     this.router.put(
       "/:entityId",
-      this.auth.introspect({ requiredScope: ["dcd:persons"] }),
-      this.policies.check({ resource: "persons", action: "update" }),
+      this.introspectToken({ requiredScope: ["dcd:persons"] }),
+      this.checkPolicy({ resource: "persons", action: "update" }),
       (request, response, next) => {
         const person = new Person(request.params.entityId, request.body);
         this.model.persons
@@ -123,8 +123,8 @@ class PersonAPI extends API {
      */
     this.router.delete(
       "/:entityId",
-      this.auth.introspect({ requiredScope: ["dcd:persons"] }),
-      this.policies.check({ resource: "persons", action: "delete" }),
+      this.introspectToken({ requiredScope: ["dcd:persons"] }),
+      this.checkPolicy({ resource: "persons", action: "delete" }),
       (request, response, next) => {
         const personId = request.params.entityId;
         this.model.persons
@@ -148,7 +148,7 @@ class PersonAPI extends API {
      */
     this.router.post(
       "/:entityId/check",
-      this.auth.introspect({ requiredScope: ["dcd:persons", "dcd:auth"] }),
+      this.introspectToken({ requiredScope: ["dcd:persons", "dcd:auth"] }),
       (request, response, next) => {
         if (request.body !== undefined && request.body.password !== undefined) {
           this.model.persons

@@ -3,8 +3,8 @@
 const API = require("./API");
 
 class HealthAPI extends API {
-  constructor(model, auth) {
-    super(model, auth);
+  constructor(model) {
+    super(model);
   }
 
   init() {

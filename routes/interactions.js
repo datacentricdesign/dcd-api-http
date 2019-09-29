@@ -4,8 +4,8 @@ const API = require("./API");
 const Interaction = require("dcd-model/entities/Interaction");
 
 class InteractionAPI extends API {
-  constructor(model, auth) {
-    super(model, auth);
+  constructor(model) {
+    super(model);
   }
 
   init() {
@@ -39,9 +39,9 @@ class InteractionAPI extends API {
     this.router.post(
       "/:entity(things|persons)/:entityId/:component(interactions)",
       request => {
-        this.auth.introspect({ requiredScope: [request.params.entity] });
+        this.introspectToken({ requiredScope: [request.params.entity] });
       },
-      this.policies.check({ resource: "interactions", action: "create" }),
+      this.checkPolicy({ resource: "interactions", action: "create" }),
       (request, response, next) => {
         if (
           request.body === undefined ||
@@ -78,9 +78,9 @@ class InteractionAPI extends API {
     this.router.get(
       "/:entity(things|persons)/:entityId/:component(interactions)",
       request => {
-        this.auth.introspect({ requiredScope: [request.params.entity] });
+        this.introspectToken({ requiredScope: [request.params.entity] });
       },
-      this.policies.check({ resource: "interactions", action: "list" }),
+      this.checkPolicy({ resource: "interactions", action: "list" }),
       (request, response, next) => {
         let entityDestId;
         if (request.query.entity !== undefined) {
@@ -108,9 +108,9 @@ class InteractionAPI extends API {
     this.router.get(
       "/:entity(things|persons)/:entityId/:component(interactions)/:componentId",
       request => {
-        this.auth.introspect({ requiredScope: [request.params.entity] });
+        this.introspectToken({ requiredScope: [request.params.entity] });
       },
-      this.policies.check({ resource: "interactions", action: "read" }),
+      this.checkPolicy({ resource: "interactions", action: "read" }),
       (request, response, next) => {
         this.model.interactions
           .read(request.params.componentId)
