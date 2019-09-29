@@ -48,6 +48,7 @@ class API {
       this.introspectToken[requiredScope] ||
       (this.introspectToken[requiredScope] = (req, res, next) => {
         this.logger.debug("auth introspect");
+        this.logger.debug(requiredScope);
         const token = extractToken(req);
         return this.model.auth
           .refresh()
