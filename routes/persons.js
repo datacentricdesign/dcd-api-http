@@ -13,7 +13,8 @@ class PersonAPI extends API {
      * Add the entity Type 'persons' to all request of this router.
      */
     this.router.use((request, response, next) => {
-      this.logger.debug("router persons, entityId: " + request.params.entityId);
+      this.logger.debug("router persons, entityId: ");
+      this.logger.debug(request.params);
       request.entityType = "persons";
       if (request.params.entityId !== undefined) {
         if (!request.params.entityId.startsWith("dcd:persons:")) {
