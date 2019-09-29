@@ -345,7 +345,7 @@ class PropertyAPI extends API {
     this.router.get(
       "/:entity(things|persons)/:entityId/:component(properties)/:propertyId/values/:ts",
       request => {
-        this.introspectToken({ requiredScope: [request.params.entity] });
+        this.introspectToken([request.params.entity]);
       },
       this.checkPolicy({ resource: "properties", action: "read" }),
       (request, response, next) => {
@@ -407,7 +407,7 @@ class PropertyAPI extends API {
     this.router.post(
       "/:entity(things|persons)/:entityId/:component(properties)/:componentId/classes",
       request => {
-        this.introspectToken({ requiredScope: [request.params.entity] });
+        this.introspectToken([request.params.entity]);
       },
       this.checkPolicy({ resource: "classes", action: "create" }),
       (request, response, next) => {

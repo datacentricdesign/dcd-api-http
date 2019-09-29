@@ -39,7 +39,7 @@ class InteractionAPI extends API {
     this.router.post(
       "/:entity(things|persons)/:entityId/:component(interactions)",
       request => {
-        this.introspectToken({ requiredScope: [request.params.entity] });
+        this.introspectToken([request.params.entity]);
       },
       this.checkPolicy({ resource: "interactions", action: "create" }),
       (request, response, next) => {
@@ -78,7 +78,7 @@ class InteractionAPI extends API {
     this.router.get(
       "/:entity(things|persons)/:entityId/:component(interactions)",
       request => {
-        this.introspectToken({ requiredScope: [request.params.entity] });
+        this.introspectToken([request.params.entity]);
       },
       this.checkPolicy({ resource: "interactions", action: "list" }),
       (request, response, next) => {
@@ -108,7 +108,7 @@ class InteractionAPI extends API {
     this.router.get(
       "/:entity(things|persons)/:entityId/:component(interactions)/:componentId",
       request => {
-        this.introspectToken({ requiredScope: [request.params.entity] });
+        this.introspectToken([request.params.entity]);
       },
       this.checkPolicy({ resource: "interactions", action: "read" }),
       (request, response, next) => {
