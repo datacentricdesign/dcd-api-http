@@ -158,15 +158,16 @@ module.exports = API;
  * @return {string}
  */
 function buildACPResource(resource, req) {
-  let acpResource = "dcd";
-  if (req.entityType !== undefined) {
-    acpResource += ":" + req.entityType;
-  } else {
-    acpResource += ":" + resource;
-  }
-  if (req.params.entityId !== undefined) {
-    acpResource += ":" + req.params.entityId;
-  }
+  // let acpResource = "dcd";
+  // if (req.entityType !== undefined) {
+  //   acpResource += ":" + req.entityType;
+  // } else {
+  //   acpResource += ":" + resource;
+  // }
+  // if (req.params.entityId !== undefined) {
+  //   acpResource += ":" + req.params.entityId;
+  // }
+  let acpResource = resource;
   if (req.params.component !== undefined) {
     acpResource += ":" + req.params.component;
   }
