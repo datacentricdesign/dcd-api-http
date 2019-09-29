@@ -81,7 +81,7 @@ class PersonAPI extends API {
     this.router.get(
       "/:entityId",
       this.introspectToken(["dcd:persons"]),
-      this.checkPolicy({ resource: "persons", action: "read" }),
+      this.checkPolicy("persons", "read"),
       (request, response, next) => {
         this.model.persons
           .read(request.params.entityId)

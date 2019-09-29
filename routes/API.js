@@ -164,10 +164,10 @@ function buildACPResource(resource, req) {
   // } else {
   //   acpResource += ":" + resource;
   // }
-  // if (req.params.entityId !== undefined) {
-  //   acpResource += ":" + req.params.entityId;
-  // }
-  let acpResource = resource;
+  let acpResource = "";
+  if (req.params.entityId !== undefined) {
+    acpResource += ":" + req.params.entityId;
+  }
   if (req.params.component !== undefined) {
     acpResource += ":" + req.params.component;
   }
