@@ -85,8 +85,8 @@ class API {
   // warden subject
   checkPolicy(resource, action) {
     return (
-      this.checkPolicy[(resource, action)] ||
-      (this.checkPolicy[(resource, action)] = (req, res, next) => {
+      this.checkPolicy[resource, action] ||
+      (this.checkPolicy[resource, action] = (req, res, next) => {
         this.logger.debug("check policy");
         const acpResource = buildACPResource(resource, req);
         this.logger.debug(acpResource);
