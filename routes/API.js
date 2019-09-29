@@ -181,11 +181,18 @@ function buildACPResource(resource, req) {
 function extractToken(req) {
   if (req.get("Authorization") === undefined) {
     throw new DCDError(4031, "Add 'Authorization' header.");
-  } else if (!req.get("Authorization").startsWith("bearer ")) {
+  } else if (
+    !req.get("Authorization").startsWith("bearer ") &&
+    !req.get("Authorization").startsWith("Bearer ")
+  ) {
     throw new DCDError(
       4031,
       "Add 'bearer ' in front of your 'Authorization' token."
     );
   }
-  return req.get("Authorization").replace(/bearer\s/gi, "");
+  const token = req
+    .get("Authorization")
+    .replace(/bearer\s/gi, "")
+    .replace(/Bearer\s/gi, "");
+  return token;
 }
