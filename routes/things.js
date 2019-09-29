@@ -41,7 +41,7 @@ class ThingAPI extends API {
     this.router.post(
       "/",
       this.introspectToken(["dcd:things"]),
-      this.checkPolicy({ resource: "things", action: "create" }),
+      this.checkPolicy("things", "create" ),
       (request, response, next) => {
         // Web forms cannot submit PUT methods, we check the flag update
         if (request.query.thingId !== undefined) {
@@ -77,7 +77,7 @@ class ThingAPI extends API {
     this.router.get(
       "/",
       this.introspectToken(["dcd:things"]),
-      this.checkPolicy({ resource: "things", action: "list" }),
+      this.checkPolicy("things", "list"),
       (request, response, next) => {
         this.model.things
           .list(request.user.sub)
@@ -100,7 +100,7 @@ class ThingAPI extends API {
     this.router.get(
       "/:entityId",
       this.introspectToken(["dcd:things"]),
-      this.checkPolicy({ resource: "things", action: "read" }),
+      this.checkPolicy("things", "read"),
       (request, response, next) => {
         this.model.things
           .read(request.params.entityId)
@@ -123,7 +123,7 @@ class ThingAPI extends API {
     this.router.put(
       "/:entityId",
       this.introspectToken(["dcd:things"]),
-      this.checkPolicy({ resource: "things", action: "update" }),
+      this.checkPolicy("things", "update"),
       (request, response, next) => {
         this.model.things
           .update(new Thing(request.body, request.params.entityId))
@@ -144,7 +144,7 @@ class ThingAPI extends API {
     this.router.delete(
       "/:entityId",
       this.introspectToken(["dcd:things"]),
-      this.checkPolicy({ resource: "things", action: "delete" }),
+      this.checkPolicy("things", "delete"),
       (request, response, next) => {
         this.model.things
           .del(request.params.entityId)
@@ -156,7 +156,7 @@ class ThingAPI extends API {
     this.router.put(
       "/:entityId/grant/:role/:entityType/:subjectId",
       this.introspectToken(["dcd:things", "dcd:roles"]),
-      this.checkPolicy({ resource: "things", action: "grant" }),
+      this.checkPolicy("things", "grant"),
       (request, response, next) => {
         this.model.policies
           .grant(
@@ -172,7 +172,7 @@ class ThingAPI extends API {
     this.router.put(
       "/:entityId/revoke/:role/:entityType/:subjectId",
       this.introspectToken(["dcd:things", "dcd:roles"]),
-      this.checkPolicy({ resource: "things", action: "revoke" }),
+      this.checkPolicy("things", "revoke"),
       (request, response, next) => {
         this.model.policies
           .revoke(
