@@ -87,13 +87,15 @@ class API {
     return (
       this.checkPolicy[(resource, action)] ||
       (this.checkPolicy[(resource, action)] = (req, res, next) => {
+        this.logger.debug("check policy");
         const acpResource = buildACPResource(resource, req);
+        this.logger.debug(acpResource);
         const acp = {
           resource: acpResource,
           action: "dcd:actions:" + action,
           subject: req.user.sub
         };
-
+        this.logger.debug(acp);
         this.model.policies
           .check(acp)
           .then(() => next())
