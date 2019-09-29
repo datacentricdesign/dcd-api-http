@@ -46,7 +46,7 @@ class API {
   introspectToken(requiredScope = []) {
     return (
       this.introspectToken[requiredScope] ||
-      (this.introspectToken[requiredScope] = function(req, res, next) {
+      (this.introspectToken[requiredScope] = (req, res, next) => {
         this.logger.debug("auth introspect");
         const token = extractToken(req);
         return this.model.auth
@@ -84,7 +84,7 @@ class API {
   checkPolicy(resource, action) {
     return (
       this.checkPolicy[(resource, action)] ||
-      (this.checkPolicy[(resource, action)] = function(req, res, next) {
+      (this.checkPolicy[(resource, action)] = (req, res, next) => {
         const acpResource = buildACPResource(resource, req);
         const acp = {
           resource: acpResource,
@@ -104,7 +104,7 @@ class API {
   checkTokenPolicy(resource, action, scope = []) {
     return (
       this.checkTokenPolicy[(resource, action, scope)] ||
-      (this.checkTokenPolicy[(resource, action)] = function(req, res, next) {
+      (this.checkTokenPolicy[(resource, action)] = (req, res, next) => {
         const token = extractToken(req);
         const acp = {
           resource: buildACPResource(resource, req),
