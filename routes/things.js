@@ -50,7 +50,7 @@ class ThingAPI extends API {
     this.router.post(
       "/",
       this.introspectToken(["dcd:things"]),
-      this.checkPolicy("things", "create" ),
+      this.checkPolicy("things", "create"),
       (request, response, next) => {
         // Web forms cannot submit PUT methods, we check the flag update
         if (request.query.thingId !== undefined) {
