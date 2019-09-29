@@ -8,25 +8,30 @@ class PersonAPI extends API {
     super(model);
   }
 
+  // warden subject
+  formatEntityId(request, response, next) {
+    if (request.params.entityId !== undefined) {
+      if (!request.params.entityId.startsWith("dcd:persons:")) {
+        request.params.entityId = "dcd:persons:" + request.params.entityId;
+      }
+    }
+    next();
+  }
+
   init() {
     /**
      * Add the entity Type 'persons' to all request of this router.
      */
     this.router.use((request, response, next) => {
       request.entityType = "persons";
-
       next();
     });
 
-    this.router.param("entityId", (req, res, next, entityId) => {
-      // executes before route handler
-      if (entityId !== undefined) {
-        if (!entityId.startsWith("dcd:persons:")) {
-          entityId = "dcd:persons:" + entityId;
-        }
-      }
-      next();
-    });
+    // this.router.param('entityId', (req, res, next, entityId) => {
+    //   // executes before route handler
+    //
+    //   next();
+    // });
 
     /**
      * @api {post} /persons Create
@@ -48,7 +53,7 @@ class PersonAPI extends API {
       this.logger.debug(person);
       this.model.persons
         .create(person)
-        .then(result => this.success(response, { personId: result }))
+        .then(result => this.success(response, {personId: result}))
         .catch(error => next(error));
     });
 
@@ -91,13 +96,14 @@ class PersonAPI extends API {
      */
     this.router.get(
       "/:entityId",
+      this.formatEntityId,
       this.introspectToken(["dcd:persons"]),
       this.checkPolicy("persons", "read"),
       (request, response, next) => {
         this.logger.debug("GET /persons read");
         this.model.persons
           .read(request.params.entityId)
-          .then(result => this.success(response, { person: result }))
+          .then(result => this.success(response, {person: result}))
           .catch(error => next(error));
       }
     );
@@ -115,8 +121,9 @@ class PersonAPI extends API {
      */
     this.router.put(
       "/:entityId",
+      this.formatEntityId,
       this.introspectToken(["dcd:persons"]),
-      this.checkPolicy({ resource: "persons", action: "update" }),
+      this.checkPolicy({resource: "persons", action: "update"}),
       (request, response, next) => {
         const person = new Person(request.params.entityId, request.body);
         this.model.persons
@@ -137,8 +144,9 @@ class PersonAPI extends API {
      */
     this.router.delete(
       "/:entityId",
+      this.formatEntityId,
       this.introspectToken(["dcd:persons"]),
-      this.checkPolicy({ resource: "persons", action: "delete" }),
+      this.checkPolicy({resource: "persons", action: "delete"}),
       (request, response, next) => {
         const personId = request.params.entityId;
         this.model.persons
@@ -162,12 +170,13 @@ class PersonAPI extends API {
      */
     this.router.post(
       "/:entityId/check",
+      this.formatEntityId,
       this.introspectToken(["dcd:persons", "dcd:auth"]),
       (request, response, next) => {
         if (request.body !== undefined && request.body.password !== undefined) {
           this.model.persons
             .check(request.params.entityId, request.body.password)
-            .then(result => this.success(response, { person: result }))
+            .then(result => this.success(response, {person: result}))
             .catch(error => next(error));
         }
       }
