@@ -167,6 +167,8 @@ function buildACPResource(resource, req) {
   let acpResource = "";
   if (req.params.entityId !== undefined) {
     acpResource += req.params.entityId;
+  } else {
+    acpResource += "dcd:" + resource;
   }
   if (req.params.component !== undefined) {
     acpResource += ":" + req.params.component;
