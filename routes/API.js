@@ -8,9 +8,15 @@ const express = require("express");
 const utils = require("../utils/writer.js");
 
 class API {
+  /**
+   *
+   * @param {DCDModel} model
+   * @param {Auth} auth
+   */
   constructor(model, auth) {
     this.model = model;
     this.auth = auth;
+    this.policies = this.model.policies;
     this.router = express.Router();
 
     this.logger = log4js.getLogger(

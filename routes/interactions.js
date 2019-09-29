@@ -38,9 +38,11 @@ class InteractionAPI extends API {
      */
     this.router.post(
       "/:entity(things|persons)/:entityId/:component(interactions)",
-      this.auth.introspect,
-      this.auth.wardenSubject({ resource: "interactions", action: "create" }),
-      (request, response) => {
+      request => {
+        this.auth.introspect({ requiredScope: [request.params.entity] });
+      },
+      this.policies.check({ resource: "interactions", action: "create" }),
+      (request, response, next) => {
         if (
           request.body === undefined ||
           (request.body.entity_id_1 !== request.params.entityId &&
@@ -57,7 +59,7 @@ class InteractionAPI extends API {
         this.model.interactions
           .create(interaction)
           .then(result => this.success(response, { interaction: result }))
-          .catch(error => this.fail(response, error));
+          .catch(error => next(error));
       }
     );
 
@@ -75,9 +77,11 @@ class InteractionAPI extends API {
      */
     this.router.get(
       "/:entity(things|persons)/:entityId/:component(interactions)",
-      this.auth.introspect,
-      this.auth.wardenSubject({ resource: "interactions", action: "list" }),
-      (request, response) => {
+      request => {
+        this.auth.introspect({ requiredScope: [request.params.entity] });
+      },
+      this.policies.check({ resource: "interactions", action: "list" }),
+      (request, response, next) => {
         let entityDestId;
         if (request.query.entity !== undefined) {
           entityDestId = parseInt(request.query.entity);
@@ -85,7 +89,7 @@ class InteractionAPI extends API {
         this.model.interactions
           .list(request.user.sub, request.params.entityId, entityDestId)
           .then(result => this.success(response, { interactions: result }))
-          .catch(error => this.fail(response, error));
+          .catch(error => next(error));
       }
     );
 
@@ -103,13 +107,15 @@ class InteractionAPI extends API {
      */
     this.router.get(
       "/:entity(things|persons)/:entityId/:component(interactions)/:componentId",
-      this.auth.introspect,
-      this.auth.wardenSubject({ resource: "interactions", action: "read" }),
-      (request, response) => {
+      request => {
+        this.auth.introspect({ requiredScope: [request.params.entity] });
+      },
+      this.policies.check({ resource: "interactions", action: "read" }),
+      (request, response, next) => {
         this.model.interactions
           .read(request.params.componentId)
           .then(result => this.success(response, { interaction: result }))
-          .catch(error => this.fail(response, error));
+          .catch(error => next(error));
       }
     );
   }

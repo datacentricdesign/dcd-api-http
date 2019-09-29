@@ -46,9 +46,11 @@ class PropertyAPI extends API {
         "/:entity(things|persons)/:entityId/:component(properties)",
         "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)"
       ],
-      this.auth.introspect,
-      this.auth.wardenSubject({ resource: "properties", action: "create" }),
-      (request, response) => {
+      request => {
+        this.auth.introspect({ requiredScope: [request.params.entity] });
+      },
+      this.policies.check({ resource: "properties", action: "create" }),
+      (request, response, next) => {
         if (request.params.interactionId !== undefined) {
           request.body.entityId = request.params.interactionId;
         } else {
@@ -59,7 +61,7 @@ class PropertyAPI extends API {
         this.model.properties
           .create(new Property(request.body))
           .then(result => this.success(response, { property: result }))
-          .catch(error => this.fail(response, error));
+          .catch(error => next(error));
       }
     );
 
@@ -79,9 +81,11 @@ class PropertyAPI extends API {
         "/:entity(things|persons)/:entityId/:component(properties)",
         "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)"
       ],
-      this.auth.introspect,
-      this.auth.wardenSubject({ resource: "properties", action: "list" }),
-      (request, response) => {
+      request => {
+        this.auth.introspect({ requiredScope: [request.params.entity] });
+      },
+      this.policies.check({ resource: "properties", action: "list" }),
+      (request, response, next) => {
         let entityId = request.params.entityId;
         if (request.params.interactionId !== undefined) {
           entityId = request.params.interactionId;
@@ -92,7 +96,7 @@ class PropertyAPI extends API {
             this.logger.info(result);
             this.success(response, { properties: result });
           })
-          .catch(error => this.fail(response, error));
+          .catch(error => next(error));
       }
     );
 
@@ -116,9 +120,11 @@ class PropertyAPI extends API {
         "/:entity(things|persons)/:entityId/:component(properties)/:propertyId",
         "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)/:propertyId"
       ],
-      this.auth.introspect,
-      this.auth.wardenSubject({ resource: "things", action: "read" }),
-      (request, response) => {
+      request => {
+        this.auth.introspect({ requiredScope: [request.params.entity] });
+      },
+      this.policies.check({ resource: "things", action: "read" }),
+      (request, response, next) => {
         let entityId = request.params.entityId;
         if (request.params.interactionId !== undefined) {
           entityId = request.params.interactionId;
@@ -138,7 +144,7 @@ class PropertyAPI extends API {
             this.logger.debug(result);
             return this.success(response, { property: result });
           })
-          .catch(error => this.fail(response, error));
+          .catch(error => next(error));
       }
     );
 
@@ -155,9 +161,11 @@ class PropertyAPI extends API {
         "/:entity(things|persons)/:entityId/:component(properties)/:propertyId",
         "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)/:propertyId"
       ],
-      this.auth.introspect,
-      this.auth.wardenSubject({ resource: "properties", action: "update" }),
-      (request, response) => {
+      request => {
+        this.auth.introspect({ requiredScope: [request.params.entity] });
+      },
+      this.policies.check({ resource: "properties", action: "update" }),
+      (request, response, next) => {
         const propertyId = request.params.propertyId;
         const property = request.body;
         if (property.id === propertyId) {
@@ -172,19 +180,19 @@ class PropertyAPI extends API {
               }
               upload(request, response, error => {
                 if (error) {
-                  return this.fail(response, error);
+                  return next(error);
                 } else {
                   if (request.file === undefined) {
-                    return this.fail(response, { error: "Missing file." });
+                    return next({ error: "Missing file." });
                   } else {
                     return this.success(response, { success: true });
                   }
                 }
               });
             })
-            .catch(error => this.fail(response, error));
+            .catch(error => next(error));
         } else {
-          this.fail(response, { message: "property id not matching" });
+          next({ message: "property id not matching" });
         }
       }
     );
@@ -203,9 +211,11 @@ class PropertyAPI extends API {
         "/:entity(things|persons)/:entityId/:component(properties)/:propertyId/values/:values/file",
         "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)/:propertyId/values/:values/file"
       ],
-      this.auth.introspect,
-      this.auth.wardenSubject({ resource: "properties", action: "update" }),
-      (request, response) => {
+      request => {
+        this.auth.introspect({ requiredScope: [request.params.entity] });
+      },
+      this.policies.check({ resource: "properties", action: "update" }),
+      (request, response, next) => {
         const values = request.params.values.split(",").map(Number);
         let entityId = request.params.entityId;
         if (request.params.interactionId !== undefined) {
@@ -220,17 +230,17 @@ class PropertyAPI extends API {
           .then(() => {
             upload(request, response, error => {
               if (error) {
-                return this.fail(response, error);
+                return next(error);
               } else {
                 if (request.file === undefined) {
-                  return this.fail(response, { error: "Missing file." });
+                  return next({ error: "Missing file." });
                 } else {
                   return this.success(response, { success: true });
                 }
               }
             });
           })
-          .catch(error => this.fail(response, error));
+          .catch(error => next(error));
       }
     );
 
@@ -247,8 +257,10 @@ class PropertyAPI extends API {
         "/:entity(things|persons)/:entityId/:component(properties)/:propertyId/file",
         "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)/:propertyId/file"
       ],
-      this.auth.introspect,
-      this.auth.wardenSubject({ resource: "properties", action: "update" }),
+      request => {
+        this.auth.introspect({ requiredScope: [request.params.entity] });
+      },
+      this.policies.check({ resource: "properties", action: "update" }),
       (request, response, next) => {
         let entityId = request.params.entityId;
         if (request.params.interactionId !== undefined) {
@@ -270,7 +282,7 @@ class PropertyAPI extends API {
           this.model.properties
             .update(entityId, propertyId, property)
             .then(result => this.success(response, result))
-            .catch(error => this.fail(response, error));
+            .catch(error => next(error));
         });
 
         // listen on part event for data file
@@ -301,19 +313,21 @@ class PropertyAPI extends API {
         "/:entity(things|persons)/:entityId/:component(properties)/:propertyId",
         "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)/:propertyId"
       ],
-      this.auth.introspect,
-      this.auth.wardenSubject({ resource: "properties", action: "delete" }),
-      (request, response) => {
+      request => {
+        this.auth.introspect({ requiredScope: [request.params.entity] });
+      },
+      this.policies.check({ resource: "properties", action: "delete" }),
+      (request, response, next) => {
         this.model.properties
           .del(request.params.propertyId)
           .then(result => {
             if (result.affectedRows === 1) {
               this.success(response, { success: true });
             } else {
-              this.fail(response, { error: "Property to delete not found" });
+              next({ error: "Property to delete not found" });
             }
           })
-          .catch(error => this.fail(response, error));
+          .catch(error => next(error));
       }
     );
 
@@ -330,8 +344,11 @@ class PropertyAPI extends API {
      */
     this.router.get(
       "/:entity(things|persons)/:entityId/:component(properties)/:propertyId/values/:ts",
-      this.auth.introspect,
-      (request, response) => {
+      request => {
+        this.auth.introspect({ requiredScope: [request.params.entity] });
+      },
+      this.policies.check({ resource: "properties", action: "read" }),
+      (request, response, next) => {
         const path =
           "./files/" +
           request.params.entityId +
@@ -389,14 +406,16 @@ class PropertyAPI extends API {
      */
     this.router.post(
       "/:entity(things|persons)/:entityId/:component(properties)/:componentId/classes",
-      this.auth.introspect,
-      this.auth.wardenSubject({ resource: "classes", action: "create" }),
-      (request, response) => {
+      request => {
+        this.auth.introspect({ requiredScope: [request.params.entity] });
+      },
+      this.policies.check({ resource: "classes", action: "create" }),
+      (request, response, next) => {
         if (
           request.body.classes === undefined ||
           request.body.classes.length === 0
         ) {
-          return this.fail(response, { msg: "Missing or empty classes array" });
+          return next({ msg: "Missing or empty classes array" });
         }
         this.model.properties
           .createClasses(
@@ -405,7 +424,7 @@ class PropertyAPI extends API {
             request.body.classes
           )
           .then(result => this.success(response, { classes: result }))
-          .catch(error => this.fail(response, error));
+          .catch(error => next(error));
       }
     );
   }

@@ -40,16 +40,16 @@ class ThingAPI extends API {
      */
     this.router.post(
       "/",
-      this.auth.introspect,
-      this.auth.wardenSubject({ resource: "things", action: "create" }),
-      (request, response) => {
+      this.auth.introspect({ requiredScope: ["dcd:things"] }),
+      this.policies.check({ resource: "things", action: "create" }),
+      (request, response, next) => {
         // Web forms cannot submit PUT methods, we check the flag update
         if (request.query.thingId !== undefined) {
           request.body.entityId = request.query.thingId;
           return this.model.things
             .update(new Thing(request.body))
             .then(result => this.success(response, result))
-            .catch(error => this.fail(response, error));
+            .catch(error => next(error));
         }
 
         const actorId = request.user.sub;
@@ -61,7 +61,7 @@ class ThingAPI extends API {
         this.model.things
           .create(actorId, thing, jwt)
           .then(result => this.success(response, { thing: result }))
-          .catch(error => this.fail(response, error));
+          .catch(error => next(error));
       }
     );
 
@@ -76,13 +76,13 @@ class ThingAPI extends API {
      */
     this.router.get(
       "/",
-      this.auth.introspect,
-      this.auth.wardenSubject({ resource: "things", action: "list" }),
-      (request, response) => {
+      this.auth.introspect({ requiredScope: ["dcd:things"] }),
+      this.policies.check({ resource: "things", action: "list" }),
+      (request, response, next) => {
         this.model.things
           .list(request.user.sub)
           .then(result => this.success(response, { things: result }))
-          .catch(error => this.fail(response, error));
+          .catch(error => next(error));
       }
     );
 
@@ -99,15 +99,15 @@ class ThingAPI extends API {
      */
     this.router.get(
       "/:entityId",
-      this.auth.introspect,
-      this.auth.wardenSubject({ resource: "things", action: "read" }),
-      (request, response) => {
+      this.auth.introspect({ requiredScope: ["dcd:things"] }),
+      this.policies.check({ resource: "things", action: "read" }),
+      (request, response, next) => {
         this.model.things
           .read(request.params.entityId)
           .then(result => {
             this.success(response, { thing: result });
           })
-          .catch(error => this.fail(response, error));
+          .catch(error => next(error));
       }
     );
 
@@ -122,13 +122,13 @@ class ThingAPI extends API {
      */
     this.router.put(
       "/:entityId",
-      this.auth.introspect,
-      this.auth.wardenSubject({ resource: "things", action: "update" }),
-      (request, response) => {
+      this.auth.introspect({ requiredScope: ["dcd:things"] }),
+      this.policies.check({ resource: "things", action: "update" }),
+      (request, response, next) => {
         this.model.things
           .update(new Thing(request.body, request.params.entityId))
           .then(result => this.success(response, result))
-          .catch(error => this.fail(response, error));
+          .catch(error => next(error));
       }
     );
 
@@ -143,21 +143,21 @@ class ThingAPI extends API {
      */
     this.router.delete(
       "/:entityId",
-      this.auth.introspect,
-      this.auth.wardenSubject({ resource: "things", action: "delete" }),
-      (request, response) => {
+      this.auth.introspect({ requiredScope: ["dcd:things"] }),
+      this.policies.check({ resource: "things", action: "delete" }),
+      (request, response, next) => {
         this.model.things
           .del(request.params.entityId)
           .then(result => this.success(response, result))
-          .catch(error => this.fail(response, error));
+          .catch(error => next(error));
       }
     );
 
     this.router.put(
       "/:entityId/grant/:role/:entityType/:actorId",
-      this.auth.introspect,
-      this.auth.wardenSubject({ resource: "things", action: "grant" }),
-      (request, response) => {
+      this.auth.introspect({ requiredScope: ["dcd:things", "dcd:roles"] }),
+      this.policies.check({ resource: "things", action: "grant" }),
+      (request, response, next) => {
         this.model.things
           .grant(
             request.params.entityType,
@@ -166,15 +166,15 @@ class ThingAPI extends API {
             request.params.role
           )
           .then(result => this.success(response, result))
-          .catch(error => this.fail(response, error));
+          .catch(error => next(error));
       }
     );
 
     this.router.put(
       "/:entityId/revoke/:role/:entityType/:actorId",
-      this.auth.introspect,
-      this.auth.wardenSubject({ resource: "things", action: "revoke" }),
-      (request, response) => {
+      this.auth.introspect({ requiredScope: ["dcd:things", "dcd:roles"] }),
+      this.policies.check({ resource: "things", action: "revoke" }),
+      (request, response, next) => {
         this.model.things
           .revoke(
             request.params.entityType,
@@ -183,7 +183,7 @@ class ThingAPI extends API {
             request.params.role
           )
           .then(result => this.success(response, result))
-          .catch(error => this.fail(response, error));
+          .catch(error => next(error));
       }
     );
   }

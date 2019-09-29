@@ -64,7 +64,7 @@ const interactionAPI = new InteractionAPI(model, auth);
 app.use(baseUrl, interactionAPI.router);
 
 // Catch 404 and forward to error handler
-app.use(function(request, response, next) {
+app.use((request, response, next) => {
   next(new DCDError(404, "Path not found: " + request.path));
 });
 

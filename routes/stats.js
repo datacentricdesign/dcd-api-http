@@ -1,6 +1,7 @@
 "use strict";
 
 const API = require("./API");
+const DCDError = require("dcd-model/lib/Error");
 
 class StatAPI extends API {
   constructor(model, auth) {
@@ -17,11 +18,11 @@ class StatAPI extends API {
      *
      * @apiSuccess {json} Json of global stats.
      */
-    this.router.get("/", this.auth.introspect, (request, response) => {
+    this.router.get("/", this.auth.introspect, (request, response, next) => {
       this.model.stats
         .getGlobalStats()
         .then(result => this.success(response, { stats: result }))
-        .catch(error => this.fail(response, error));
+        .catch(error => next(error));
     });
 
     /**
@@ -40,9 +41,9 @@ class StatAPI extends API {
     this.router.get(
       "/propertyTypes",
       this.auth.introspect,
-      (request, response) => {
+      (request, response, next) => {
         if (!request.query.types) {
-          this.fail(new Error("types is undefined"));
+          this.next(new DCDError(400, "Add 'types' query param"));
         } else {
           let propertyTypes = request.query.types.split(",");
           let from;
@@ -57,7 +58,7 @@ class StatAPI extends API {
           this.model.stats
             .getTypesStats(propertyTypes, from, to)
             .then(result => this.success(response, { stats: result }))
-            .catch(error => this.fail(response, error));
+            .catch(error => next(error));
         }
       }
     );

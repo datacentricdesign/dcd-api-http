@@ -54,7 +54,7 @@ class PersonAPI extends API {
     this.router.get(
       "/",
       this.auth.introspect({ requiredScope: ["dcd:persons"] }),
-      this.auth.wardenSubject({ resource: "persons", action: "list" }),
+      this.policies.check({ resource: "persons", action: "list" }),
       (request, response, next) => {
         this.model.persons
           .list(request.user.sub)
@@ -79,7 +79,7 @@ class PersonAPI extends API {
     this.router.get(
       "/:entityId",
       this.auth.introspect({ requiredScope: ["dcd:persons"] }),
-      this.auth.wardenSubject({ resource: "persons", action: "read" }),
+      this.policies.check({ resource: "persons", action: "read" }),
       (request, response, next) => {
         this.model.persons
           .read(request.params.entityId)
@@ -102,7 +102,7 @@ class PersonAPI extends API {
     this.router.put(
       "/:entityId",
       this.auth.introspect({ requiredScope: ["dcd:persons"] }),
-      this.auth.wardenSubject({ resource: "persons", action: "update" }),
+      this.policies.check({ resource: "persons", action: "update" }),
       (request, response, next) => {
         const person = new Person(request.params.entityId, request.body);
         this.model.persons
@@ -124,7 +124,7 @@ class PersonAPI extends API {
     this.router.delete(
       "/:entityId",
       this.auth.introspect({ requiredScope: ["dcd:persons"] }),
-      this.auth.wardenSubject({ resource: "persons", action: "delete" }),
+      this.policies.check({ resource: "persons", action: "delete" }),
       (request, response, next) => {
         const personId = request.params.entityId;
         this.model.persons
