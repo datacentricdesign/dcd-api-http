@@ -14,6 +14,11 @@ class PersonAPI extends API {
      */
     this.router.use((request, response, next) => {
       request.entityType = "persons";
+      if (request.params.entityId !== undefined) {
+        if (!request.params.entityId.startsWith("dcd:persons:")) {
+          request.params.entityId = "dcd:persons:" + request.params.entityId;
+        }
+      }
       next();
     });
 
