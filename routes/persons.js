@@ -57,6 +57,7 @@ class PersonAPI extends API {
       this.introspectToken(["dcd:persons"]),
       this.checkPolicy({ resource: "persons", action: "list" }),
       (request, response, next) => {
+        this.logger.debug("GET /person");
         this.model.persons
           .list(request.user.sub)
           .then(result => this.success(response, result))

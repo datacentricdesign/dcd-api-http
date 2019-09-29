@@ -73,6 +73,7 @@ class API {
             }
           })
           .then(user => {
+            this.logger.debug(user);
             req.user = user;
             next();
           })
