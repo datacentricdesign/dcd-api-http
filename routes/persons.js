@@ -55,7 +55,7 @@ class PersonAPI extends API {
     this.router.get(
       "/",
       this.introspectToken(["dcd:persons"]),
-      this.checkPolicy({ resource: "persons", action: "list" }),
+      this.checkPolicy("persons", "list"),
       (request, response, next) => {
         this.logger.debug("GET /person");
         this.model.persons
