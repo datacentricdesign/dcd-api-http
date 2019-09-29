@@ -34,6 +34,7 @@ class PersonAPI extends API {
      */
     this.router.post("/", (request, response, next) => {
       const person = new Person(request.body);
+      this.logger.debug(person);
       this.model.persons
         .create(person)
         .then(result => this.success(response, { personId: result }))
