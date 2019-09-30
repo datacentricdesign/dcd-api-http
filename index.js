@@ -7,7 +7,7 @@ require("dotenv").config();
  * Module dependencies.
  */
 
-const app = require("./app2");
+const app = require("./app");
 const http = require("http");
 
 // Setting the logs
