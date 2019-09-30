@@ -10,6 +10,11 @@ require("dotenv").config();
 const app = require("./app2");
 const http = require("http");
 
+// Setting the logs
+const log4js = require("log4js");
+const logger = log4js.getLogger("[dcd-api-http:index]");
+logger.level = process.env.LOG_LEVEL || "INFO";
+
 /**
  * Get port from environment and store in Express.
  */
@@ -61,16 +66,16 @@ function onError(error) {
 
   const bind = typeof port === "string" ? "Pipe " + port : "Port " + port;
 
-  console.error(error);
+  logger.error(error);
 
   // handle specific listen errors with friendly messages
   switch (error.code) {
     case "EACCES":
-      console.error(bind + " requires elevated privileges");
+      logger.error(bind + " requires elevated privileges");
       process.exit(1);
       break;
     case "EADDRINUSE":
-      console.error(bind + " is already in use");
+      logger.error(bind + " is already in use");
       process.exit(1);
       break;
     default:
@@ -85,5 +90,5 @@ function onListening() {
   const address = server.address();
   const bind =
     typeof address === "string" ? "pipe " + address : "port " + address.port;
-  console.debug("Listening on " + bind);
+  logger.debug("Listening on " + bind);
 }

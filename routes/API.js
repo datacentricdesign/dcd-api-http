@@ -1,5 +1,8 @@
 "use strict";
 
+// Setting the logs
+const log4js = require("log4js");
+
 // Express router
 const express = require("express");
 
@@ -14,6 +17,12 @@ class API {
     this.model = model;
     this.policies = this.model.policies;
     this.router = express.Router();
+
+    this.logger = log4js.getLogger(
+      "[dcd-api-http:" + this.constructor.name + "]"
+    );
+    this.logger.level = process.env.LOG_LEVEL || "INFO";
+
     this.init();
   }
 
@@ -202,8 +211,9 @@ function extractToken(req) {
       "Add 'bearer ' in front of your 'Authorization' token."
     );
   }
-  return req
+  const token = req
     .get("Authorization")
     .replace(/bearer\s/gi, "")
     .replace(/Bearer\s/gi, "");
+  return token;
 }

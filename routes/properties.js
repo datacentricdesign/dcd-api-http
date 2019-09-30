@@ -337,7 +337,7 @@ class PropertyAPI extends API {
         this.introspectToken([request.params.entity]);
       },
       this.checkPolicy({ resource: "properties", action: "read" }),
-      (request, response) => {
+      (request, response, next) => {
         const path =
           "./files/" +
           request.params.entityId +
