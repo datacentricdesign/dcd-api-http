@@ -3,6 +3,11 @@
 const API = require("./API");
 const Person = require("dcd-model/entities/Person");
 
+/**
+ * PersonAPI provides the routes for managing Persons of the DCD Hub.
+ * A Person represents a physical person, signed up on the hub.
+ * It can own, share and have access to Things.
+ */
 class PersonAPI extends API {
   constructor(model) {
     super(model);
@@ -37,6 +42,8 @@ class PersonAPI extends API {
      * @apiGroup Person
      * @apiDescription Create a Person.
      *
+     * @apiVersion 0.1.0
+     *
      * @apiHeader {String} Content-type application/json
      *
      * @apiParam (Body) {string} A id Unique identifier such as email address
@@ -52,7 +59,7 @@ class PersonAPI extends API {
       this.logger.debug(person);
       this.model.persons
         .create(person)
-        .then(result => this.success(response, {personId: result}))
+        .then(result => this.success(response, { personId: result }))
         .catch(error => next(error));
     });
 
@@ -60,6 +67,8 @@ class PersonAPI extends API {
      * @api {get} /persons List
      * @apiGroup Person
      * @apiDescription List Persons.
+     *
+     * @apiVersion 0.1.0
      *
      * @apiHeader {String} Authorization TOKEN ID
      *
@@ -85,6 +94,8 @@ class PersonAPI extends API {
      * @apiGroup Person
      * @apiDescription Read a Person.
      *
+     * @apiVersion 0.1.0
+     *
      * @apiHeader {String} Authorization TOKEN ID
      *
      * @apiPermission Requires scope 'dcd:persons'
@@ -102,7 +113,7 @@ class PersonAPI extends API {
         this.logger.debug("GET /persons read");
         this.model.persons
           .read(request.params.entityId)
-          .then(result => this.success(response, {person: result}))
+          .then(result => this.success(response, { person: result }))
           .catch(error => next(error));
       }
     );
@@ -111,6 +122,8 @@ class PersonAPI extends API {
      * @api {put} /persons/:personId Update
      * @apiGroup Person
      * @apiDescription Update a Person.
+     *
+     * @apiVersion 0.1.0
      *
      * @apiHeader {String} Content-type application/json
      * @apiHeader {String} Authorization TOKEN ID
@@ -137,6 +150,8 @@ class PersonAPI extends API {
      * @apiGroup Person
      * @apiDescription Delete a Person.
      *
+     * @apiVersion 0.1.0
+     *
      * @apiHeader {String} Authorization TOKEN ID
      *
      * @apiPermission Requires scope 'dcd:persons'
@@ -160,6 +175,8 @@ class PersonAPI extends API {
      * @apiGroup Person
      * @apiDescription Check a Person's credentials.
      *
+     * @apiVersion 0.1.0
+     *
      * @apiHeader {String} Content-type application/json
      * @apiHeader {String} Authorization TOKEN ID
      *
@@ -175,7 +192,7 @@ class PersonAPI extends API {
         if (request.body !== undefined && request.body.password !== undefined) {
           this.model.persons
             .check(request.params.entityId, request.body.password)
-            .then(result => this.success(response, {person: result}))
+            .then(result => this.success(response, { person: result }))
             .catch(error => next(error));
         }
       }

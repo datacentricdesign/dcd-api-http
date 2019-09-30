@@ -61,6 +61,10 @@ const InteractionAPI = require("./routes/interactions");
 const interactionAPI = new InteractionAPI(model);
 app.use(baseUrl, interactionAPI.router);
 
+const RoleAPI = require("./routes/roles");
+const roleAPI = new RoleAPI(model);
+app.use(baseUrl, roleAPI.router);
+
 // Catch 404 and forward to error handler
 app.use((request, response, next) => {
   next(new DCDError(404, "Path not found: " + request.path));

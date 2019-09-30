@@ -3,6 +3,9 @@
 const API = require("./API");
 const DCDError = require("dcd-model/lib/Error");
 
+/**
+ * StatAPI provides the routes for searching DCD Hub data.
+ */
 class StatAPI extends API {
   constructor(model) {
     super(model);
@@ -13,6 +16,8 @@ class StatAPI extends API {
      * @api {get} /stats Global
      * @apiGroup Stat
      * @apiDescription Get number of persons,things and properties.
+     *
+     * @apiVersion 0.1.0
      *
      * @apiHeader {String} Authorization TOKEN ID
      *
@@ -29,6 +34,8 @@ class StatAPI extends API {
      * @api {get} /stats/propertyTypes Property Types
      * @apiGroup Stat
      * @apiDescription Get number of properties, entities and values of a property type in a range date of an array of properties. There must be values for the property entities to be counted in the range.
+     *
+     * @apiVersion 0.1.0
      *
      * @apiHeader {String} Authorization TOKEN ID
      * @apiParam (Query) {Array} [types] array of property type.

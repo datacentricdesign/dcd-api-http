@@ -5,8 +5,13 @@ const path = require("path");
 const multer = require("multer");
 
 const API = require("./API");
+const DCDError = require("dcd-model/lib/Error");
 const Property = require("dcd-model/entities/Property");
 
+/**
+ * PropertyAPI provides the routes for managing Properties of the DCD Hub.
+ * A Property represents a Thing or Person property.
+ */
 class PropertyAPI extends API {
   constructor(model) {
     super(model);
@@ -25,6 +30,8 @@ class PropertyAPI extends API {
      * @api {post} /things|persons/:entityId/properties Create
      * @apiGroup Property
      * @apiDescription Create a Property.
+     *
+     * @apiVersion 0.1.0
      *
      * @apiParam {String} entityId Id of the Thing or Person to which we add the Property.
      *
@@ -70,6 +77,8 @@ class PropertyAPI extends API {
      * @apiGroup Property
      * @apiDescription List Properties.
      *
+     * @apiVersion 0.1.0
+     *
      * @apiHeader {String} Authorization TOKEN ID
      *
      * @apiParam {String} entityId Id of the Thing or Person containing the Properties.
@@ -104,6 +113,8 @@ class PropertyAPI extends API {
      * @api {get} /things|persons/:entityId/properties/:propertyId Read
      * @apiGroup Property
      * @apiDescription Read a Property.
+     *
+     * @apiVersion 0.1.0
      *
      * @apiHeader {String} Authorization TOKEN ID
      *
@@ -152,6 +163,8 @@ class PropertyAPI extends API {
      * @api {put} /things|persons/:entityId/properties/:propertyId Update
      * @apiGroup Property
      * @apiDescription Update a Property.
+     *
+     * @apiVersion 0.1.0
      *
      * @apiParam {String} entityId   Id of the Thing or Person containing the property.
      * @apiParam {String} propertyId Id of the Property to update.
@@ -202,6 +215,8 @@ class PropertyAPI extends API {
      * @apiGroup Property
      * @apiDescription Update a Property with a file (e.g. video).
      *
+     * @apiVersion 0.1.0
+     *
      * @apiParam {String} entityId   Id of the Thing or Person containing the property.
      * @apiParam {String} propertyId Id of the Property to update.
      * @apiParam {String} values Comma-separated values to associate to the file.
@@ -248,6 +263,8 @@ class PropertyAPI extends API {
      * @api {put} /things|persons/:entityId/properties/:propertyId/file Update CSV
      * @apiGroup Property
      * @apiDescription Update a property with a CSV file of values.
+     *
+     * @apiVersion 0.1.0
      *
      * @apiParam {String} entityId   Id of the Thing or Person containing the property.
      * @apiParam {String} propertyId Id of the Property to update.
@@ -299,42 +316,11 @@ class PropertyAPI extends API {
     );
 
     /**
-     * @api {delete} /things|persons/:entityId/properties/:propertyId Delete
-     * @apiGroup Property
-     * @apiDescription Delete a Property.
-     *
-     * @apiHeader {String} Authorization TOKEN ID
-     *
-     * @apiParam {String} entityId   Id of the Thing or Person containing the property.
-     * @apiParam {String} propertyId Id of the Property to delete.
-     */
-    this.router.delete(
-      [
-        "/:entity(things|persons)/:entityId/:component(properties)/:propertyId",
-        "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)/:propertyId"
-      ],
-      request => {
-        this.introspectToken({ requiredScope: [request.params.entity] });
-      },
-      this.checkPolicy({ resource: "properties", action: "delete" }),
-      (request, response, next) => {
-        this.model.properties
-          .del(request.params.propertyId)
-          .then(result => {
-            if (result.affectedRows === 1) {
-              this.success(response, { success: true });
-            } else {
-              next({ error: "Property to delete not found" });
-            }
-          })
-          .catch(error => next(error));
-      }
-    );
-
-    /**
      * @api {get} /things/thingId Read file
      * @apiGroup Property
      * @apiDescription Read file attach to a property value.
+     *
+     * @apiVersion 0.1.0
      *
      * @apiHeader {String} Authorization TOKEN ID
      *
@@ -343,7 +329,10 @@ class PropertyAPI extends API {
      * @apiParam {Number} ts         Timestamp of the value associated with the file to retrieve (UNIX, in ms)
      */
     this.router.get(
-      "/:entity(things|persons)/:entityId/:component(properties)/:propertyId/values/:ts",
+      [
+        "/:entity(things|persons)/:entityId/:component(properties)/:propertyId/values/:ts",
+        "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)/:propertyId/values/:ts"
+      ],
       request => {
         this.introspectToken([request.params.entity]);
       },
@@ -393,6 +382,8 @@ class PropertyAPI extends API {
      * @apiGroup Property
      * @apiDescription Attach a list of class names (labels) to a property of type CLASS
      *
+     * @apiVersion 0.1.0
+     *
      * @apiHeader {String} Authorization TOKEN ID
      * @apiHeader {String} Content-type application/json
      *
@@ -405,7 +396,10 @@ class PropertyAPI extends API {
      *     }
      */
     this.router.post(
-      "/:entity(things|persons)/:entityId/:component(properties)/:componentId/classes",
+      [
+        "/:entity(things|persons)/:entityId/:component(properties)/:componentId/classes",
+        "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)/:componentId/classes"
+      ],
       request => {
         this.introspectToken([request.params.entity]);
       },
@@ -415,7 +409,7 @@ class PropertyAPI extends API {
           request.body.classes === undefined ||
           request.body.classes.length === 0
         ) {
-          return next({ msg: "Missing or empty classes array" });
+          return next(new DCDError(4009, "Missing or empty classes array"));
         }
         this.model.properties
           .createClasses(
@@ -423,7 +417,42 @@ class PropertyAPI extends API {
             request.params.componentId,
             request.body.classes
           )
-          .then(result => this.success(response, { classes: result }))
+          .then(result => this.success(response, { classes: result }, 201))
+          .catch(error => next(error));
+      }
+    );
+
+    /**
+     * @api {delete} /things|persons/:entityId/properties/:propertyId Delete
+     * @apiGroup Property
+     * @apiDescription Delete a Property.
+     *
+     * @apiVersion 0.1.0
+     *
+     * @apiHeader {String} Authorization TOKEN ID
+     *
+     * @apiParam {String} entityId   Id of the Thing or Person containing the property.
+     * @apiParam {String} propertyId Id of the Property to delete.
+     */
+    this.router.delete(
+      [
+        "/:entity(things|persons)/:entityId/:component(properties)/:propertyId",
+        "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)/:propertyId"
+      ],
+      request => {
+        this.introspectToken({ requiredScope: [request.params.entity] });
+      },
+      this.checkPolicy({ resource: "properties", action: "delete" }),
+      (request, response, next) => {
+        this.model.properties
+          .del(request.params.propertyId)
+          .then(result => {
+            if (result.affectedRows === 1) {
+              this.success(response, { success: true });
+            } else {
+              next({ error: "Property to delete not found" });
+            }
+          })
           .catch(error => next(error));
       }
     );

@@ -1,8 +1,12 @@
 "use strict";
 
 const API = require("./API");
+const DCDError = require("dcd-model/lib/Error");
 const Interaction = require("dcd-model/entities/Interaction");
 
+/**
+ * InteractionAPI provides the routes for managing Interactions of the DCD Hub.
+ */
 class InteractionAPI extends API {
   constructor(model) {
     super(model);
@@ -21,6 +25,9 @@ class InteractionAPI extends API {
      * @api {post} /things|persons/:entityId/interactions Create
      * @apiGroup Interaction
      * @apiDescription Create an Interaction.
+     *
+     * @apiVersion 0.0.0
+     * @apiIgnore Still under development.
      *
      * @apiParam {String} entityId Id of one of the Thing or Person taking part in the interaction.
      *
@@ -48,8 +55,9 @@ class InteractionAPI extends API {
           (request.body.entity_id_1 !== request.params.entityId &&
             request.body.entity_id_2 !== request.params.entityId)
         ) {
-          return this.fail(
-            new Error(
+          return next(
+            new DCDError(
+              4008,
               "Missing body with entityId1 and entityId2," +
                 " or mismatch with requester thing id."
             )
@@ -67,6 +75,9 @@ class InteractionAPI extends API {
      * @api {get} /things|persons/:entityId/interactions List
      * @apiGroup Interaction
      * @apiDescription List Interactions.
+     *
+     * @apiVersion 0.0.0
+     * @apiIgnore Still under development.
      *
      * @apiHeader {String} Authorization TOKEN ID
      *
@@ -97,6 +108,9 @@ class InteractionAPI extends API {
      * @api {get} /things|persons/:entityId/interactions/:interactionId Read
      * @apiGroup Interaction
      * @apiDescription Read an Interaction.
+     *
+     * @apiVersion 0.0.0
+     * @apiIgnore Still under development.
      *
      * @apiHeader {String} Authorization TOKEN ID
      *

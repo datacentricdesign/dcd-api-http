@@ -3,6 +3,9 @@
 const API = require("./API");
 const Thing = require("dcd-model/entities/Thing");
 
+/**
+ * ThingAPI provides the routes for managing Things of the DCD Hub.
+ */
 class ThingAPI extends API {
   constructor(model) {
     super(model);
@@ -30,6 +33,8 @@ class ThingAPI extends API {
      * @api {post} /things Create
      * @apiGroup Thing
      * @apiDescription Create a Thing.
+     *
+     * @apiVersion 0.1.0
      *
      * @apiParam (Body) {Thing} thing Thing to create as JSON.
      * @apiParamExample {json} thing:
@@ -69,7 +74,7 @@ class ThingAPI extends API {
             : false;
         this.model.things
           .create(actorId, thing, jwt)
-          .then(result => this.success(response, { thing: result }))
+          .then(result => this.success(response, { thing: result }, 201))
           .catch(error => next(error));
       }
     );
@@ -78,6 +83,8 @@ class ThingAPI extends API {
      * @api {get} /things List
      * @apiGroup Thing
      * @apiDescription List Things.
+     *
+     * @apiVersion 0.1.0
      *
      * @apiHeader {String} Authorization TOKEN ID
      *
@@ -99,6 +106,8 @@ class ThingAPI extends API {
      * @api {get} /things/thingId Read
      * @apiGroup Thing
      * @apiDescription Read a Thing.
+     *
+     * @apiVersion 0.1.0
      *
      * @apiHeader {String} Authorization TOKEN ID
      *
@@ -126,6 +135,8 @@ class ThingAPI extends API {
      * @apiGroup Thing
      * @apiDescription Update a Thing.
      *
+     * @apiVersion 0.1.0
+     *
      * @apiHeader {String} Authorization TOKEN ID
      *
      * @apiParam {String} thingId Id of the Thing to update.
@@ -148,6 +159,8 @@ class ThingAPI extends API {
      * @apiGroup Thing
      * @apiDescription Delete a Thing.
      *
+     * @apiVersion 0.1.0
+     *
      * @apiHeader {String} Authorization TOKEN ID
      *
      * @apiParam {String} thingId Id of the Thing to delete.
@@ -169,40 +182,6 @@ class ThingAPI extends API {
               204
             );
           })
-          .catch(error => next(error));
-      }
-    );
-
-    this.router.put(
-      "/:entityId/grant/:role/:entityType/:subjectId",
-      this.formatEntityId,
-      this.introspectToken(["dcd:things", "dcd:roles"]),
-      this.checkPolicy("things", "grant"),
-      (request, response, next) => {
-        this.model.policies
-          .grant(
-            request.params.subjectId,
-            request.params.entityId,
-            request.params.role
-          )
-          .then(result => this.success(response, result))
-          .catch(error => next(error));
-      }
-    );
-
-    this.router.put(
-      "/:entityId/revoke/:role/:entityType/:subjectId",
-      this.formatEntityId,
-      this.introspectToken(["dcd:things", "dcd:roles"]),
-      this.checkPolicy("things", "revoke"),
-      (request, response, next) => {
-        this.model.policies
-          .revoke(
-            request.params.subjectId,
-            request.params.entityId,
-            request.params.role
-          )
-          .then(result => this.success(response, result))
           .catch(error => next(error));
       }
     );

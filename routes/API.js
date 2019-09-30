@@ -5,13 +5,12 @@ const log4js = require("log4js");
 
 // Express router
 const express = require("express");
-const utils = require("../utils/writer.js");
 
 const DCDError = require("dcd-model/lib/Error");
 
 class API {
   /**
-   *
+   * DCD API super class with introspection and policy functions
    * @param {DCDModel} model
    */
   constructor(model) {
@@ -27,16 +26,24 @@ class API {
     this.init();
   }
 
+  /**
+   * The place to declare API routes
+   */
   init() {}
 
-  success(response, result) {
-    this.logger.debug(result);
-    utils.writeJson(response, result);
-  }
-
-  fail(response, error) {
-    this.logger.error(error);
-    utils.writeJson(response, error);
+  /**
+   * A standard way to format successful responses
+   * @param {Response} response
+   * @param {object|string} payload
+   * @param {int} status
+   */
+  success(response, payload, status = 200) {
+    this.logger.debug(payload);
+    if (typeof payload === "object") {
+      payload = JSON.stringify(payload, null, 2);
+    }
+    response.set({ "Content-Type": "application/json" });
+    response.status(status).send(payload);
   }
 
   /**
@@ -82,7 +89,12 @@ class API {
     );
   }
 
-  // warden subject
+  /**
+   * Check Access Control Policy with Keto, based on subject
+   * @param resource
+   * @param action
+   * @return {Function}
+   */
   checkPolicy(resource, action) {
     return (this.checkPolicy[{ resource, action }] = (req, res, next) => {
       this.logger.debug("check policy");
@@ -101,7 +113,13 @@ class API {
     });
   }
 
-  // warden token
+  /**
+   * Check Access Control Policy with Keto, based on token
+   * @param resource
+   * @param action
+   * @param scope
+   * @return {*|Function}
+   */
   checkTokenPolicy(resource, action, scope = []) {
     return (
       this.checkTokenPolicy[(resource, action, scope)] ||
