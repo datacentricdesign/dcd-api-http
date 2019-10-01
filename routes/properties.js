@@ -403,10 +403,10 @@ class PropertyAPI extends API {
         this.logger.warn(result);
         const payload = {};
         if (result !== undefined) {
-          payload.warning = result.warning;
+          payload.values = result;
         }
         if (request.files === undefined || request.files.video === undefined) {
-          payload.success = true;
+          payload.file = false;
           return this.success(response, payload, 200);
         }
         upload(request, response, error => {
@@ -416,7 +416,7 @@ class PropertyAPI extends API {
             if (request.file === undefined) {
               return next(new DCDError(4042, "The file to upload is missing."));
             } else {
-              payload.succes = true;
+              payload.file = true;
               return this.success(response, payload, 200);
             }
           }
