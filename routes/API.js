@@ -51,42 +51,39 @@ class API {
    * determined if it is valid and who it belongs to.
    */
   introspectToken(requiredScope = []) {
-    return (
-      this.introspectToken[requiredScope] ||
-      (this.introspectToken[requiredScope] = (req, res, next) => {
-        this.logger.debug("auth introspect");
-        this.logger.debug(requiredScope);
-        const token = extractToken(req);
-        return this.model.auth
-          .refresh()
-          .then(() => {
-            this.logger.debug("successful token refresh");
-            if (
-              token.split(".").length === 3 &&
-              req.params.entityId !== undefined
-            ) {
-              this.logger.debug("token is JWT");
-              return this.model.auth.checkJWTAuth(token).then(token => {
-                const user = {
-                  entityId: req.params.entityId,
-                  token: token,
-                  sub: "dcd:" + req.entityType + ":" + req.params.entityId
-                };
-                return Promise.resolve(user);
-              });
-            } else {
-              this.logger.debug("forward to introspect model");
-              return this.model.auth.introspect(token, requiredScope);
-            }
-          })
-          .then(user => {
-            this.logger.debug(user);
-            req.user = user;
-            next();
-          })
-          .catch(error => next(error));
-      })
-    );
+    return (this.introspectToken[requiredScope] = (req, res, next) => {
+      this.logger.debug("auth introspect");
+      this.logger.debug(requiredScope);
+      const token = extractToken(req);
+      return this.model.auth
+        .refresh()
+        .then(() => {
+          this.logger.debug("successful token refresh");
+          if (
+            token.split(".").length === 3 &&
+            req.params.entityId !== undefined
+          ) {
+            this.logger.debug("token is JWT");
+            return this.model.auth.checkJWTAuth(token).then(token => {
+              const user = {
+                entityId: req.params.entityId,
+                token: token,
+                sub: "dcd:" + req.entityType + ":" + req.params.entityId
+              };
+              return Promise.resolve(user);
+            });
+          } else {
+            this.logger.debug("forward to introspect model");
+            return this.model.auth.introspect(token, requiredScope);
+          }
+        })
+        .then(user => {
+          this.logger.debug(user);
+          req.user = user;
+          next();
+        })
+        .catch(error => next(error));
+    });
   }
 
   /**
