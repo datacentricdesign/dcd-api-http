@@ -176,7 +176,8 @@ class PropertyAPI extends API {
       this.checkPolicy("properties", "update"),
       (request, response, next) => {
         const propertyId = request.params.propertyId;
-        if (request.headers["content-type"] === "application/json") {
+        const contentType = request.headers["content-type"];
+        if (contentType.indexOf("application/json")) {
           // Look for data in the body
           const property = new Property(request.body);
           property.entityId = request.params.entityId;
@@ -189,7 +190,7 @@ class PropertyAPI extends API {
             );
           }
           return this.update(property, request, response, next);
-        } else if (request.headers["content-type"] === "multipart/form-data") {
+        } else if (contentType.indexOf("multipart/form-data")) {
           // Look for data in a CSV file
           const property = new Property({
             id: propertyId,
@@ -201,7 +202,7 @@ class PropertyAPI extends API {
         return next(
           new DCDError(
             404,
-            "Could not find data in the body as JSON (Content-Type application/json) nor in a data file (multipart/form-data)."
+            "Could not find data in the body as JSON (Content-Type: application/json) nor in a data file (Content-Type: multipart/form-data)."
           )
         );
       }
