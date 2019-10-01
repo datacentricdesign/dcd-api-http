@@ -103,7 +103,7 @@ class PropertyAPI extends API {
           .list(entityId)
           .then(result => {
             this.logger.info(result);
-            this.success(response, { properties: result });
+            this.success(response, { properties: result }, 200);
           })
           .catch(error => next(error));
       }
@@ -151,7 +151,7 @@ class PropertyAPI extends API {
           .read(entityId, propertyId, from, to)
           .then(result => {
             this.logger.debug(result);
-            return this.success(response, { property: result });
+            return this.success(response, { property: result }, 200);
           })
           .catch(error => next(error));
       }
@@ -192,9 +192,11 @@ class PropertyAPI extends API {
                   return next(error);
                 } else {
                   if (request.file === undefined) {
-                    return next({ error: "Missing file." });
+                    return next(
+                      new DCDError(4042, "The file to upload is missing.")
+                    );
                   } else {
-                    return this.success(response, { success: true });
+                    return this.success(response, { success: true }, 200);
                   }
                 }
               });
@@ -242,9 +244,11 @@ class PropertyAPI extends API {
                 return next(error);
               } else {
                 if (request.file === undefined) {
-                  return next({ error: "Missing file." });
+                  return next(
+                    new DCDError(4042, "The file to upload is missing.")
+                  );
                 } else {
-                  return this.success(response, { success: true });
+                  return this.success(response, { success: true }, 201);
                 }
               }
             });
