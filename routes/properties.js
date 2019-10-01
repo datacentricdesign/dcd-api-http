@@ -3,6 +3,7 @@
 const fs = require("fs");
 const path = require("path");
 const multer = require("multer");
+const multiparty = require("multiparty");
 
 const API = require("./API");
 const DCDError = require("dcd-model/lib/Error");
