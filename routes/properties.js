@@ -440,13 +440,27 @@ class PropertyAPI extends API {
       this.introspectToken([]),
       this.checkPolicy("properties", "delete"),
       (request, response, next) => {
+        const propertyId = request.params.propertyId;
         this.model.properties
-          .del(request.params.propertyId)
+          .del(propertyId)
           .then(result => {
-            if (result.affectedRows === 1) {
-              this.success(response, { success: true });
+            if (result.affectedRows > 0) {
+              this.success(
+                response,
+                {
+                  message: result.affectedRows + " Property deleted."
+                },
+                204
+              );
             } else {
-              next({ error: "Property to delete not found" });
+              next(
+                new DCDError(
+                  404,
+                  "Property to delete " +
+                    propertyId +
+                    " could not be not found."
+                )
+              );
             }
           })
           .catch(error => next(error));

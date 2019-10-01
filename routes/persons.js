@@ -164,8 +164,14 @@ class PersonAPI extends API {
       (request, response, next) => {
         const personId = request.params.entityId;
         this.model.persons
-          .delete(personId)
-          .then(result => this.success(response, result))
+          .del(personId)
+          .then(nbDelete => {
+            this.success(
+              response,
+              { message: nbDelete + " Person(s) deleted." },
+              204
+            );
+          })
           .catch(error => next(error));
       }
     );
