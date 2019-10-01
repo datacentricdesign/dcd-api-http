@@ -59,7 +59,7 @@ class PersonAPI extends API {
       this.logger.debug(person);
       this.model.persons
         .create(person)
-        .then(result => this.success(response, { personId: result }))
+        .then(result => this.success(response, { personId: result }, 201))
         .catch(error => next(error));
     });
 
@@ -83,7 +83,7 @@ class PersonAPI extends API {
       (request, response, next) => {
         this.model.persons
           .list(request.user.sub)
-          .then(result => this.success(response, { persons: result }))
+          .then(result => this.success(response, { persons: result }, 200))
           .catch(error => next(error));
       }
     );
@@ -111,7 +111,7 @@ class PersonAPI extends API {
       (request, response, next) => {
         this.model.persons
           .read(request.params.entityId)
-          .then(result => this.success(response, { person: result }))
+          .then(result => this.success(response, { person: result }, 200))
           .catch(error => next(error));
       }
     );
@@ -138,7 +138,7 @@ class PersonAPI extends API {
         const person = new Person(request.params.entityId, request.body);
         this.model.persons
           .update(person)
-          .then(result => this.success(response, result))
+          .then(result => this.success(response, result, 200))
           .catch(error => next(error));
       }
     );
@@ -196,7 +196,7 @@ class PersonAPI extends API {
         if (request.body !== undefined && request.body.password !== undefined) {
           this.model.persons
             .check(request.params.entityId, request.body.password)
-            .then(result => this.success(response, { person: result }))
+            .then(result => this.success(response, { person: result }, 200))
             .catch(error => next(error));
         }
       }

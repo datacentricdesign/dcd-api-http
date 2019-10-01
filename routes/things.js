@@ -97,7 +97,7 @@ class ThingAPI extends API {
       (request, response, next) => {
         this.model.things
           .list(request.user.sub)
-          .then(result => this.success(response, { things: result }))
+          .then(result => this.success(response, { things: result }, 200))
           .catch(error => next(error));
       }
     );
@@ -124,7 +124,7 @@ class ThingAPI extends API {
         this.model.things
           .read(request.params.entityId)
           .then(result => {
-            this.success(response, { thing: result });
+            this.success(response, { thing: result }, 200);
           })
           .catch(error => next(error));
       }
@@ -149,7 +149,7 @@ class ThingAPI extends API {
       (request, response, next) => {
         this.model.things
           .update(new Thing(request.body, request.params.entityId))
-          .then(result => this.success(response, result))
+          .then(result => this.success(response, result, 200))
           .catch(error => next(error));
       }
     );
