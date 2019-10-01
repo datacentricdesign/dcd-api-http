@@ -224,7 +224,7 @@ class PropertyAPI extends API {
     );
 
     /**
-     * @api {post} /things|persons/:entityId/properties/:propertyId/values/:values Update
+     * @api {put} /things|persons/:entityId/properties/:propertyId/values/:values Update
      * @apiGroup Property
      * @apiDescription Update a Property with a file (e.g. video).
      *
@@ -234,7 +234,7 @@ class PropertyAPI extends API {
      * @apiParam {String} propertyId Id of the Property to update.
      * @apiParam {String} values Comma-separated values to associate to the file.
      */
-    this.router.post(
+    this.router.put(
       [
         "/:entity(things|persons)/:entityId/:component(properties)/:propertyId/values/:values",
         "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)/:propertyId/values/:values"
