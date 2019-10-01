@@ -92,9 +92,7 @@ class PropertyAPI extends API {
         "/:entity(things|persons)/:entityId/:component(properties)",
         "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)"
       ],
-      request => {
-        this.introspectToken([request.params.entity]);
-      },
+      this.introspectToken([]),
       this.checkPolicy("properties", "list"),
       (request, response, next) => {
         let entityId = request.params.entityId;
@@ -133,9 +131,7 @@ class PropertyAPI extends API {
         "/:entity(things|persons)/:entityId/:component(properties)/:propertyId",
         "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)/:propertyId"
       ],
-      request => {
-        this.introspectToken([request.params.entity]);
-      },
+      this.introspectToken([]),
       this.checkPolicy("things", "read"),
       (request, response, next) => {
         let entityId = request.params.entityId;
@@ -176,9 +172,7 @@ class PropertyAPI extends API {
         "/:entity(things|persons)/:entityId/:component(properties)/:propertyId",
         "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)/:propertyId"
       ],
-      request => {
-        this.introspectToken([request.params.entity]);
-      },
+      this.introspectToken([]),
       this.checkPolicy("properties", "update"),
       (request, response, next) => {
         const propertyId = request.params.propertyId;
@@ -228,9 +222,7 @@ class PropertyAPI extends API {
         "/:entity(things|persons)/:entityId/:component(properties)/:propertyId/values/:values/file",
         "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)/:propertyId/values/:values/file"
       ],
-      request => {
-        this.introspectToken([request.params.entity]);
-      },
+      this.introspectToken([]),
       this.checkPolicy("properties", "update"),
       (request, response, next) => {
         const values = request.params.values.split(",").map(Number);
@@ -276,9 +268,7 @@ class PropertyAPI extends API {
         "/:entity(things|persons)/:entityId/:component(properties)/:propertyId/file",
         "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)/:propertyId/file"
       ],
-      request => {
-        this.introspectToken([request.params.entity]);
-      },
+      this.introspectToken([]),
       this.checkPolicy("properties", "update"),
       (request, response, next) => {
         let entityId = request.params.entityId;
@@ -335,9 +325,7 @@ class PropertyAPI extends API {
         "/:entity(things|persons)/:entityId/:component(properties)/:propertyId/values/:ts",
         "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)/:propertyId/values/:ts"
       ],
-      request => {
-        this.introspectToken([request.params.entity]);
-      },
+      this.introspectToken([]),
       this.checkPolicy("properties", "read"),
       (request, response, next) => {
         const path =
@@ -402,9 +390,7 @@ class PropertyAPI extends API {
         "/:entity(things|persons)/:entityId/:component(properties)/:componentId/classes",
         "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)/:componentId/classes"
       ],
-      request => {
-        this.introspectToken([request.params.entity]);
-      },
+      this.introspectToken([]),
       this.checkPolicy("classes", "create"),
       (request, response, next) => {
         if (
@@ -441,9 +427,7 @@ class PropertyAPI extends API {
         "/:entity(things|persons)/:entityId/:component(properties)/:propertyId",
         "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)/:propertyId"
       ],
-      request => {
-        this.introspectToken([request.params.entity]);
-      },
+      this.introspectToken([]),
       this.checkPolicy("properties", "delete"),
       (request, response, next) => {
         this.model.properties
