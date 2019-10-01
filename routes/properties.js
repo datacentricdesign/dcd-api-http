@@ -177,34 +177,38 @@ class PropertyAPI extends API {
       (request, response, next) => {
         const propertyId = request.params.propertyId;
         const property = request.body;
-        if (property.id === propertyId) {
-          this.model.properties
-            .updateValues(property)
-            .then(() => {
-              if (
-                request.files === undefined ||
-                request.files.video === undefined
-              ) {
-                return this.success(response, property);
-              }
-              upload(request, response, error => {
-                if (error) {
-                  return next(error);
-                } else {
-                  if (request.file === undefined) {
-                    return next(
-                      new DCDError(4042, "The file to upload is missing.")
-                    );
-                  } else {
-                    return this.success(response, { success: true }, 200);
-                  }
-                }
-              });
-            })
-            .catch(error => next(error));
-        } else {
-          next({ message: "property id not matching" });
+        if (property.id !== propertyId) {
+          return next(
+            new DCDError(
+              400,
+              "The property id in the request path is not matching with the id provided in the request body."
+            )
+          );
         }
+        this.model.properties
+          .updateValues(property)
+          .then(() => {
+            if (
+              request.files === undefined ||
+              request.files.video === undefined
+            ) {
+              return this.success(response, property, 200);
+            }
+            upload(request, response, error => {
+              if (error) {
+                return next(error);
+              } else {
+                if (request.file === undefined) {
+                  return next(
+                    new DCDError(4042, "The file to upload is missing.")
+                  );
+                } else {
+                  return this.success(response, { success: true }, 200);
+                }
+              }
+            });
+          })
+          .catch(error => next(error));
       }
     );
 
