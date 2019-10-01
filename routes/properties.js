@@ -22,6 +22,7 @@ class PropertyAPI extends API {
      * Add the entity Type to all request of this router.
      */
     this.router.use((req, res, next) => {
+      this.logger.debug("Property route");
       req.entityType = req.params.entity;
       next();
     });
@@ -59,8 +60,10 @@ class PropertyAPI extends API {
       this.checkPolicy({ resource: "properties", action: "create" }),
       (request, response, next) => {
         if (request.params.interactionId !== undefined) {
+          // Looking for an interaction property
           request.body.entityId = request.params.interactionId;
         } else {
+          // Looking for a Person/Thing property
           request.body.entityId = request.params.entityId;
         }
         this.logger.debug(request.body);
