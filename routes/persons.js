@@ -167,7 +167,7 @@ class PersonAPI extends API {
             this.success(
               response,
               { message: nbDelete + " Person(s) deleted." },
-              204
+              200
             );
           })
           .catch(error => next(error));

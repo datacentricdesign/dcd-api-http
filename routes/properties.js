@@ -375,7 +375,7 @@ class PropertyAPI extends API {
                 {
                   message: result.affectedRows + " Property deleted."
                 },
-                204
+                200
               );
             } else {
               next(

@@ -177,7 +177,7 @@ class ThingAPI extends API {
             this.success(
               response,
               { message: nbDelete + " Thing(s) deleted." },
-              204
+              200
             );
           })
           .catch(error => next(error));

@@ -86,7 +86,7 @@ class RoleAPI extends API {
             request.params.resourceEntityId,
             request.params.roleName
           )
-          .then(result => this.success(response, result, 204))
+          .then(result => this.success(response, result, 200))
           .catch(error => next(error));
       }
     );
