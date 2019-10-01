@@ -437,12 +437,12 @@ class PropertyAPI extends API {
       });
     });
     form.on("close", () => {
-      const property = updatePropertyFromCSVStr(
+      const propertyWithValues = updatePropertyFromCSVStr(
         property.entityId,
         property.id,
         dataStr
       );
-      this.update(property, request, response, next);
+      this.update(propertyWithValues, request, response, next);
     });
     form.on("error", next);
     form.parse(request);
