@@ -51,6 +51,7 @@ class API {
    * determined if it is valid and who it belongs to.
    */
   introspectToken(requiredScope = []) {
+    this.logger.debug("intro");
     return (
       this.introspectToken[requiredScope] ||
       (this.introspectToken[requiredScope] = (req, res, next) => {

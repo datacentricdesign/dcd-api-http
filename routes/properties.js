@@ -54,10 +54,10 @@ class PropertyAPI extends API {
         "/:entity(things|persons)/:entityId/:component(properties)",
         "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)"
       ],
-      request => {
-        this.introspectToken({ requiredScope: ["things"] });
-        // this.introspectToken({ requiredScope: [request.params.entity] });
-      },
+      // request => {
+      //   this.introspectToken({ requiredScope: [request.params.entity] });
+      // },
+      this.introspectToken({ requiredScope: ["things"] }),
       this.checkPolicy({ resource: "properties", action: "create" }),
       (request, response, next) => {
         this.logger.debug("POST properties");
