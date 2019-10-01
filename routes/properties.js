@@ -177,6 +177,8 @@ class PropertyAPI extends API {
       (request, response, next) => {
         const propertyId = request.params.propertyId;
         const property = request.body;
+        this.logger.debug(property);
+        this.logger.debug(propertyId);
         if (property.id !== propertyId) {
           return next(
             new DCDError(
