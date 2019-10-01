@@ -475,12 +475,12 @@ const upload = multer({
   fileFilter: function(req, file, cb) {
     checkFileType(file, cb);
   }
-}).single("video");
+}).single("media");
 
 // Check File Type
 function checkFileType(file, cb) {
   // Allowed ext
-  const filetypes = /mp4/;
+  const filetypes = /mp4|jpeg|jpg|mp3/;
   // Check ext
   const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
   // Check mime
@@ -489,7 +489,7 @@ function checkFileType(file, cb) {
   if (mimetype && extname) {
     return cb(null, true);
   } else {
-    cb("Error: MP4 video Only!");
+    cb(new DCDError(400, "MP4, MP3 and JPEG Only!"));
   }
 }
 
