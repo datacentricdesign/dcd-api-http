@@ -177,7 +177,7 @@ class PropertyAPI extends API {
       (request, response, next) => {
         const propertyId = request.params.propertyId;
         const contentType = request.headers["content-type"];
-        if (contentType.indexOf("application/json")) {
+        if (contentType.indexOf("application/json") === 0) {
           // Look for data in the body
           const property = new Property(request.body);
           property.entityId = request.params.entityId;
@@ -190,7 +190,7 @@ class PropertyAPI extends API {
             );
           }
           return this.update(property, request, response, next);
-        } else if (contentType.indexOf("multipart/form-data")) {
+        } else if (contentType.indexOf("multipart/form-data") === 0) {
           // Look for data in a CSV file
           const property = new Property({
             id: propertyId,
