@@ -55,10 +55,10 @@ class PropertyAPI extends API {
         "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)"
       ],
       // request => {
-      //   this.introspectToken({ requiredScope: [request.params.entity] });
+      //   this.introspectToken([request.params.entity] });
       // },
       this.introspectToken(["dcd:things"]),
-      this.checkPolicy({ resource: "properties", action: "create" }),
+      this.checkPolicy("properties", "create"),
       (request, response, next) => {
         this.logger.debug("POST properties");
         if (request.params.interactionId !== undefined) {
@@ -96,9 +96,9 @@ class PropertyAPI extends API {
         "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)"
       ],
       request => {
-        this.introspectToken({ requiredScope: [request.params.entity] });
+        this.introspectToken([request.params.entity]);
       },
-      this.checkPolicy({ resource: "properties", action: "list" }),
+      this.checkPolicy("properties", "list"),
       (request, response, next) => {
         let entityId = request.params.entityId;
         if (request.params.interactionId !== undefined) {
@@ -137,9 +137,9 @@ class PropertyAPI extends API {
         "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)/:propertyId"
       ],
       request => {
-        this.introspectToken({ requiredScope: [request.params.entity] });
+        this.introspectToken([request.params.entity]);
       },
-      this.checkPolicy({ resource: "things", action: "read" }),
+      this.checkPolicy("things", "read"),
       (request, response, next) => {
         let entityId = request.params.entityId;
         if (request.params.interactionId !== undefined) {
@@ -180,9 +180,9 @@ class PropertyAPI extends API {
         "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)/:propertyId"
       ],
       request => {
-        this.introspectToken({ requiredScope: [request.params.entity] });
+        this.introspectToken([request.params.entity]);
       },
-      this.checkPolicy({ resource: "properties", action: "update" }),
+      this.checkPolicy("properties", "update"),
       (request, response, next) => {
         const propertyId = request.params.propertyId;
         const property = request.body;
@@ -232,9 +232,9 @@ class PropertyAPI extends API {
         "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)/:propertyId/values/:values/file"
       ],
       request => {
-        this.introspectToken({ requiredScope: [request.params.entity] });
+        this.introspectToken([request.params.entity]);
       },
-      this.checkPolicy({ resource: "properties", action: "update" }),
+      this.checkPolicy("properties", "update"),
       (request, response, next) => {
         const values = request.params.values.split(",").map(Number);
         let entityId = request.params.entityId;
@@ -280,9 +280,9 @@ class PropertyAPI extends API {
         "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)/:propertyId/file"
       ],
       request => {
-        this.introspectToken({ requiredScope: [request.params.entity] });
+        this.introspectToken([request.params.entity]);
       },
-      this.checkPolicy({ resource: "properties", action: "update" }),
+      this.checkPolicy("properties", "update"),
       (request, response, next) => {
         let entityId = request.params.entityId;
         if (request.params.interactionId !== undefined) {
@@ -341,7 +341,7 @@ class PropertyAPI extends API {
       request => {
         this.introspectToken([request.params.entity]);
       },
-      this.checkPolicy({ resource: "properties", action: "read" }),
+      this.checkPolicy("properties", "read"),
       (request, response, next) => {
         const path =
           "./files/" +
@@ -408,7 +408,7 @@ class PropertyAPI extends API {
       request => {
         this.introspectToken([request.params.entity]);
       },
-      this.checkPolicy({ resource: "classes", action: "create" }),
+      this.checkPolicy("classes", "create"),
       (request, response, next) => {
         if (
           request.body.classes === undefined ||
@@ -445,9 +445,9 @@ class PropertyAPI extends API {
         "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)/:propertyId"
       ],
       request => {
-        this.introspectToken({ requiredScope: [request.params.entity] });
+        this.introspectToken([request.params.entity]);
       },
-      this.checkPolicy({ resource: "properties", action: "delete" }),
+      this.checkPolicy("properties", "delete"),
       (request, response, next) => {
         this.model.properties
           .del(request.params.propertyId)
