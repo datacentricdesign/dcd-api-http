@@ -55,10 +55,12 @@ class PropertyAPI extends API {
         "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)"
       ],
       request => {
-        this.introspectToken({ requiredScope: [request.params.entity] });
+        this.introspectToken({ requiredScope: ["things"] });
+        // this.introspectToken({ requiredScope: [request.params.entity] });
       },
       this.checkPolicy({ resource: "properties", action: "create" }),
       (request, response, next) => {
+        this.logger.debug("POST properties");
         if (request.params.interactionId !== undefined) {
           // Looking for an interaction property
           request.body.entityId = request.params.interactionId;
@@ -70,7 +72,7 @@ class PropertyAPI extends API {
         this.logger.debug(new Property(request.body));
         this.model.properties
           .create(new Property(request.body))
-          .then(result => this.success(response, { property: result }))
+          .then(result => this.success(response, { property: result }, 204))
           .catch(error => next(error));
       }
     );
