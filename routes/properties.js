@@ -400,7 +400,6 @@ class PropertyAPI extends API {
         return this.model.properties.updateValues(property);
       })
       .then(result => {
-        this.logger.warn(result);
         const payload = {};
         if (result !== undefined) {
           payload.values = result;
