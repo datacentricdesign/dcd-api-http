@@ -224,7 +224,7 @@ class PropertyAPI extends API {
     );
 
     /**
-     * @api {post} /things|persons/:entityId/properties/:propertyId/values/:values/file Update file
+     * @api {post} /things|persons/:entityId/properties/:propertyId/values/:values Update
      * @apiGroup Property
      * @apiDescription Update a Property with a file (e.g. video).
      *
@@ -236,8 +236,8 @@ class PropertyAPI extends API {
      */
     this.router.post(
       [
-        "/:entity(things|persons)/:entityId/:component(properties)/:propertyId/values/:values/file",
-        "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)/:propertyId/values/:values/file"
+        "/:entity(things|persons)/:entityId/:component(properties)/:propertyId/values/:values",
+        "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)/:propertyId/values/:values"
       ],
       this.introspectToken([]),
       this.checkPolicy("properties", "update"),
