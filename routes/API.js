@@ -52,6 +52,9 @@ class API {
    */
   introspectToken(requiredScope = []) {
     return (this.introspectToken[requiredScope] = (req, res, next) => {
+      if (requiredScope.length === 0 && req.params.entity !== undefined) {
+        requiredScope = [req.params.entity];
+      }
       this.logger.debug("auth introspect");
       this.logger.debug(requiredScope);
       const token = extractToken(req);
