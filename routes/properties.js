@@ -189,7 +189,9 @@ class PropertyAPI extends API {
         }
         this.model.properties
           .update(property)
-          .updateValues(property)
+          .then(() => {
+            this.model.updateValues(property);
+          })
           .then(warning => {
             const payload = {};
             if (warning !== undefined) {
