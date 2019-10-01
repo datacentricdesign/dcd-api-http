@@ -188,13 +188,19 @@ class PropertyAPI extends API {
           );
         }
         this.model.properties
+          .update(property)
           .updateValues(property)
-          .then(() => {
+          .then(warning => {
+            const payload = {};
+            if (warning !== undefined) {
+              payload.warning = warning;
+            }
             if (
               request.files === undefined ||
               request.files.video === undefined
             ) {
-              return this.success(response, property, 200);
+              payload.success = true;
+              return this.success(response, payload, 200);
             }
             upload(request, response, error => {
               if (error) {
@@ -205,7 +211,8 @@ class PropertyAPI extends API {
                     new DCDError(4042, "The file to upload is missing.")
                   );
                 } else {
-                  return this.success(response, { success: true }, 200);
+                  payload.succes = true;
+                  return this.success(response, payload, 200);
                 }
               }
             });
