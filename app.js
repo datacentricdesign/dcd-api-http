@@ -73,20 +73,20 @@ app.use((request, response, next) => {
 // Error handler
 
 app.use((error, request, response, next) => {
+  let responseError = {};
   if (error instanceof DCDError) {
     logger.error(JSON.stringify(error));
+    responseError = error;
   } else {
     logger.error(JSON.stringify(error, Object.getOwnPropertyNames(error)));
+    responseError = new DCDError(
+      error.code || error.status || 500,
+      error.message
+    );
   }
   response.status(error.status || 500);
-  const errorResponse = { message: error.message };
-  if (error.code !== undefined) {
-    errorResponse.code = error.code;
-  } else if (error.status !== undefined) {
-    errorResponse.code = error.status;
-  }
   response.set({ "Content-Type": "application/json" });
-  response.json(errorResponse);
+  response.json(responseError);
 });
 
 module.exports = app;
