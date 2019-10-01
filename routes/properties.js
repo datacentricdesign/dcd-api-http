@@ -190,7 +190,7 @@ class PropertyAPI extends API {
         this.model.properties
           .update(property)
           .then(() => {
-            this.model.updateValues(property);
+            this.model.properties.updateValues(property);
           })
           .then(warning => {
             const payload = {};
