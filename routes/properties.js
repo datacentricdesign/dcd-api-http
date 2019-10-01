@@ -188,15 +188,22 @@ class PropertyAPI extends API {
               )
             );
           }
-          this.update(property, request, response, next);
+          return this.update(property, request, response, next);
         } else if (request.headers["content-type"] === "multipart/form-data") {
           // Look for data in a CSV file
           const property = new Property({
             id: propertyId,
             entityId: request.params.entityId
           });
-          this.uploadDataFile(property, request, response, next);
+          return this.uploadDataFile(property, request, response, next);
         }
+        // No json body nor data file.
+        return next(
+          new DCDError(
+            404,
+            "Could not find data in the body as JSON (Content-Type application/json) nor in a data file (multipart/form-data)."
+          )
+        );
       }
     );
 
