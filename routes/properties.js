@@ -192,10 +192,10 @@ class PropertyAPI extends API {
           .then(() => {
             this.model.properties.updateValues(property);
           })
-          .then(warning => {
+          .then(result => {
             const payload = {};
-            if (warning !== undefined) {
-              payload.warning = warning;
+            if (result !== undefined) {
+              payload.warning = result.warning;
             }
             if (
               request.files === undefined ||
