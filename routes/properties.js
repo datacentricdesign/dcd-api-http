@@ -397,7 +397,7 @@ class PropertyAPI extends API {
     this.model.properties
       .update(property)
       .then(() => {
-        this.model.properties.updateValues(property);
+        return this.model.properties.updateValues(property);
       })
       .then(result => {
         this.logger.warn(result);
