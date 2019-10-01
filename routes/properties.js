@@ -57,7 +57,7 @@ class PropertyAPI extends API {
       // request => {
       //   this.introspectToken({ requiredScope: [request.params.entity] });
       // },
-      this.introspectToken({ requiredScope: ["things"] }),
+      this.introspectToken(["dcd:things"]),
       this.checkPolicy({ resource: "properties", action: "create" }),
       (request, response, next) => {
         this.logger.debug("POST properties");
