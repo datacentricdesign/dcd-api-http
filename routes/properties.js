@@ -54,10 +54,10 @@ class PropertyAPI extends API {
         "/:entity(things|persons)/:entityId/:component(properties)",
         "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)"
       ],
-      // request => {
-      //   this.introspectToken([request.params.entity] });
-      // },
-      this.introspectToken(["dcd:things"]),
+      (request, response, next) => {
+        this.introspectToken([request.params.entity]);
+      },
+      // this.introspectToken(["dcd:things"]),
       this.checkPolicy("properties", "create"),
       (request, response, next) => {
         this.logger.debug("POST properties");
@@ -72,7 +72,7 @@ class PropertyAPI extends API {
         this.logger.debug(new Property(request.body));
         this.model.properties
           .create(new Property(request.body))
-          .then(result => this.success(response, { property: result }, 204))
+          .then(result => this.success(response, { property: result }, 201))
           .catch(error => next(error));
       }
     );
