@@ -176,17 +176,27 @@ class PropertyAPI extends API {
       this.checkPolicy("properties", "update"),
       (request, response, next) => {
         const propertyId = request.params.propertyId;
-        const property = new Property(request.body);
-        property.entityId = request.params.entityId;
-        if (property.id !== propertyId) {
-          return next(
-            new DCDError(
-              400,
-              "The property id in the request path is not matching with the id provided in the request body."
-            )
-          );
+        if (request.headers["content-type"] === "application/json") {
+          // Look for data in the body
+          const property = new Property(request.body);
+          property.entityId = request.params.entityId;
+          if (property.id !== propertyId) {
+            return next(
+              new DCDError(
+                400,
+                "The property id in the request path is not matching with the id provided in the request body."
+              )
+            );
+          }
+          this.update(property, request, response, next);
+        } else if (request.headers["content-type"] === "multipart/form-data") {
+          // Look for data in a CSV file
+          const property = new Property({
+            id: propertyId,
+            entityId: request.params.entityId
+          });
+          this.uploadDataFile(property, request, response, next);
         }
-        this.update(property, request, response, next);
       }
     );
 
@@ -220,60 +230,6 @@ class PropertyAPI extends API {
           entityId: entityId
         });
         this.update(property, request, response, next);
-      }
-    );
-
-    /**
-     * @api {put} /things|persons/:entityId/properties/:propertyId/file Update CSV
-     * @apiGroup Property
-     * @apiDescription Update a property with a CSV file of values.
-     *
-     * @apiVersion 0.1.0
-     *
-     * @apiParam {String} entityId   Id of the Thing or Person containing the property.
-     * @apiParam {String} propertyId Id of the Property to update.
-     */
-    this.router.put(
-      [
-        "/:entity(things|persons)/:entityId/:component(properties)/:propertyId/file",
-        "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)/:propertyId/file"
-      ],
-      this.introspectToken([]),
-      this.checkPolicy("properties", "update"),
-      (request, response, next) => {
-        let entityId = request.params.entityId;
-        if (request.params.interactionId !== undefined) {
-          entityId = request.params.interactionId;
-        }
-        const propertyId = request.params.propertyId;
-
-        // eslint-disable-next-line no-undef
-        const form = new multiparty.Form();
-        let dataStr = "";
-
-        form.on("error", next);
-        form.on("close", () => {
-          const property = updatePropertyFromCSVStr(
-            entityId,
-            propertyId,
-            dataStr
-          );
-          this.model.properties
-            .update(entityId, propertyId, property)
-            .then(result => this.success(response, result))
-            .catch(error => next(error));
-        });
-
-        // listen on part event for data file
-        form.on("part", part => {
-          if (!part.filename) {
-            return;
-          }
-          part.on("data", buf => {
-            dataStr += buf.toString();
-          });
-        });
-        form.parse(request);
       }
     );
 
@@ -457,6 +413,26 @@ class PropertyAPI extends API {
         });
       })
       .catch(error => next(error));
+  }
+
+  uploadDataFile(property, request, response, next) {
+    const form = new multiparty.Form();
+    let dataStr = "";
+    // listen on part event for data file
+    form.on("part", part => {
+      if (!part.filename) {
+        return;
+      }
+      part.on("data", buf => {
+        dataStr += buf.toString();
+      });
+    });
+    form.on("close", () => {
+      const property = updatePropertyFromCSVStr(property, dataStr);
+      this.update(request, response, next);
+    });
+    form.on("error", next);
+    form.parse(request);
   }
 }
 
