@@ -81,7 +81,6 @@ class PersonAPI extends API {
       this.introspectToken(["dcd:persons"]),
       this.checkPolicy("persons", "list"),
       (request, response, next) => {
-        this.logger.debug("GET /persons list");
         this.model.persons
           .list(request.user.sub)
           .then(result => this.success(response, { persons: result }))
@@ -110,7 +109,6 @@ class PersonAPI extends API {
       this.introspectToken(["dcd:persons"]),
       this.checkPolicy("persons", "read"),
       (request, response, next) => {
-        this.logger.debug("GET /persons read");
         this.model.persons
           .read(request.params.entityId)
           .then(result => this.success(response, { person: result }))
