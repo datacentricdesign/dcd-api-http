@@ -176,7 +176,8 @@ class PropertyAPI extends API {
       this.checkPolicy("properties", "update"),
       (request, response, next) => {
         const propertyId = request.params.propertyId;
-        const property = request.body;
+        const property = new Property(request.body);
+        property.entityId = request.params.entityId;
         if (property.id !== propertyId) {
           return next(
             new DCDError(
@@ -185,7 +186,7 @@ class PropertyAPI extends API {
             )
           );
         }
-        this.update(property);
+        this.update(property, request, response, next);
       }
     );
 
@@ -213,12 +214,12 @@ class PropertyAPI extends API {
         if (request.params.interactionId !== undefined) {
           entityId = request.params.interactionId;
         }
-        const property = {
+        const property = new Property({
           id: request.params.propertyId,
           values: [values],
           entityId: entityId
-        };
-        this.update(property);
+        });
+        this.update(property, request, response, next);
       }
     );
 
@@ -427,42 +428,35 @@ class PropertyAPI extends API {
     );
   }
 
-  update(property) {
-    return (this.update[property] = (request, response, next) => {
-      this.model.properties
-        .update(property)
-        .then(() => {
-          this.model.properties.updateValues(property);
-        })
-        .then(result => {
-          const payload = {};
-          if (result !== undefined) {
-            payload.warning = result.warning;
-          }
-          if (
-            request.files === undefined ||
-            request.files.video === undefined
-          ) {
-            payload.success = true;
-            return this.success(response, payload, 200);
-          }
-          upload(request, response, error => {
-            if (error) {
-              return next(error);
+  update(property, request, response, next) {
+    this.model.properties
+      .update(property)
+      .then(() => {
+        this.model.properties.updateValues(property);
+      })
+      .then(result => {
+        const payload = {};
+        if (result !== undefined) {
+          payload.warning = result.warning;
+        }
+        if (request.files === undefined || request.files.video === undefined) {
+          payload.success = true;
+          return this.success(response, payload, 200);
+        }
+        upload(request, response, error => {
+          if (error) {
+            return next(error);
+          } else {
+            if (request.file === undefined) {
+              return next(new DCDError(4042, "The file to upload is missing."));
             } else {
-              if (request.file === undefined) {
-                return next(
-                  new DCDError(4042, "The file to upload is missing.")
-                );
-              } else {
-                payload.succes = true;
-                return this.success(response, payload, 200);
-              }
+              payload.succes = true;
+              return this.success(response, payload, 200);
             }
-          });
-        })
-        .catch(error => next(error));
-    });
+          }
+        });
+      })
+      .catch(error => next(error));
   }
 }
 
