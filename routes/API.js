@@ -141,7 +141,8 @@ class API {
           token.split(".").length === 3 &&
           req.params.entityId !== undefined
         ) {
-          acp.subject = "dcd:" + req.entityType + ":" + req.params.entityId;
+          acp.subject = req.params.entityId;
+          this.logger.debug(acp);
           this.model.auth
             .checkJWT(acp, req.params.entityId)
             .then(user => {
