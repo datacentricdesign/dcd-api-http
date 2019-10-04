@@ -75,7 +75,7 @@ class API {
                   const user = {
                     entityId: req.params.entityId,
                     token: token,
-                    sub: "dcd:" + req.entityType + ":" + req.params.entityId
+                    sub: req.params.entityId
                   };
                   return Promise.resolve(user);
                 });
