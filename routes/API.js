@@ -69,14 +69,16 @@ class API {
               req.params.entityId !== undefined
             ) {
               this.logger.debug("token is JWT");
-              return this.model.auth.checkJWTAuth(token).then(token => {
-                const user = {
-                  entityId: req.params.entityId,
-                  token: token,
-                  sub: "dcd:" + req.entityType + ":" + req.params.entityId
-                };
-                return Promise.resolve(user);
-              });
+              return this.model.auth
+                .checkJWTAuth(token, req.params.entityId)
+                .then(token => {
+                  const user = {
+                    entityId: req.params.entityId,
+                    token: token,
+                    sub: "dcd:" + req.entityType + ":" + req.params.entityId
+                  };
+                  return Promise.resolve(user);
+                });
             } else {
               this.logger.debug("forward to introspect model");
               return this.model.auth.introspect(token, requiredScope);
