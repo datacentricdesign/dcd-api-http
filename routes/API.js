@@ -157,8 +157,8 @@ class API {
             })
             .catch(error => next(error));
         } else {
-          this.model.auth
-            .wardenToken(acp)
+          this.model.policies
+            .check(acp)
             .then(user => {
               req.user = user;
               next();
