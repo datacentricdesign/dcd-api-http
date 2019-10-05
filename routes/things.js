@@ -155,6 +155,30 @@ class ThingAPI extends API {
     );
 
     /**
+     * @api {put} /things/thingId/jwk Update JWK
+     * @apiGroup Thing
+     * @apiDescription Update a Thing JWK.
+     *
+     * @apiVersion 0.1.0
+     *
+     * @apiHeader {String} Authorization TOKEN ID
+     *
+     * @apiParam {String} thingId Id of the Thing to update.
+     */
+    this.router.put(
+      "/:entityId/jwk",
+      this.formatEntityId,
+      this.introspectToken(["dcd:things"]),
+      this.checkPolicy("things", "update"),
+      (request, response, next) => {
+        this.model.auth
+          .setJWK(request.params.entityId, request.body)
+          .then(result => this.success(response, result, 200))
+          .catch(error => next(error));
+      }
+    );
+
+    /**
      * @api {delete} /things/thingId Delete
      * @apiGroup Thing
      * @apiDescription Delete a Thing.
