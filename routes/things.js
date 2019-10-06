@@ -41,7 +41,8 @@ class ThingAPI extends API {
      *     {
      *       "name": "My Thing",
      *       "description": "A description of my thing.",
-     *       "type": "Test Thing"
+     *       "type": "Test Thing",
+     *       "pem": "PEM PUBLIC KEY"
      *     }
      *
      * @apiParam (Query) {Boolean} [jwt=false] Need to generate a JWT
@@ -155,24 +156,27 @@ class ThingAPI extends API {
     );
 
     /**
-     * @api {put} /things/thingId/jwk Update JWK
+     * @api {put} /things/thingId/jwk Update PEM
      * @apiGroup Thing
-     * @apiDescription Update a Thing JWK.
+     * @apiDescription Update a Thing PEM.
      *
      * @apiVersion 0.1.0
      *
-     * @apiHeader {String} Authorization TOKEN ID
+     * @apiHeader {string} Authorization TOKEN ID
      *
-     * @apiParam {String} thingId Id of the Thing to update.
+     * @apiParam {string} thingId Id of the Thing to update.
+     *
+     * @apiBody {string} thingId Id of the Thing to update.
+     * @apiBody {string} pem of the Thing to update.
      */
     this.router.put(
-      "/:entityId/jwk",
+      "/:entityId/pem",
       this.formatEntityId,
       this.introspectToken(["dcd:things"]),
       this.checkPolicy("things", "update"),
       (request, response, next) => {
         this.model.auth
-          .setJWK(request.params.entityId, request.body)
+          .setPEM(request.params.entityId, request.body.pem)
           .then(result => this.success(response, result, 200))
           .catch(error => next(error));
       }
