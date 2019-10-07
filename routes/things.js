@@ -69,10 +69,12 @@ class ThingAPI extends API {
 
         const actorId = request.user.sub;
         const thing = new Thing(request.body);
-        const jwt =
-          request.query.jwt !== undefined
-            ? request.query.jwt === "true"
-            : false;
+        // const jwt =
+        //   request.query.jwt !== undefined
+        //     ? request.query.jwt === "true"
+        //     : false;
+        const jwt = true;
+        thing["pem"] = undefined;
         this.model.things
           .create(actorId, thing, jwt)
           .then(result => this.success(response, { thing: result }, 201))
