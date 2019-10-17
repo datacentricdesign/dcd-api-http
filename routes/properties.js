@@ -459,11 +459,11 @@ class PropertyAPI extends API {
 
   static toCSV(property) {
     let csv = "time";
-    for (let i; i < property.dimensions.length; i++) {
+    for (let i=0; i < property.dimensions.length; i++) {
       csv += "," + property.dimensions[i].name;
     }
     csv += "\n";
-    for (let i; i < property.values.length; i++) {
+    for (let i=0; i < property.values.length; i++) {
       csv += property.values[i].join(",");
     }
     return csv;
