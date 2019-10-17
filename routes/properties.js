@@ -118,6 +118,7 @@ class PropertyAPI extends API {
      * @apiVersion 0.1.0
      *
      * @apiHeader {String} Authorization TOKEN ID
+     * @apiHeader {String} Accept text/csv or application/json
      *
      * @apiParam {String} entityId   Id of the Thing or Person containing the property.
      * @apiParam {String} propertyId Id of the Property to read.
@@ -152,6 +153,14 @@ class PropertyAPI extends API {
           .read(entityId, propertyId, from, to)
           .then(result => {
             this.logger.debug(result);
+            if (request.accepts("text/csv")) {
+              return this.success(
+                response,
+                PropertyAPI.toCSV(result),
+                200,
+                "text/csv"
+              );
+            }
             return this.success(response, { property: result }, 200);
           })
           .catch(error => next(error));
@@ -446,6 +455,18 @@ class PropertyAPI extends API {
     });
     form.on("error", next);
     form.parse(request);
+  }
+
+  static toCSV(property) {
+    let csv = "time";
+    for (let i; i < property.dimensions.length; i++) {
+      csv += "," + property.dimensions[i].name;
+    }
+    csv += "\n";
+    for (let i; i < property.values.length; i++) {
+      csv += property.values[i].join(",");
+    }
+    return csv;
   }
 }
 

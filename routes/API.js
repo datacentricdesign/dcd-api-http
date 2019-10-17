@@ -36,13 +36,14 @@ class API {
    * @param {Response} response
    * @param {object|string} payload
    * @param {int} status
+   * @param {string} contentType
    */
-  success(response, payload, status = 200) {
+  success(response, payload, status = 200, contentType = "application/json") {
     this.logger.debug(payload);
     if (typeof payload === "object") {
       payload = JSON.stringify(payload, null, 2);
     }
-    response.set({ "Content-Type": "application/json" });
+    response.set({ "Content-Type": contentType });
     response.status(status).send(payload);
   }
 
