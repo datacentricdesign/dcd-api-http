@@ -153,15 +153,18 @@ class PropertyAPI extends API {
           .read(entityId, propertyId, from, to)
           .then(result => {
             this.logger.debug(result);
-            if (request.accepts("text/csv")) {
+            if (request.accepts("application/json")) {
+              return this.success(response, { property: result }, 200);
+            } else if (request.accepts("text/csv")) {
               return this.success(
                 response,
                 PropertyAPI.toCSV(result),
                 200,
                 "text/csv"
               );
+            } else {
+              return this.success(response, { property: result }, 200);
             }
-            return this.success(response, { property: result }, 200);
           })
           .catch(error => next(error));
       }
