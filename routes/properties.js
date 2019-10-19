@@ -151,7 +151,7 @@ class PropertyAPI extends API {
           to = parseInt(request.query.to);
         }
         if (request.query.interval !== undefined) {
-          interval = parseInt(request.query.interval);
+          interval = request.query.interval;
         }
         this.model.properties
           .read(entityId, propertyId, from, to, interval)
