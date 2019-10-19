@@ -143,14 +143,18 @@ class PropertyAPI extends API {
         const propertyId = request.params.propertyId;
         let from;
         let to;
+        let interval;
         if (request.query.from !== undefined) {
           from = parseInt(request.query.from);
         }
         if (request.query.to !== undefined) {
           to = parseInt(request.query.to);
         }
+        if (request.query.interval !== undefined) {
+          interval = request.query.interval;
+        }
         this.model.properties
-          .read(entityId, propertyId, from, to)
+          .read(entityId, propertyId, from, to, interval)
           .then(result => {
             this.logger.debug(result);
             if (request.accepts("application/json")) {
