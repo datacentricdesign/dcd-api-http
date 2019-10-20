@@ -144,6 +144,8 @@ class PropertyAPI extends API {
         let from;
         let to;
         let interval;
+        let fill = "none";
+        let dao = "mysql";
         if (request.query.from !== undefined) {
           from = parseInt(request.query.from);
         }
@@ -153,8 +155,14 @@ class PropertyAPI extends API {
         if (request.query.interval !== undefined) {
           interval = request.query.interval;
         }
+        if (request.query.fill !== undefined) {
+          fill = request.query.fill;
+        }
+        if (request.query.dao !== undefined) {
+          fill = request.query.dao;
+        }
         this.model.properties
-          .read(entityId, propertyId, from, to, interval)
+          .read(entityId, propertyId, from, to, interval, fill, dao)
           .then(result => {
             this.logger.debug(result);
             if (request.accepts("application/json")) {
