@@ -125,6 +125,10 @@ class PropertyAPI extends API {
      *
      * @apiParam (Query) {Number} [from] Start time to get historical values, UNIX timestamp (in ms)
      * @apiParam (Query) {Number} [to] End time to get historical values, UNIX timestamp (in ms)
+     * @apiParam (Query) {String} [interval] interval between each data point (e.g 1s for 1 second, 2m for 2 minutes)
+     * @apiParam (Query) {String} [fct] interval fct to apply for each interval (default: MEAN)
+     * @apiParam (Query) {String} [fill] behaviour to apply if no record for a given interval (default: none)
+     * @apiParam (Query) {String} [store] for legacy, looks at "mysql" by default. Use "influx" for newly collected data for interval functions
      *
      * @apiSuccess {object} thing The retrieved Property
      */
@@ -144,8 +148,12 @@ class PropertyAPI extends API {
         let from;
         let to;
         let interval;
-        let fill = "none";
-        let dao = "mysql";
+        let fctInterval =
+          request.query.fct !== undefined ? request.query.fct : "MEAN";
+        let fill =
+          request.query.fill !== undefined ? request.query.fill : "none";
+        let store =
+          request.query.store !== undefined ? request.query.store : "mysql";
         if (request.query.from !== undefined) {
           from = parseInt(request.query.from);
         }
@@ -155,14 +163,17 @@ class PropertyAPI extends API {
         if (request.query.interval !== undefined) {
           interval = request.query.interval;
         }
-        if (request.query.fill !== undefined) {
-          fill = request.query.fill;
-        }
-        if (request.query.dao !== undefined) {
-          fill = request.query.dao;
-        }
         this.model.properties
-          .read(entityId, propertyId, from, to, interval, fill, dao)
+          .read(
+            entityId,
+            propertyId,
+            from,
+            to,
+            interval,
+            fctInterval,
+            fill,
+            store
+          )
           .then(result => {
             this.logger.debug(result);
             if (request.accepts("application/json")) {
