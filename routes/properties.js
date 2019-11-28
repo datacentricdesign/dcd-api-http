@@ -207,7 +207,7 @@ class PropertyAPI extends API {
           .readProperty(entityId, request.params.propertyId)
           .then(property => {
             property.values = [values];
-            return this.model.dao.updatePropertyValues(property);
+            return this.model.properties.updateValues(property);
           })
           .then(() => {
             upload(request, response, error => {
