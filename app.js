@@ -65,24 +65,19 @@ const RoleAPI = require("./routes/roles");
 const roleAPI = new RoleAPI(model);
 app.use(baseUrl, roleAPI.router);
 
+const TaskAPI = require('./routes/tasks');
+const taskAPI = new TaskAPI(model);
+app.use(baseUrl, taskAPI.router);
+
 // Catch 404 and forward to error handler
 app.use((request, response, next) => {
   next(new DCDError(404, "Path not found: " + request.path));
-const TaskAPI = require('./routes/tasks');
-const taskAPI = new TaskAPI(model);
-app.use(baseUrl+"/tasks", taskAPI.router);
-
-// catch 404 and forward to error handler
-app.use(function(request, response, next) {
-  const err = new Error("Not Found");
-  err.status = 404;
-  next(err);
 });
 
 // Error handler
 
-app.use((error, request, response, next) => {
-  let responseError = {};
+app.use((error, request, response) => {
+  let responseError;
   if (error instanceof DCDError) {
     logger.error(JSON.stringify(error));
     responseError = error;

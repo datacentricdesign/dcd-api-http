@@ -61,5 +61,6 @@ typings/
 .next
 
 .idea
+*.iml
 
 public/docs

@@ -6,6 +6,18 @@
 
 A NodeJS REST API for the Data-Centric Design Hub
 
+# Developers
+
+After cloning the repository, create a .env file at the root of the project with the following variables:
+
+
+
+Then
+
+npm install
+
+npm start
+
 # Changelog
 
 All notable changes to this project will be documented in this file.
