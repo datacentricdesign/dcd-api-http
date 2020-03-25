@@ -11,6 +11,8 @@ The API of the Data-Centric Design Hub relies on three main concepts:
   * a name
   * a password (at least 8 characters)
 
+[![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/62e1a1cef0b74a4133a6)
+
 * A **Thing** represents a physical or virtual component collecting data. For example, a
 phone which collects acceleration, a website recording number of page views. A Thing
 has:
@@ -21,6 +23,7 @@ has:
   * a description (optional)
   * a list of properties (optional) which values change over time
 
+[![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/17cbc21cf955ad88d5c5)
 
 * A **Property** represents a Thing property
 
@@ -42,6 +45,7 @@ has:
   * a list of classes (optional): if the property type is 'CLASS', you can associate
   text to the values. This is useful when using a property as data label.
 
+[![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/8b9e0bd72011379e84cb)
 
 ## Sign Up
 

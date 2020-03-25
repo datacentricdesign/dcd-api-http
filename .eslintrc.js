@@ -12,8 +12,5 @@ module.exports = {
       jsx: true
     }
   },
-  extends: [
-    "eslint:recommended",
-    "plugin:prettier/recommended"
-  ]
+  extends: ["eslint:recommended", "plugin:prettier/recommended"]
 };

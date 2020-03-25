@@ -3,20 +3,37 @@
 const fs = require("fs");
 const path = require("path");
 const multer = require("multer");
+const multiparty = require("multiparty");
 
 const API = require("./API");
+const DCDError = require("dcd-model/lib/Error");
 const Property = require("dcd-model/entities/Property");
 
+/**
+ * PropertyAPI provides the routes for managing Properties of the DCD Hub.
+ * A Property represents a Thing or Person property.
+ */
 class PropertyAPI extends API {
-  constructor(model, auth) {
-    super(model, auth);
+  constructor(model) {
+    super(model);
   }
 
   init() {
     /**
+     * Add the entity Type to all request of this router.
+     */
+    this.router.use((req, res, next) => {
+      this.logger.debug("Property route");
+      req.entityType = req.params.entity;
+      next();
+    });
+
+    /**
      * @api {post} /things|persons/:entityId/properties Create
      * @apiGroup Property
      * @apiDescription Create a Property.
+     *
+     * @apiVersion 0.1.0
      *
      * @apiParam {String} entityId Id of the Thing or Person to which we add the Property.
      *
@@ -38,20 +55,23 @@ class PropertyAPI extends API {
         "/:entity(things|persons)/:entityId/:component(properties)",
         "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)"
       ],
-      this.auth.introspect,
-      this.auth.wardenSubject({ resource: "properties", action: "create" }),
-      (request, response) => {
+      this.introspectToken([]),
+      this.checkPolicy("properties", "create"),
+      (request, response, next) => {
+        this.logger.debug("POST properties");
         if (request.params.interactionId !== undefined) {
+          // Looking for an interaction property
           request.body.entityId = request.params.interactionId;
         } else {
+          // Looking for a Person/Thing property
           request.body.entityId = request.params.entityId;
         }
         this.logger.debug(request.body);
         this.logger.debug(new Property(request.body));
         this.model.properties
           .create(new Property(request.body))
-          .then(result => this.success(response, { property: result }))
-          .catch(error => this.fail(response, error));
+          .then(result => this.success(response, { property: result }, 201))
+          .catch(error => next(error));
       }
     );
 
@@ -59,6 +79,8 @@ class PropertyAPI extends API {
      * @api {get} /things|persons/:entityId/properties List
      * @apiGroup Property
      * @apiDescription List Properties.
+     *
+     * @apiVersion 0.1.0
      *
      * @apiHeader {String} Authorization TOKEN ID
      *
@@ -71,9 +93,9 @@ class PropertyAPI extends API {
         "/:entity(things|persons)/:entityId/:component(properties)",
         "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)"
       ],
-      this.auth.introspect,
-      this.auth.wardenSubject({ resource: "properties", action: "list" }),
-      (request, response) => {
+      this.introspectToken([]),
+      this.checkPolicy("properties", "list"),
+      (request, response, next) => {
         let entityId = request.params.entityId;
         if (request.params.interactionId !== undefined) {
           entityId = request.params.interactionId;
@@ -82,9 +104,9 @@ class PropertyAPI extends API {
           .list(entityId)
           .then(result => {
             this.logger.info(result);
-            this.success(response, { properties: result });
+            this.success(response, { properties: result }, 200);
           })
-          .catch(error => this.fail(response, error));
+          .catch(error => next(error));
       }
     );
 
@@ -93,13 +115,20 @@ class PropertyAPI extends API {
      * @apiGroup Property
      * @apiDescription Read a Property.
      *
+     * @apiVersion 0.1.0
+     *
      * @apiHeader {String} Authorization TOKEN ID
+     * @apiHeader {String} Accept text/csv or application/json
      *
      * @apiParam {String} entityId   Id of the Thing or Person containing the property.
      * @apiParam {String} propertyId Id of the Property to read.
      *
      * @apiParam (Query) {Number} [from] Start time to get historical values, UNIX timestamp (in ms)
      * @apiParam (Query) {Number} [to] End time to get historical values, UNIX timestamp (in ms)
+     * @apiParam (Query) {String} [interval] interval between each data point (e.g 1s for 1 second, 2m for 2 minutes)
+     * @apiParam (Query) {String} [fct] interval fct to apply for each interval (default: MEAN)
+     * @apiParam (Query) {String} [fill] behaviour to apply if no record for a given interval (default: none)
+     * @apiParam (Query) {String} [store] for legacy, looks at "mysql" by default. Use "influx" for newly collected data for interval functions
      *
      * @apiSuccess {object} thing The retrieved Property
      */
@@ -108,9 +137,9 @@ class PropertyAPI extends API {
         "/:entity(things|persons)/:entityId/:component(properties)/:propertyId",
         "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)/:propertyId"
       ],
-      this.auth.introspect,
-      this.auth.wardenSubject({ resource: "things", action: "read" }),
-      (request, response) => {
+      this.introspectToken([]),
+      this.checkPolicy("things", "read"),
+      (request, response, next) => {
         let entityId = request.params.entityId;
         if (request.params.interactionId !== undefined) {
           entityId = request.params.interactionId;
@@ -118,19 +147,49 @@ class PropertyAPI extends API {
         const propertyId = request.params.propertyId;
         let from;
         let to;
+        let interval;
+        let fctInterval =
+          request.query.fct !== undefined ? request.query.fct : "MEAN";
+        let fill =
+          request.query.fill !== undefined ? request.query.fill : "none";
+        let store =
+          request.query.store !== undefined ? request.query.store : "mysql";
         if (request.query.from !== undefined) {
           from = parseInt(request.query.from);
         }
         if (request.query.to !== undefined) {
           to = parseInt(request.query.to);
         }
+        if (request.query.interval !== undefined) {
+          interval = request.query.interval;
+        }
         this.model.properties
-          .read(entityId, propertyId, from, to)
+          .read(
+            entityId,
+            propertyId,
+            from,
+            to,
+            interval,
+            fctInterval,
+            fill,
+            store
+          )
           .then(result => {
             this.logger.debug(result);
-            return this.success(response, { property: result });
+            if (request.accepts("application/json")) {
+              return this.success(response, { property: result }, 200);
+            } else if (request.accepts("text/csv")) {
+              return this.success(
+                response,
+                PropertyAPI.toCSV(result),
+                200,
+                "text/csv"
+              );
+            } else {
+              return this.success(response, { property: result }, 200);
+            }
           })
-          .catch(error => this.fail(response, error));
+          .catch(error => next(error));
       }
     );
 
@@ -139,6 +198,8 @@ class PropertyAPI extends API {
      * @apiGroup Property
      * @apiDescription Update a Property.
      *
+     * @apiVersion 0.1.0
+     *
      * @apiParam {String} entityId   Id of the Thing or Person containing the property.
      * @apiParam {String} propertyId Id of the Property to update.
      */
@@ -147,164 +208,72 @@ class PropertyAPI extends API {
         "/:entity(things|persons)/:entityId/:component(properties)/:propertyId",
         "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)/:propertyId"
       ],
-      this.auth.introspect,
-      this.auth.wardenSubject({ resource: "properties", action: "update" }),
-      (request, response) => {
+      this.introspectToken([]),
+      this.checkPolicy("properties", "update"),
+      (request, response, next) => {
         const propertyId = request.params.propertyId;
-        const property = request.body;
-        if (property.id === propertyId) {
-          this.model.properties
-            .updateValues(property)
-            .then(() => {
-              if (
-                request.files === undefined ||
-                request.files.video === undefined
-              ) {
-                return this.success(response, property);
-              }
-              upload(request, response, error => {
-                if (error) {
-                  return this.fail(response, error);
-                } else {
-                  if (request.file === undefined) {
-                    return this.fail(response, { error: "Missing file." });
-                  } else {
-                    return this.success(response, { success: true });
-                  }
-                }
-              });
-            })
-            .catch(error => this.fail(response, error));
-        } else {
-          this.fail(response, { message: "property id not matching" });
+        const contentType = request.headers["content-type"];
+        if (contentType.indexOf("application/json") === 0) {
+          // Look for data in the body
+          const property = new Property(request.body);
+          property.entityId = request.params.entityId;
+          if (property.id !== propertyId) {
+            return next(
+              new DCDError(
+                400,
+                "The property id in the request path is not matching with the id provided in the request body."
+              )
+            );
+          }
+          return this.update(property, request, response, next);
+        } else if (contentType.indexOf("multipart/form-data") === 0) {
+          // Look for data in a CSV file
+          const property = new Property({
+            id: propertyId,
+            entityId: request.params.entityId
+          });
+          return this.uploadDataFile(property, request, response, next);
         }
+        // No json body nor data file.
+        return next(
+          new DCDError(
+            404,
+            "Could not find data in the body as JSON (Content-Type: application/json) nor in a data file (Content-Type: multipart/form-data)."
+          )
+        );
       }
     );
 
     /**
-     * @api {post} /things|persons/:entityId/properties/:propertyId/values/:values/file Update file
+     * @api {put} /things|persons/:entityId/properties/:propertyId/values/:values Update
      * @apiGroup Property
      * @apiDescription Update a Property with a file (e.g. video).
+     *
+     * @apiVersion 0.1.0
      *
      * @apiParam {String} entityId   Id of the Thing or Person containing the property.
      * @apiParam {String} propertyId Id of the Property to update.
      * @apiParam {String} values Comma-separated values to associate to the file.
      */
-    this.router.post(
+    this.router.put(
       [
-        "/:entity(things|persons)/:entityId/:component(properties)/:propertyId/values/:values/file",
-        "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)/:propertyId/values/:values/file"
+        "/:entity(things|persons)/:entityId/:component(properties)/:propertyId/values/:values",
+        "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)/:propertyId/values/:values"
       ],
-      this.auth.introspect,
-      this.auth.wardenSubject({ resource: "properties", action: "update" }),
-      (request, response) => {
+      this.introspectToken([]),
+      this.checkPolicy("properties", "update"),
+      (request, response, next) => {
         const values = request.params.values.split(",").map(Number);
         let entityId = request.params.entityId;
         if (request.params.interactionId !== undefined) {
           entityId = request.params.interactionId;
         }
-        this.model.dao
-          .readProperty(entityId, request.params.propertyId)
-          .then(property => {
-            property.values = [values];
-            return this.model.properties.updateValues(property);
-          })
-          .then(() => {
-            upload(request, response, error => {
-              if (error) {
-                return this.fail(response, error);
-              } else {
-                if (request.file === undefined) {
-                  return this.fail(response, { error: "Missing file." });
-                } else {
-                  return this.success(response, { success: true });
-                }
-              }
-            });
-          })
-          .catch(error => this.fail(response, error));
-      }
-    );
-
-    /**
-     * @api {put} /things|persons/:entityId/properties/:propertyId/file Update CSV
-     * @apiGroup Property
-     * @apiDescription Update a property with a CSV file of values.
-     *
-     * @apiParam {String} entityId   Id of the Thing or Person containing the property.
-     * @apiParam {String} propertyId Id of the Property to update.
-     */
-    this.router.put(
-      [
-        "/:entity(things|persons)/:entityId/:component(properties)/:propertyId/file",
-        "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)/:propertyId/file"
-      ],
-      this.auth.introspect,
-      this.auth.wardenSubject({ resource: "properties", action: "update" }),
-      (request, response, next) => {
-        let entityId = request.params.entityId;
-        if (request.params.interactionId !== undefined) {
-          entityId = request.params.interactionId;
-        }
-        const propertyId = request.params.propertyId;
-
-        const form = new multiparty.Form();
-        let dataStr = "";
-
-        form.on("error", next);
-        form.on("close", () => {
-          const property = updatePropertyFromCSVStr(
-            entityId,
-            propertyId,
-            dataStr
-          );
-          this.model.properties
-            .update(entityId, propertyId, property)
-            .then(result => this.success(response, result))
-            .catch(error => this.fail(response, error));
+        const property = new Property({
+          id: request.params.propertyId,
+          values: [values],
+          entityId: entityId
         });
-
-        // listen on part event for data file
-        form.on("part", part => {
-          if (!part.filename) {
-            return;
-          }
-          part.on("data", buf => {
-            dataStr += buf.toString();
-          });
-        });
-        form.parse(request);
-      }
-    );
-
-    /**
-     * @api {delete} /things|persons/:entityId/properties/:propertyId Delete
-     * @apiGroup Property
-     * @apiDescription Delete a Property.
-     *
-     * @apiHeader {String} Authorization TOKEN ID
-     *
-     * @apiParam {String} entityId   Id of the Thing or Person containing the property.
-     * @apiParam {String} propertyId Id of the Property to delete.
-     */
-    this.router.delete(
-      [
-        "/:entity(things|persons)/:entityId/:component(properties)/:propertyId",
-        "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)/:propertyId"
-      ],
-      this.auth.introspect,
-      this.auth.wardenSubject({ resource: "properties", action: "delete" }),
-      (request, response) => {
-        this.model.properties
-          .del(request.params.propertyId)
-          .then(result => {
-            if (result.affectedRows === 1) {
-              this.success(response, { success: true });
-            } else {
-              this.fail(response, { error: "Property to delete not found" });
-            }
-          })
-          .catch(error => this.fail(response, error));
+        this.update(property, request, response, next);
       }
     );
 
@@ -313,6 +282,8 @@ class PropertyAPI extends API {
      * @apiGroup Property
      * @apiDescription Read file attach to a property value.
      *
+     * @apiVersion 0.1.0
+     *
      * @apiHeader {String} Authorization TOKEN ID
      *
      * @apiParam {String} entityId   Id of the Thing or Person containing the property.
@@ -320,9 +291,13 @@ class PropertyAPI extends API {
      * @apiParam {Number} ts         Timestamp of the value associated with the file to retrieve (UNIX, in ms)
      */
     this.router.get(
-      "/:entity(things|persons)/:entityId/:component(properties)/:propertyId/values/:ts",
-      this.auth.introspect,
-      (request, response) => {
+      [
+        "/:entity(things|persons)/:entityId/:component(properties)/:propertyId/values/:ts",
+        "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)/:propertyId/values/:ts"
+      ],
+      this.introspectToken([]),
+      this.checkPolicy("properties", "read"),
+      (request, response, next) => {
         const path =
           "./files/" +
           request.params.entityId +
@@ -367,6 +342,8 @@ class PropertyAPI extends API {
      * @apiGroup Property
      * @apiDescription Attach a list of class names (labels) to a property of type CLASS
      *
+     * @apiVersion 0.1.0
+     *
      * @apiHeader {String} Authorization TOKEN ID
      * @apiHeader {String} Content-type application/json
      *
@@ -379,15 +356,18 @@ class PropertyAPI extends API {
      *     }
      */
     this.router.post(
-      "/:entity(things|persons)/:entityId/:component(properties)/:componentId/classes",
-      this.auth.introspect,
-      this.auth.wardenSubject({ resource: "classes", action: "create" }),
-      (request, response) => {
+      [
+        "/:entity(things|persons)/:entityId/:component(properties)/:componentId/classes",
+        "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)/:componentId/classes"
+      ],
+      this.introspectToken([]),
+      this.checkPolicy("classes", "create"),
+      (request, response, next) => {
         if (
           request.body.classes === undefined ||
           request.body.classes.length === 0
         ) {
-          return this.fail(response, { msg: "Missing or empty classes array" });
+          return next(new DCDError(4009, "Missing or empty classes array"));
         }
         this.model.properties
           .createClasses(
@@ -395,10 +375,125 @@ class PropertyAPI extends API {
             request.params.componentId,
             request.body.classes
           )
-          .then(result => this.success(response, { classes: result }))
-          .catch(error => this.fail(response, error));
+          .then(result => this.success(response, { classes: result }, 201))
+          .catch(error => next(error));
       }
     );
+
+    /**
+     * @api {delete} /things|persons/:entityId/properties/:propertyId Delete
+     * @apiGroup Property
+     * @apiDescription Delete a Property.
+     *
+     * @apiVersion 0.1.0
+     *
+     * @apiHeader {String} Authorization TOKEN ID
+     *
+     * @apiParam {String} entityId   Id of the Thing or Person containing the property.
+     * @apiParam {String} propertyId Id of the Property to delete.
+     */
+    this.router.delete(
+      [
+        "/:entity(things|persons)/:entityId/:component(properties)/:propertyId",
+        "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)/:propertyId"
+      ],
+      this.introspectToken([]),
+      this.checkPolicy("properties", "delete"),
+      (request, response, next) => {
+        const propertyId = request.params.propertyId;
+        this.model.properties
+          .del(propertyId)
+          .then(result => {
+            if (result.affectedRows > 0) {
+              this.success(
+                response,
+                {
+                  message: result.affectedRows + " Property deleted."
+                },
+                200
+              );
+            } else {
+              next(
+                new DCDError(
+                  404,
+                  "Property to delete " +
+                    propertyId +
+                    " could not be not found."
+                )
+              );
+            }
+          })
+          .catch(error => next(error));
+      }
+    );
+  }
+
+  update(property, request, response, next) {
+    this.model.properties
+      .update(property)
+      .then(() => {
+        return this.model.properties.updateValues(property);
+      })
+      .then(result => {
+        const payload = {};
+        if (result !== undefined) {
+          payload.values = result;
+        }
+        if (request.files === undefined || request.files.video === undefined) {
+          payload.file = false;
+          return this.success(response, payload, 200);
+        }
+        upload(request, response, error => {
+          if (error) {
+            return next(error);
+          } else {
+            if (request.file === undefined) {
+              return next(new DCDError(4042, "The file to upload is missing."));
+            } else {
+              payload.file = true;
+              return this.success(response, payload, 200);
+            }
+          }
+        });
+      })
+      .catch(error => next(error));
+  }
+
+  uploadDataFile(property, request, response, next) {
+    const form = new multiparty.Form();
+    let dataStr = "";
+    // listen on part event for data file
+    form.on("part", part => {
+      if (!part.filename) {
+        return;
+      }
+      part.on("data", buf => {
+        dataStr += buf.toString();
+      });
+    });
+    form.on("close", () => {
+      const propertyWithValues = updatePropertyFromCSVStr(
+        property.entityId,
+        property.id,
+        dataStr
+      );
+      this.update(propertyWithValues, request, response, next);
+    });
+    form.on("error", next);
+    form.parse(request);
+  }
+
+  static toCSV(property) {
+    let csv = "time";
+    for (let i = 0; i < property.dimensions.length; i++) {
+      csv += "," + property.dimensions[i].name;
+    }
+    csv += "\n";
+    for (let i = 0; i < property.values.length; i++) {
+      csv += property.values[i].join(",");
+      csv += "\n";
+    }
+    return csv;
   }
 }
 
@@ -428,12 +523,12 @@ const upload = multer({
   fileFilter: function(req, file, cb) {
     checkFileType(file, cb);
   }
-}).single("video");
+}).single("media");
 
 // Check File Type
 function checkFileType(file, cb) {
   // Allowed ext
-  const filetypes = /mp4/;
+  const filetypes = /mp4|jpeg|jpg|mp3/;
   // Check ext
   const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
   // Check mime
@@ -442,7 +537,7 @@ function checkFileType(file, cb) {
   if (mimetype && extname) {
     return cb(null, true);
   } else {
-    cb("Error: MP4 video Only!");
+    cb(new DCDError(400, "MP4, MP3 and JPEG Only!"));
   }
 }
 

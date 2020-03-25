@@ -1,18 +1,33 @@
 "use strict";
 
 const API = require("./API");
+const DCDError = require("dcd-model/lib/Error");
 const Interaction = require("dcd-model/entities/Interaction");
 
+/**
+ * InteractionAPI provides the routes for managing Interactions of the DCD Hub.
+ */
 class InteractionAPI extends API {
-  constructor(model, auth) {
-    super(model, auth);
+  constructor(model) {
+    super(model);
   }
 
   init() {
     /**
+     * Add the entity Type to all request of this router.
+     */
+    this.router.use((req, res, next) => {
+      req.entityType = req.params.entity;
+      next();
+    });
+
+    /**
      * @api {post} /things|persons/:entityId/interactions Create
      * @apiGroup Interaction
      * @apiDescription Create an Interaction.
+     *
+     * @apiVersion 0.0.0
+     * @apiIgnore Still under development.
      *
      * @apiParam {String} entityId Id of one of the Thing or Person taking part in the interaction.
      *
@@ -30,16 +45,19 @@ class InteractionAPI extends API {
      */
     this.router.post(
       "/:entity(things|persons)/:entityId/:component(interactions)",
-      this.auth.introspect,
-      this.auth.wardenSubject({ resource: "interactions", action: "create" }),
-      (request, response) => {
+      request => {
+        this.introspectToken([request.params.entity]);
+      },
+      this.checkPolicy({ resource: "interactions", action: "create" }),
+      (request, response, next) => {
         if (
           request.body === undefined ||
           (request.body.entity_id_1 !== request.params.entityId &&
             request.body.entity_id_2 !== request.params.entityId)
         ) {
-          return this.fail(
-            new Error(
+          return next(
+            new DCDError(
+              4008,
               "Missing body with entityId1 and entityId2," +
                 " or mismatch with requester thing id."
             )
@@ -49,7 +67,7 @@ class InteractionAPI extends API {
         this.model.interactions
           .create(interaction)
           .then(result => this.success(response, { interaction: result }))
-          .catch(error => this.fail(response, error));
+          .catch(error => next(error));
       }
     );
 
@@ -57,6 +75,9 @@ class InteractionAPI extends API {
      * @api {get} /things|persons/:entityId/interactions List
      * @apiGroup Interaction
      * @apiDescription List Interactions.
+     *
+     * @apiVersion 0.0.0
+     * @apiIgnore Still under development.
      *
      * @apiHeader {String} Authorization TOKEN ID
      *
@@ -67,9 +88,11 @@ class InteractionAPI extends API {
      */
     this.router.get(
       "/:entity(things|persons)/:entityId/:component(interactions)",
-      this.auth.introspect,
-      this.auth.wardenSubject({ resource: "interactions", action: "list" }),
-      (request, response) => {
+      request => {
+        this.introspectToken([request.params.entity]);
+      },
+      this.checkPolicy({ resource: "interactions", action: "list" }),
+      (request, response, next) => {
         let entityDestId;
         if (request.query.entity !== undefined) {
           entityDestId = parseInt(request.query.entity);
@@ -77,7 +100,7 @@ class InteractionAPI extends API {
         this.model.interactions
           .list(request.user.sub, request.params.entityId, entityDestId)
           .then(result => this.success(response, { interactions: result }))
-          .catch(error => this.fail(response, error));
+          .catch(error => next(error));
       }
     );
 
@@ -85,6 +108,9 @@ class InteractionAPI extends API {
      * @api {get} /things|persons/:entityId/interactions/:interactionId Read
      * @apiGroup Interaction
      * @apiDescription Read an Interaction.
+     *
+     * @apiVersion 0.0.0
+     * @apiIgnore Still under development.
      *
      * @apiHeader {String} Authorization TOKEN ID
      *
@@ -95,13 +121,15 @@ class InteractionAPI extends API {
      */
     this.router.get(
       "/:entity(things|persons)/:entityId/:component(interactions)/:componentId",
-      this.auth.introspect,
-      this.auth.wardenSubject({ resource: "interactions", action: "read" }),
-      (request, response) => {
+      request => {
+        this.introspectToken([request.params.entity]);
+      },
+      this.checkPolicy({ resource: "interactions", action: "read" }),
+      (request, response, next) => {
         this.model.interactions
           .read(request.params.componentId)
           .then(result => this.success(response, { interaction: result }))
-          .catch(error => this.fail(response, error));
+          .catch(error => next(error));
       }
     );
   }

@@ -3,23 +3,46 @@
 const API = require("./API");
 const Thing = require("dcd-model/entities/Thing");
 
+/**
+ * ThingAPI provides the routes for managing Things of the DCD Hub.
+ */
 class ThingAPI extends API {
-  constructor(model, auth) {
-    super(model, auth);
+  constructor(model) {
+    super(model);
+  }
+
+  formatEntityId(request, response, next) {
+    if (request.params.entityId !== undefined) {
+      if (!request.params.entityId.startsWith("dcd:things:")) {
+        request.params.entityId = "dcd:things:" + request.params.entityId;
+      }
+    }
+    next();
   }
 
   init() {
     /**
+     * Add the entity Type 'persons' to all request of this router.
+     */
+    this.router.use((req, res, next) => {
+      req.entityType = "things";
+      next();
+    });
+
+    /**
      * @api {post} /things Create
      * @apiGroup Thing
      * @apiDescription Create a Thing.
+     *
+     * @apiVersion 0.1.0
      *
      * @apiParam (Body) {Thing} thing Thing to create as JSON.
      * @apiParamExample {json} thing:
      *     {
      *       "name": "My Thing",
      *       "description": "A description of my thing.",
-     *       "type": "Test Thing"
+     *       "type": "Test Thing",
+     *       "pem": "PEM PUBLIC KEY"
      *     }
      *
      * @apiParam (Query) {Boolean} [jwt=false] Need to generate a JWT
@@ -32,28 +55,30 @@ class ThingAPI extends API {
      */
     this.router.post(
       "/",
-      this.auth.introspect,
-      this.auth.wardenSubject({ resource: "things", action: "create" }),
-      (request, response) => {
+      this.introspectToken(["dcd:things"]),
+      this.checkPolicy("things", "create"),
+      (request, response, next) => {
         // Web forms cannot submit PUT methods, we check the flag update
         if (request.query.thingId !== undefined) {
           request.body.entityId = request.query.thingId;
           return this.model.things
             .update(new Thing(request.body))
             .then(result => this.success(response, result))
-            .catch(error => this.fail(response, error));
+            .catch(error => next(error));
         }
 
         const actorId = request.user.sub;
         const thing = new Thing(request.body);
-        const jwt =
-          request.query.jwt !== undefined
-            ? request.query.jwt === "true"
-            : false;
+        // const jwt =
+        //   request.query.jwt !== undefined
+        //     ? request.query.jwt === "true"
+        //     : false;
+        const jwt = true;
+        thing["pem"] = undefined;
         this.model.things
           .create(actorId, thing, jwt)
-          .then(result => this.success(response, { thing: result }))
-          .catch(error => this.fail(response, error));
+          .then(result => this.success(response, { thing: result }, 201))
+          .catch(error => next(error));
       }
     );
 
@@ -62,19 +87,21 @@ class ThingAPI extends API {
      * @apiGroup Thing
      * @apiDescription List Things.
      *
+     * @apiVersion 0.1.0
+     *
      * @apiHeader {String} Authorization TOKEN ID
      *
      * @apiSuccess {object} things The retrieved Things
      */
     this.router.get(
       "/",
-      this.auth.introspect,
-      this.auth.wardenSubject({ resource: "things", action: "list" }),
-      (request, response) => {
+      this.introspectToken(["dcd:things"]),
+      this.checkPolicy("things", "list"),
+      (request, response, next) => {
         this.model.things
           .list(request.user.sub)
-          .then(result => this.success(response, { things: result }))
-          .catch(error => this.fail(response, error));
+          .then(result => this.success(response, { things: result }, 200))
+          .catch(error => next(error));
       }
     );
 
@@ -82,6 +109,8 @@ class ThingAPI extends API {
      * @api {get} /things/thingId Read
      * @apiGroup Thing
      * @apiDescription Read a Thing.
+     *
+     * @apiVersion 0.1.0
      *
      * @apiHeader {String} Authorization TOKEN ID
      *
@@ -91,15 +120,16 @@ class ThingAPI extends API {
      */
     this.router.get(
       "/:entityId",
-      this.auth.introspect,
-      this.auth.wardenSubject({ resource: "things", action: "read" }),
-      (request, response) => {
+      this.formatEntityId,
+      this.introspectToken(["dcd:things"]),
+      this.checkPolicy("things", "read"),
+      (request, response, next) => {
         this.model.things
           .read(request.params.entityId)
           .then(result => {
-            this.success(response, { thing: result });
+            this.success(response, { thing: result }, 200);
           })
-          .catch(error => this.fail(response, error));
+          .catch(error => next(error));
       }
     );
 
@@ -108,19 +138,49 @@ class ThingAPI extends API {
      * @apiGroup Thing
      * @apiDescription Update a Thing.
      *
+     * @apiVersion 0.1.0
+     *
      * @apiHeader {String} Authorization TOKEN ID
      *
      * @apiParam {String} thingId Id of the Thing to update.
      */
     this.router.put(
       "/:entityId",
-      this.auth.introspect,
-      this.auth.wardenSubject({ resource: "things", action: "update" }),
-      (request, response) => {
+      this.formatEntityId,
+      this.introspectToken(["dcd:things"]),
+      this.checkPolicy("things", "update"),
+      (request, response, next) => {
         this.model.things
           .update(new Thing(request.body, request.params.entityId))
-          .then(result => this.success(response, result))
-          .catch(error => this.fail(response, error));
+          .then(result => this.success(response, result, 200))
+          .catch(error => next(error));
+      }
+    );
+
+    /**
+     * @api {put} /things/thingId/jwk Update PEM
+     * @apiGroup Thing
+     * @apiDescription Update a Thing PEM.
+     *
+     * @apiVersion 0.1.0
+     *
+     * @apiHeader {string} Authorization TOKEN ID
+     *
+     * @apiParam {string} thingId Id of the Thing to update.
+     *
+     * @apiBody {string} thingId Id of the Thing to update.
+     * @apiBody {string} pem of the Thing to update.
+     */
+    this.router.put(
+      "/:entityId/pem",
+      this.formatEntityId,
+      this.introspectToken(["dcd:things"]),
+      this.checkPolicy("things", "update"),
+      (request, response, next) => {
+        this.model.auth
+          .setPEM(request.params.entityId, request.body.pem)
+          .then(result => this.success(response, result, 200))
+          .catch(error => next(error));
       }
     );
 
@@ -129,19 +189,28 @@ class ThingAPI extends API {
      * @apiGroup Thing
      * @apiDescription Delete a Thing.
      *
+     * @apiVersion 0.1.0
+     *
      * @apiHeader {String} Authorization TOKEN ID
      *
      * @apiParam {String} thingId Id of the Thing to delete.
      */
     this.router.delete(
       "/:entityId",
-      this.auth.introspect,
-      this.auth.wardenSubject({ resource: "things", action: "delete" }),
-      (request, response) => {
+      this.formatEntityId,
+      this.introspectToken(["dcd:things"]),
+      this.checkPolicy("things", "delete"),
+      (request, response, next) => {
         this.model.things
           .del(request.params.entityId)
-          .then(result => this.success(response, result))
-          .catch(error => this.fail(response, error));
+          .then(nbDelete => {
+            this.success(
+              response,
+              { message: nbDelete + " Thing(s) deleted." },
+              200
+            );
+          })
+          .catch(error => next(error));
       }
     );
   }
