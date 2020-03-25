@@ -1,7 +1,7 @@
 "use strict";
 
 const API = require("./API");
-const Person = require("dcd-model/entities/Person");
+const Person = require("@datacentricdesign/model/entities/Person");
 
 /**
  * PersonAPI provides the routes for managing Persons of the DCD Hub.

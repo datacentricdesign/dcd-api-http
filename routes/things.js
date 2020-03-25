@@ -1,7 +1,7 @@
 "use strict";
 
 const API = require("./API");
-const Thing = require("dcd-model/entities/Thing");
+const Thing = require("@datacentricdesign/model/entities/Thing");
 
 /**
  * ThingAPI provides the routes for managing Things of the DCD Hub.

@@ -24,7 +24,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(baseUrl, express.static(path.join(__dirname, "public")));
 
-const DCDModel = require("dcd-model");
+const DCDModel = require("@datacentricdesign/model");
 const DCDError = require("dcd-model/lib/Error");
 
 // test
@@ -68,6 +68,15 @@ app.use(baseUrl, roleAPI.router);
 // Catch 404 and forward to error handler
 app.use((request, response, next) => {
   next(new DCDError(404, "Path not found: " + request.path));
+const TaskAPI = require('./routes/tasks');
+const taskAPI = new TaskAPI(model);
+app.use(baseUrl+"/tasks", taskAPI.router);
+
+// catch 404 and forward to error handler
+app.use(function(request, response, next) {
+  const err = new Error("Not Found");
+  err.status = 404;
+  next(err);
 });
 
 // Error handler

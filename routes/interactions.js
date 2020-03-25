@@ -1,8 +1,8 @@
 "use strict";
 
 const API = require("./API");
+const Interaction = require("@datacentricdesign/model/entities/Interaction");
 const DCDError = require("dcd-model/lib/Error");
-const Interaction = require("dcd-model/entities/Interaction");
 
 /**
  * InteractionAPI provides the routes for managing Interactions of the DCD Hub.

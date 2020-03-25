@@ -6,8 +6,8 @@ const multer = require("multer");
 const multiparty = require("multiparty");
 
 const API = require("./API");
+const Property = require("@datacentricdesign/model/entities/Property");
 const DCDError = require("dcd-model/lib/Error");
-const Property = require("dcd-model/entities/Property");
 
 /**
  * PropertyAPI provides the routes for managing Properties of the DCD Hub.
