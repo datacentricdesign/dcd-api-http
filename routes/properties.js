@@ -1,11 +1,11 @@
-"use strict";
+'use strict';
 
-const fs = require("fs");
-const path = require("path");
-const multer = require("multer");
+const fs = require('fs');
+const path = require('path');
+const multer = require('multer');
 
-const API = require("./API");
-const Property = require("dcd-model/entities/Property");
+const API = require('./API');
+const Property = require('dcd-model/entities/Property');
 
 class PropertyAPI extends API {
   constructor(model, auth) {
@@ -35,11 +35,14 @@ class PropertyAPI extends API {
      */
     this.router.post(
       [
-        "/:entity(things|persons)/:entityId/:component(properties)",
-        "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)"
+        '/:entity(things|persons)/:entityId/:component(properties)',
+        '/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)'
       ],
       this.auth.introspect,
-      this.auth.wardenSubject({ resource: "properties", action: "create" }),
+      this.auth.wardenSubject({
+        resource: 'properties',
+        action: 'create'
+      }),
       (request, response) => {
         if (request.params.interactionId !== undefined) {
           request.body.entityId = request.params.interactionId;
@@ -50,8 +53,8 @@ class PropertyAPI extends API {
         this.logger.debug(new Property(request.body));
         this.model.properties
           .create(new Property(request.body))
-          .then(result => this.success(response, { property: result }))
-          .catch(error => this.fail(response, error));
+          .then((result) => this.success(response, { property: result }))
+          .catch((error) => this.fail(response, error));
       }
     );
 
@@ -68,11 +71,14 @@ class PropertyAPI extends API {
      */
     this.router.get(
       [
-        "/:entity(things|persons)/:entityId/:component(properties)",
-        "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)"
+        '/:entity(things|persons)/:entityId/:component(properties)',
+        '/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)'
       ],
       this.auth.introspect,
-      this.auth.wardenSubject({ resource: "properties", action: "list" }),
+      this.auth.wardenSubject({
+        resource: 'properties',
+        action: 'list'
+      }),
       (request, response) => {
         let entityId = request.params.entityId;
         if (request.params.interactionId !== undefined) {
@@ -80,11 +86,11 @@ class PropertyAPI extends API {
         }
         this.model.properties
           .list(entityId)
-          .then(result => {
+          .then((result) => {
             this.logger.info(result);
             this.success(response, { properties: result });
           })
-          .catch(error => this.fail(response, error));
+          .catch((error) => this.fail(response, error));
       }
     );
 
@@ -105,11 +111,11 @@ class PropertyAPI extends API {
      */
     this.router.get(
       [
-        "/:entity(things|persons)/:entityId/:component(properties)/:propertyId",
-        "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)/:propertyId"
+        '/:entity(things|persons)/:entityId/:component(properties)/:propertyId',
+        '/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)/:propertyId'
       ],
       this.auth.introspect,
-      this.auth.wardenSubject({ resource: "things", action: "read" }),
+      this.auth.wardenSubject({ resource: 'things', action: 'read' }),
       (request, response) => {
         let entityId = request.params.entityId;
         if (request.params.interactionId !== undefined) {
@@ -126,11 +132,11 @@ class PropertyAPI extends API {
         }
         this.model.properties
           .read(entityId, propertyId, from, to)
-          .then(result => {
+          .then((result) => {
             this.logger.debug(result);
             return this.success(response, { property: result });
           })
-          .catch(error => this.fail(response, error));
+          .catch((error) => this.fail(response, error));
       }
     );
 
@@ -144,11 +150,14 @@ class PropertyAPI extends API {
      */
     this.router.put(
       [
-        "/:entity(things|persons)/:entityId/:component(properties)/:propertyId",
-        "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)/:propertyId"
+        '/:entity(things|persons)/:entityId/:component(properties)/:propertyId',
+        '/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)/:propertyId'
       ],
       this.auth.introspect,
-      this.auth.wardenSubject({ resource: "properties", action: "update" }),
+      this.auth.wardenSubject({
+        resource: 'properties',
+        action: 'update'
+      }),
       (request, response) => {
         const propertyId = request.params.propertyId;
         const property = request.body;
@@ -158,25 +167,28 @@ class PropertyAPI extends API {
             .then(() => {
               if (
                 request.files === undefined ||
-                request.files.video === undefined
+                request.files.video === undefined ||
+                request.files.image === undefined
               ) {
                 return this.success(response, property);
               }
-              upload(request, response, error => {
+              upload(request, response, (error) => {
                 if (error) {
                   return this.fail(response, error);
                 } else {
                   if (request.file === undefined) {
-                    return this.fail(response, { error: "Missing file." });
+                    return this.fail(response, {
+                      error: 'Missing file.'
+                    });
                   } else {
                     return this.success(response, { success: true });
                   }
                 }
               });
             })
-            .catch(error => this.fail(response, error));
+            .catch((error) => this.fail(response, error));
         } else {
-          this.fail(response, { message: "property id not matching" });
+          this.fail(response, { message: 'property id not matching' });
         }
       }
     );
@@ -192,37 +204,40 @@ class PropertyAPI extends API {
      */
     this.router.post(
       [
-        "/:entity(things|persons)/:entityId/:component(properties)/:propertyId/values/:values/file",
-        "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)/:propertyId/values/:values/file"
+        '/:entity(things|persons)/:entityId/:component(properties)/:propertyId/values/:values/file',
+        '/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)/:propertyId/values/:values/file'
       ],
       this.auth.introspect,
-      this.auth.wardenSubject({ resource: "properties", action: "update" }),
+      this.auth.wardenSubject({
+        resource: 'properties',
+        action: 'update'
+      }),
       (request, response) => {
-        const values = request.params.values.split(",").map(Number);
+        const values = request.params.values.split(',').map(Number);
         let entityId = request.params.entityId;
         if (request.params.interactionId !== undefined) {
           entityId = request.params.interactionId;
         }
         this.model.dao
           .readProperty(entityId, request.params.propertyId)
-          .then(property => {
+          .then((property) => {
             property.values = [values];
             return this.model.properties.updateValues(property);
           })
           .then(() => {
-            upload(request, response, error => {
+            upload(request, response, (error) => {
               if (error) {
                 return this.fail(response, error);
               } else {
                 if (request.file === undefined) {
-                  return this.fail(response, { error: "Missing file." });
+                  return this.fail(response, { error: 'Missing file.' });
                 } else {
                   return this.success(response, { success: true });
                 }
               }
             });
           })
-          .catch(error => this.fail(response, error));
+          .catch((error) => this.fail(response, error));
       }
     );
 
@@ -236,11 +251,14 @@ class PropertyAPI extends API {
      */
     this.router.put(
       [
-        "/:entity(things|persons)/:entityId/:component(properties)/:propertyId/file",
-        "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)/:propertyId/file"
+        '/:entity(things|persons)/:entityId/:component(properties)/:propertyId/file',
+        '/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)/:propertyId/file'
       ],
       this.auth.introspect,
-      this.auth.wardenSubject({ resource: "properties", action: "update" }),
+      this.auth.wardenSubject({
+        resource: 'properties',
+        action: 'update'
+      }),
       (request, response, next) => {
         let entityId = request.params.entityId;
         if (request.params.interactionId !== undefined) {
@@ -249,10 +267,10 @@ class PropertyAPI extends API {
         const propertyId = request.params.propertyId;
 
         const form = new multiparty.Form();
-        let dataStr = "";
+        let dataStr = '';
 
-        form.on("error", next);
-        form.on("close", () => {
+        form.on('error', next);
+        form.on('close', () => {
           const property = updatePropertyFromCSVStr(
             entityId,
             propertyId,
@@ -260,16 +278,16 @@ class PropertyAPI extends API {
           );
           this.model.properties
             .update(entityId, propertyId, property)
-            .then(result => this.success(response, result))
-            .catch(error => this.fail(response, error));
+            .then((result) => this.success(response, result))
+            .catch((error) => this.fail(response, error));
         });
 
         // listen on part event for data file
-        form.on("part", part => {
+        form.on('part', (part) => {
           if (!part.filename) {
             return;
           }
-          part.on("data", buf => {
+          part.on('data', (buf) => {
             dataStr += buf.toString();
           });
         });
@@ -289,22 +307,27 @@ class PropertyAPI extends API {
      */
     this.router.delete(
       [
-        "/:entity(things|persons)/:entityId/:component(properties)/:propertyId",
-        "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)/:propertyId"
+        '/:entity(things|persons)/:entityId/:component(properties)/:propertyId',
+        '/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)/:propertyId'
       ],
       this.auth.introspect,
-      this.auth.wardenSubject({ resource: "properties", action: "delete" }),
+      this.auth.wardenSubject({
+        resource: 'properties',
+        action: 'delete'
+      }),
       (request, response) => {
         this.model.properties
           .del(request.params.propertyId)
-          .then(result => {
+          .then((result) => {
             if (result.affectedRows === 1) {
               this.success(response, { success: true });
             } else {
-              this.fail(response, { error: "Property to delete not found" });
+              this.fail(response, {
+                error: 'Property to delete not found'
+              });
             }
           })
-          .catch(error => this.fail(response, error));
+          .catch((error) => this.fail(response, error));
       }
     );
 
@@ -320,41 +343,58 @@ class PropertyAPI extends API {
      * @apiParam {Number} ts         Timestamp of the value associated with the file to retrieve (UNIX, in ms)
      */
     this.router.get(
-      "/:entity(things|persons)/:entityId/:component(properties)/:propertyId/values/:ts",
+      '/:entity(things|persons)/:entityId/:component(properties)/:propertyId/values/:ts',
       this.auth.introspect,
       (request, response) => {
+        var fileExt;
+        var contentType;
+        switch (request.files.mimetype) {
+          case request.files.video:
+            fileExt = '.mp4';
+            contentType = 'video/mp4';
+            break;
+          case request.files.image:
+            fileExt = '.png';
+            contentType = 'image/png';
+            break;
+
+          default:
+            break;
+        }
+
         const path =
-          "./files/" +
+          './files/' +
           request.params.entityId +
-          "-" +
+          '-' +
           request.params.propertyId +
-          "-" +
+          '-' +
           request.params.ts +
-          ".mp4";
+          fileExt;
+
         const stat = fs.statSync(path);
         const fileSize = stat.size;
         const range = request.headers.range;
 
         if (range) {
-          const parts = range.replace(/bytes=/, "").split("-");
+          const parts = range.replace(/bytes=/, '').split('-');
           const start = parseInt(parts[0], 10);
           const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
 
           const chunksize = end - start + 1;
           const file = fs.createReadStream(path, { start, end });
           const head = {
-            "Content-Range": `bytes ${start}-${end}/${fileSize}`,
-            "Accept-Ranges": "bytes",
-            "Content-Length": chunksize,
-            "Content-Type": "video/mp4"
+            'Content-Range': `bytes ${start}-${end}/${fileSize}`,
+            'Accept-Ranges': 'bytes',
+            'Content-Length': chunksize,
+            'Content-Type': contentType
           };
 
           response.writeHead(206, head);
           file.pipe(response);
         } else {
           const head = {
-            "Content-Length": fileSize,
-            "Content-Type": "video/mp4"
+            'Content-Length': fileSize,
+            'Content-Type': contentType
           };
           response.writeHead(200, head);
           fs.createReadStream(path).pipe(response);
@@ -379,15 +419,17 @@ class PropertyAPI extends API {
      *     }
      */
     this.router.post(
-      "/:entity(things|persons)/:entityId/:component(properties)/:componentId/classes",
+      '/:entity(things|persons)/:entityId/:component(properties)/:componentId/classes',
       this.auth.introspect,
-      this.auth.wardenSubject({ resource: "classes", action: "create" }),
+      this.auth.wardenSubject({ resource: 'classes', action: 'create' }),
       (request, response) => {
         if (
           request.body.classes === undefined ||
           request.body.classes.length === 0
         ) {
-          return this.fail(response, { msg: "Missing or empty classes array" });
+          return this.fail(response, {
+            msg: 'Missing or empty classes array'
+          });
         }
         this.model.properties
           .createClasses(
@@ -395,8 +437,8 @@ class PropertyAPI extends API {
             request.params.componentId,
             request.body.classes
           )
-          .then(result => this.success(response, { classes: result }))
-          .catch(error => this.fail(response, error));
+          .then((result) => this.success(response, { classes: result }))
+          .catch((error) => this.fail(response, error));
       }
     );
   }
@@ -404,17 +446,17 @@ class PropertyAPI extends API {
 
 // Set The Storage Engine
 const storage = multer.diskStorage({
-  destination: "./files/",
+  destination: './files/',
   filename: function(req, file, cb) {
     const entityId = req.params.entityId;
     const propertyId = req.params.propertyId;
-    const values = req.params.values.split(",").map(Number);
+    const values = req.params.values.split(',').map(Number);
     cb(
       null,
       entityId +
-        "-" +
+        '-' +
         propertyId +
-        "-" +
+        '-' +
         values[0] +
         path.extname(file.originalname).toLowerCase()
     );
@@ -428,12 +470,12 @@ const upload = multer({
   fileFilter: function(req, file, cb) {
     checkFileType(file, cb);
   }
-}).single("video");
+}).single('video');
 
 // Check File Type
 function checkFileType(file, cb) {
   // Allowed ext
-  const filetypes = /mp4/;
+  const filetypes = [/mp4/, /png/];
   // Check ext
   const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
   // Check mime
@@ -442,7 +484,7 @@ function checkFileType(file, cb) {
   if (mimetype && extname) {
     return cb(null, true);
   } else {
-    cb("Error: MP4 video Only!");
+    cb('Error: MP4 video or PNG image Only!');
   }
 }
 
@@ -458,9 +500,9 @@ function updatePropertyFromCSVStr(entityId, propertyId, csvStr) {
     id: propertyId,
     values: []
   };
-  csvStr.split("\n").forEach(line => {
-    if (line !== "") {
-      property.values.push(line.split(",").map(Number));
+  csvStr.split('\n').forEach((line) => {
+    if (line !== '') {
+      property.values.push(line.split(',').map(Number));
     }
   });
   return property;
