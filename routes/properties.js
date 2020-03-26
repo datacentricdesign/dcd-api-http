@@ -23,7 +23,6 @@ class PropertyAPI extends API {
      * Add the entity Type to all request of this router.
      */
     this.router.use((req, res, next) => {
-      this.logger.debug("Property route");
       req.entityType = req.params.entity;
       next();
     });

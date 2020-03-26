@@ -25,7 +25,7 @@ app.use(cookieParser());
 app.use(baseUrl, express.static(path.join(__dirname, "public")));
 
 const DCDModel = require("@datacentricdesign/model");
-const DCDError = require("dcd-model/lib/Error");
+const DCDError = require("@datacentricdesign/model/lib/DCDError");
 
 // test
 
@@ -67,16 +67,20 @@ app.use(baseUrl, roleAPI.router);
 
 const TaskAPI = require('./routes/tasks');
 const taskAPI = new TaskAPI(model);
-app.use(baseUrl, taskAPI.router);
+app.use(baseUrl + "/tasks", taskAPI.router);
 
 // Catch 404 and forward to error handler
 app.use((request, response, next) => {
+  logger.debug(404);
   next(new DCDError(404, "Path not found: " + request.path));
 });
 
 // Error handler
-
-app.use((error, request, response) => {
+// Do not remove the 'next', error handlers requires 4 arguments,
+// otherwise the default error handler kicks in.
+app.use((error, request, response, next) => {
+  logger.debug("error handler");
+  logger.debug(error);
   let responseError;
   if (error instanceof DCDError) {
     logger.error(JSON.stringify(error));
@@ -84,11 +88,11 @@ app.use((error, request, response) => {
   } else {
     logger.error(JSON.stringify(error, Object.getOwnPropertyNames(error)));
     responseError = new DCDError(
-      error.code || error.status || 500,
-      error.message
+        error.errorCode || error.statusCode || 500,
+        error.message
     );
   }
-  response.status(error.status || 500);
+  response.status(error.statusCode || 500);
   response.set({ "Content-Type": "application/json" });
   response.json(responseError);
 });

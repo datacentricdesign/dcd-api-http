@@ -213,7 +213,7 @@ class TaskAPI extends API {
                     );
                 } else {
 
-                    let shared_properties
+                    let shared_properties;
 
                     if (Array.isArray(request.body.shared_properties)) {
                         shared_properties = request.body.shared_properties.join()
