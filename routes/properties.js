@@ -7,7 +7,7 @@ const multiparty = require("multiparty");
 
 const API = require("./API");
 const Property = require("@datacentricdesign/model/entities/Property");
-const DCDError = require("dcd-model/lib/Error");
+const DCDError = require("@datacentricdesign/model/lib/DCDError");
 
 /**
  * PropertyAPI provides the routes for managing Properties of the DCD Hub.

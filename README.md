@@ -18,6 +18,18 @@ npm install
 
 npm start
 
+Note: if you struggle with the need for sudo and localadmin, use a local package:
+
+```bash
+mkdir ~/.npm-packages
+```
+
+Then:
+
+```
+npm config set prefix ~/.npm-packages
+```
+
 ## Changelog
 
 All notable changes to this project will be documented in this file.

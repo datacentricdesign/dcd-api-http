@@ -1,7 +1,7 @@
 "use strict";
 
 const API = require("./API");
-const DCDError = require("dcd-model/lib/Error");
+const DCDError = require("@datacentricdesign/model/lib/DCDError");
 
 /**
  * StatAPI provides the routes for searching DCD Hub data.

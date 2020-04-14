@@ -6,7 +6,7 @@ const log4js = require("log4js");
 // Express router
 const express = require("express");
 
-const DCDError = require("dcd-model/lib/Error");
+const DCDError = require("@datacentricdesign/model/lib/DCDError");
 
 class API {
   /**

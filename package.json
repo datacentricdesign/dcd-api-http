@@ -10,7 +10,7 @@
     "production": "npm run doc && npm start"
   },
   "dependencies": {
-    "@datacentricdesign/model": "0.1.8-dev1",
+    "@datacentricdesign/model": "0.1.8-dev3",
     "apidoc": "0.17.7",
     "body-parser": "1.19.0",
     "cookie-parser": "1.4.4",

@@ -69,11 +69,8 @@ class ThingAPI extends API {
 
         const actorId = request.user.sub;
         const thing = new Thing(request.body);
-        // const jwt =
-        //   request.query.jwt !== undefined
-        //     ? request.query.jwt === "true"
-        //     : false;
-        const jwt = true;
+        const jwt = request.query.jwt !== undefined
+            ? request.query.jwt === "true" : false;
         thing["pem"] = undefined;
         this.model.things
           .create(actorId, thing, jwt)
@@ -158,9 +155,9 @@ class ThingAPI extends API {
     );
 
     /**
-     * @api {put} /things/thingId/jwk Update PEM
+     * @api {put} /things/thingId/pem Update PEM
      * @apiGroup Thing
-     * @apiDescription Update a Thing PEM.
+     * @apiDescription Update the PEM file containing a public key, so that the Hub can identify a Thing as data transmitter.
      *
      * @apiVersion 0.1.0
      *
