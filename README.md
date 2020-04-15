@@ -26,7 +26,7 @@ mkdir ~/.npm-packages
 
 Then:
 
-```
+```bash
 npm config set prefix ~/.npm-packages
 ```
 
