@@ -49,7 +49,7 @@ class RoleAPI extends API {
       this.introspectToken(["dcd:things", "dcd:roles"]),
       this.checkPolicy("things", "grant"),
       (request, response, next) => {
-        this.model.policies
+        this.policies
           .grant(
             request.params.subjectId,
             request.params.entityId,
@@ -80,7 +80,7 @@ class RoleAPI extends API {
       this.introspectToken(["dcd:things", "dcd:roles"]),
       this.checkPolicy("things", "revoke"),
       (request, response, next) => {
-        this.model.policies
+        this.policies
           .revoke(
             request.params.subjectEntityId,
             request.params.resourceEntityId,

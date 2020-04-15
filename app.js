@@ -65,7 +65,7 @@ const RoleAPI = require("./routes/roles");
 const roleAPI = new RoleAPI(model);
 app.use(baseUrl, roleAPI.router);
 
-const TaskAPI = require('./routes/tasks');
+const TaskAPI = require("./routes/tasks");
 const taskAPI = new TaskAPI(model);
 app.use(baseUrl + "/tasks", taskAPI.router);
 
@@ -88,8 +88,8 @@ app.use((error, request, response, next) => {
   } else {
     logger.error(JSON.stringify(error, Object.getOwnPropertyNames(error)));
     responseError = new DCDError(
-        error.errorCode || error.statusCode || 500,
-        error.message
+      error.errorCode || error.statusCode || 500,
+      error.message
     );
   }
   response.status(error.statusCode || 500);

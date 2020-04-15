@@ -112,7 +112,7 @@ class API {
         subject: req.user.sub
       };
       this.logger.debug(acp);
-      this.model.policies
+      this.policies
         .check(acp)
         .then(() => next())
         .catch(error => next(error));
@@ -158,7 +158,7 @@ class API {
             })
             .catch(error => next(error));
         } else {
-          this.model.policies
+          this.policies
             .check(acp)
             .then(user => {
               req.user = user;
@@ -218,9 +218,8 @@ function extractToken(req) {
       "Add 'bearer ' in front of your 'Authorization' token."
     );
   }
-  const token = req
+  return req
     .get("Authorization")
     .replace(/bearer\s/gi, "")
     .replace(/Bearer\s/gi, "");
-  return token;
 }

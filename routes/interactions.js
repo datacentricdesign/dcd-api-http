@@ -89,16 +89,12 @@ class InteractionAPI extends API {
     this.router.get(
       "/:entity(things|persons)/:entityId/:component(interactions)",
       request => {
-        this.introspectToken([request.params.entity]);
+        this.introspectToken([request.params.entityId]);
       },
       this.checkPolicy({ resource: "interactions", action: "list" }),
       (request, response, next) => {
-        let entityDestId;
-        if (request.query.entity !== undefined) {
-          entityDestId = parseInt(request.query.entity);
-        }
         this.model.interactions
-          .list(request.user.sub, request.params.entityId, entityDestId)
+          .list(request.user.sub, request.params.entityId)
           .then(result => this.success(response, { interactions: result }))
           .catch(error => next(error));
       }

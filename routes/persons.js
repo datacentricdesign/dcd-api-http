@@ -50,7 +50,7 @@ class PersonAPI extends API {
      * @apiParam (Body) {string} name The name of the person
      * @apiParam (Body) {string} password A minimum 8-character long password
      *
-     * @apiPermission Requirs scope 'dcd:persons'
+     * @apiPermission Requires scope 'dcd:persons'
      *
      * @apiSuccess {object} personId Id of the created Person
      */

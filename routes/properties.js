@@ -314,12 +314,12 @@ class PropertyAPI extends API {
           const start = parseInt(parts[0], 10);
           const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
 
-          const chunksize = end - start + 1;
+          const chunkSize = end - start + 1;
           const file = fs.createReadStream(path, { start, end });
           const head = {
             "Content-Range": `bytes ${start}-${end}/${fileSize}`,
             "Accept-Ranges": "bytes",
-            "Content-Length": chunksize,
+            "Content-Length": chunkSize,
             "Content-Type": "video/mp4"
           };
 
@@ -527,13 +527,13 @@ const upload = multer({
 // Check File Type
 function checkFileType(file, cb) {
   // Allowed ext
-  const filetypes = /mp4|jpeg|jpg|mp3/;
+  const fileTypes = /mp4|jpeg|jpg|mp3/;
   // Check ext
-  const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+  const extname = fileTypes.test(path.extname(file.originalname).toLowerCase());
   // Check mime
-  const mimetype = filetypes.test(file.mimetype);
+  const mimeType = fileTypes.test(file.mimetype);
 
-  if (mimetype && extname) {
+  if (mimeType && extname) {
     return cb(null, true);
   } else {
     cb(new DCDError(400, "MP4, MP3 and JPEG Only!"));
