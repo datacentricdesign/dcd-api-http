@@ -498,7 +498,7 @@ class PropertyAPI extends API {
 
 // Set The Storage Engine
 const storage = multer.diskStorage({
-  destination: "./files/",
+  destination: process.env.HOST_DATA_FOLDER + "/files/",
   filename: function(req, file, cb) {
     const entityId = req.params.entityId;
     const propertyId = req.params.propertyId;

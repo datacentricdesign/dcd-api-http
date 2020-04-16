@@ -8,15 +8,28 @@ A NodeJS REST API for the Data-Centric Design Hub
 
 ## Developers
 
-After cloning the repository, create a .env file at the root of the project with the following variables:
+To effectively develop this API, first setup your dcd hub development environment as described here:
+[https://github.com/datacentricdesign/dcd-hub/tree/develop](https://github.com/datacentricdesign/dcd-hub/tree/develop)
 
-Then
+As part of the setup, you now have the clone of this dcd-api-http repository.
 
-Create a 'files' folder at the root of the project.
+```bash
+cd dcd-api-http
+cp development.env .env
+```
 
+Install all dependencies with npm.
+
+```bash
 npm install
+```
 
+To switch from the dcd-api-http running on Docker to your version, first stop the container, then run your code.
+
+```bash
+docker-compose stop dcd-api-http
 npm start
+```
 
 Note: if you struggle with the need for sudo and localadmin, use a local package:
 
