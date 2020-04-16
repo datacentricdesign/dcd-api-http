@@ -3,6 +3,7 @@
 ![GitHub package.json version](https://img.shields.io/github/package-json/v/datacentricdesign/dcd-api-http)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/datacentricdesign/dcd-api-http)
 ![Docker Build Status](https://img.shields.io/docker/build/datacentricdesign/dcd-api-http)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/682b367cb8934b42ae7b02297796b35c)](https://www.codacy.com/manual/jackybourgeois/dcd-api-http?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=datacentricdesign/dcd-api-http&amp;utm_campaign=Badge_Grade)
 
 A NodeJS REST API for the Data-Centric Design Hub
 
