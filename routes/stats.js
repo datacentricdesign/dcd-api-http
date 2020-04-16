@@ -56,10 +56,10 @@ class StatAPI extends API {
           let from
           let to
           if (request.query.from !== undefined) {
-            from = parseInt(request.query.from)
+            from = parseInt(request.query.from, 10)
           }
           if (request.query.to !== undefined) {
-            to = parseInt(request.query.to)
+            to = parseInt(request.query.to, 10)
           }
 
           this.model.stats
