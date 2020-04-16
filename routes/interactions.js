@@ -1,25 +1,25 @@
-"use strict";
+'use strict'
 
-const API = require("./API");
-const Interaction = require("@datacentricdesign/model/entities/Interaction");
-const DCDError = require("@datacentricdesign/model/lib/DCDError");
+const API = require('./API')
+const Interaction = require('@datacentricdesign/model/entities/Interaction')
+const DCDError = require('@datacentricdesign/model/lib/DCDError')
 
 /**
  * InteractionAPI provides the routes for managing Interactions of the DCD Hub.
  */
 class InteractionAPI extends API {
-  constructor(model) {
-    super(model);
+  constructor (model) {
+    super(model)
   }
 
-  init() {
+  init () {
     /**
      * Add the entity Type to all request of this router.
      */
     this.router.use((req, res, next) => {
-      req.entityType = req.params.entity;
-      next();
-    });
+      req.entityType = req.params.entity
+      next()
+    })
 
     /**
      * @api {post} /things|persons/:entityId/interactions Create
@@ -44,11 +44,11 @@ class InteractionAPI extends API {
      * @apiSuccess {object} interaction The created Interaction
      */
     this.router.post(
-      "/:entity(things|persons)/:entityId/:component(interactions)",
+      '/:entity(things|persons)/:entityId/:component(interactions)',
       request => {
-        this.introspectToken([request.params.entity]);
+        this.introspectToken([request.params.entity])
       },
-      this.checkPolicy({ resource: "interactions", action: "create" }),
+      this.checkPolicy({ resource: 'interactions', action: 'create' }),
       (request, response, next) => {
         if (
           request.body === undefined ||
@@ -58,18 +58,18 @@ class InteractionAPI extends API {
           return next(
             new DCDError(
               4008,
-              "Missing body with entityId1 and entityId2," +
-                " or mismatch with requester thing id."
+              'Missing body with entityId1 and entityId2,' +
+              ' or mismatch with requester thing id.'
             )
-          );
+          )
         }
-        const interaction = new Interaction(request.body);
+        const interaction = new Interaction(request.body)
         this.model.interactions
           .create(interaction)
           .then(result => this.success(response, { interaction: result }))
-          .catch(error => next(error));
+          .catch(error => next(error))
       }
-    );
+    )
 
     /**
      * @api {get} /things|persons/:entityId/interactions List
@@ -87,18 +87,18 @@ class InteractionAPI extends API {
      * @apiSuccess {object} interactions The retrieved Interactions
      */
     this.router.get(
-      "/:entity(things|persons)/:entityId/:component(interactions)",
+      '/:entity(things|persons)/:entityId/:component(interactions)',
       request => {
-        this.introspectToken([request.params.entityId]);
+        this.introspectToken([request.params.entityId])
       },
-      this.checkPolicy({ resource: "interactions", action: "list" }),
+      this.checkPolicy({ resource: 'interactions', action: 'list' }),
       (request, response, next) => {
         this.model.interactions
           .list(request.user.sub, request.params.entityId)
           .then(result => this.success(response, { interactions: result }))
-          .catch(error => next(error));
+          .catch(error => next(error))
       }
-    );
+    )
 
     /**
      * @api {get} /things|persons/:entityId/interactions/:interactionId Read
@@ -116,19 +116,19 @@ class InteractionAPI extends API {
      * @apiSuccess {object} thing The retrieved Thing
      */
     this.router.get(
-      "/:entity(things|persons)/:entityId/:component(interactions)/:componentId",
+      '/:entity(things|persons)/:entityId/:component(interactions)/:componentId',
       request => {
-        this.introspectToken([request.params.entity]);
+        this.introspectToken([request.params.entity])
       },
-      this.checkPolicy({ resource: "interactions", action: "read" }),
+      this.checkPolicy({ resource: 'interactions', action: 'read' }),
       (request, response, next) => {
         this.model.interactions
           .read(request.params.componentId)
           .then(result => this.success(response, { interaction: result }))
-          .catch(error => next(error));
+          .catch(error => next(error))
       }
-    );
+    )
   }
 }
 
-module.exports = InteractionAPI;
+module.exports = InteractionAPI

@@ -1,6 +1,6 @@
-"use strict";
+'use strict'
 
-const API = require("./API");
+const API = require('./API')
 
 /**
  * RoleAPI provides the routes for managing Roles of the DCD Hub.
@@ -8,27 +8,27 @@ const API = require("./API");
  * on an entity resource.
  */
 class RoleAPI extends API {
-  constructor(model) {
-    super(model);
+  constructor (model) {
+    super(model)
   }
 
-  formatEntityId(request, response, next) {
-    if (request.params.resourceEntityType === "things") {
-      if (!request.params.resourceEntityId.startsWith("dcd:things:")) {
+  formatEntityId (request, response, next) {
+    if (request.params.resourceEntityType === 'things') {
+      if (!request.params.resourceEntityId.startsWith('dcd:things:')) {
         request.params.resourceEntityId =
-          "dcd:things:" + request.params.resourceEntityId;
+          'dcd:things:' + request.params.resourceEntityId
       }
     }
-    if (request.params.resourceEntityType === "persons") {
-      if (!request.params.resourceEntityId.startsWith("dcd:persons:")) {
+    if (request.params.resourceEntityType === 'persons') {
+      if (!request.params.resourceEntityId.startsWith('dcd:persons:')) {
         request.params.resourceEntityId =
-          "dcd:persons:" + request.params.resourceEntityId;
+          'dcd:persons:' + request.params.resourceEntityId
       }
     }
-    next();
+    next()
   }
 
-  init() {
+  init () {
     /**
      * @api {post} "/:resourceEntityType(things|persons|)/:resourceEntityId/revoke/:roleName/:subjectEntityId" Grant
      * @apiGroup Role
@@ -44,10 +44,10 @@ class RoleAPI extends API {
      * @apiParam {string} :subjectEntityId Id of the entity to grant role
      */
     this.router.post(
-      "/:resourceEntityType(things|persons|)/:resourceEntityId/revoke/:roleName/:subjectEntityId",
+      '/:resourceEntityType(things|persons|)/:resourceEntityId/revoke/:roleName/:subjectEntityId',
       this.formatEntityId,
-      this.introspectToken(["dcd:things", "dcd:roles"]),
-      this.checkPolicy("things", "grant"),
+      this.introspectToken(['dcd:things', 'dcd:roles']),
+      this.checkPolicy('things', 'grant'),
       (request, response, next) => {
         this.policies
           .grant(
@@ -56,9 +56,9 @@ class RoleAPI extends API {
             request.params.role
           )
           .then(result => this.success(response, result, 201))
-          .catch(error => next(error));
+          .catch(error => next(error))
       }
-    );
+    )
 
     /**
      * @api {delete} "/:resourceEntityType(things|persons|)/:resourceEntityId/revoke/:roleName/:subjectEntityId" Revoke
@@ -75,10 +75,10 @@ class RoleAPI extends API {
      * @apiParam {string} :subjectEntityId Id of the entity to revoke role
      */
     this.router.post(
-      "/:resourceEntityType(things|persons|)/:resourceEntityId/revoke/:roleName/:subjectEntityId",
+      '/:resourceEntityType(things|persons|)/:resourceEntityId/revoke/:roleName/:subjectEntityId',
       this.formatEntityId,
-      this.introspectToken(["dcd:things", "dcd:roles"]),
-      this.checkPolicy("things", "revoke"),
+      this.introspectToken(['dcd:things', 'dcd:roles']),
+      this.checkPolicy('things', 'revoke'),
       (request, response, next) => {
         this.policies
           .revoke(
@@ -87,10 +87,10 @@ class RoleAPI extends API {
             request.params.roleName
           )
           .then(result => this.success(response, result, 200))
-          .catch(error => next(error));
+          .catch(error => next(error))
       }
-    );
+    )
   }
 }
 
-module.exports = RoleAPI;
+module.exports = RoleAPI

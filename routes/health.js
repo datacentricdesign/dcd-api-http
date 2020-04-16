@@ -1,16 +1,16 @@
-"use strict";
+'use strict'
 
-const API = require("./API");
+const API = require('./API')
 
 /**
  * HealthAPI provides the routes for checking the status of the DCD Hub.
  */
 class HealthAPI extends API {
-  constructor(model) {
-    super(model);
+  constructor (model) {
+    super(model)
   }
 
-  init() {
+  init () {
     /**
      * @api {get} /health Check
      * @apiGroup Health
@@ -20,10 +20,10 @@ class HealthAPI extends API {
      *
      * @apiSuccess {object} status The status of the DCD Hub
      */
-    this.router.get("/", (request, response) => {
-      this.success(response, { status: 0, message: "OK" });
-    });
+    this.router.get('/', (request, response) => {
+      this.success(response, { status: 0, message: 'OK' })
+    })
   }
 }
 
-module.exports = HealthAPI;
+module.exports = HealthAPI

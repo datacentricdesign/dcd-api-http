@@ -1,7 +1,7 @@
-"use strict";
+'use strict'
 
-const API = require("./API");
-const Person = require("@datacentricdesign/model/entities/Person");
+const API = require('./API')
+const Person = require('@datacentricdesign/model/entities/Person')
 
 /**
  * PersonAPI provides the routes for managing Persons of the DCD Hub.
@@ -9,27 +9,27 @@ const Person = require("@datacentricdesign/model/entities/Person");
  * It can own, share and have access to Things.
  */
 class PersonAPI extends API {
-  constructor(model) {
-    super(model);
+  constructor (model) {
+    super(model)
   }
 
-  formatEntityId(request, response, next) {
+  formatEntityId (request, response, next) {
     if (request.params.entityId !== undefined) {
-      if (!request.params.entityId.startsWith("dcd:persons:")) {
-        request.params.entityId = "dcd:persons:" + request.params.entityId;
+      if (!request.params.entityId.startsWith('dcd:persons:')) {
+        request.params.entityId = 'dcd:persons:' + request.params.entityId
       }
     }
-    next();
+    next()
   }
 
-  init() {
+  init () {
     /**
      * Add the entity Type 'persons' to all request of this router.
      */
     this.router.use((request, response, next) => {
-      request.entityType = "persons";
-      next();
-    });
+      request.entityType = 'persons'
+      next()
+    })
 
     // this.router.param('entityId', (req, res, next, entityId) => {
     //   // executes before route handler
@@ -54,14 +54,14 @@ class PersonAPI extends API {
      *
      * @apiSuccess {object} personId Id of the created Person
      */
-    this.router.post("/", (request, response, next) => {
-      const person = new Person(request.body);
-      this.logger.debug(person);
+    this.router.post('/', (request, response, next) => {
+      const person = new Person(request.body)
+      this.logger.debug(person)
       this.model.persons
         .create(person)
         .then(result => this.success(response, { personId: result }, 201))
-        .catch(error => next(error));
-    });
+        .catch(error => next(error))
+    })
 
     /**
      * @api {get} /persons List
@@ -77,16 +77,16 @@ class PersonAPI extends API {
      * @apiSuccess {array} persons Array of Persons found.
      */
     this.router.get(
-      "/",
-      this.introspectToken(["dcd:persons"]),
-      this.checkPolicy("persons", "list"),
+      '/',
+      this.introspectToken(['dcd:persons']),
+      this.checkPolicy('persons', 'list'),
       (request, response, next) => {
         this.model.persons
           .list(request.user.sub)
           .then(result => this.success(response, { persons: result }, 200))
-          .catch(error => next(error));
+          .catch(error => next(error))
       }
-    );
+    )
 
     /**
      * @api {get} /persons/:personId Read
@@ -104,17 +104,17 @@ class PersonAPI extends API {
      * @apiSuccess {object} person Person found.
      */
     this.router.get(
-      "/:entityId",
+      '/:entityId',
       this.formatEntityId,
-      this.introspectToken(["dcd:persons"]),
-      this.checkPolicy("persons", "read"),
+      this.introspectToken(['dcd:persons']),
+      this.checkPolicy('persons', 'read'),
       (request, response, next) => {
         this.model.persons
           .read(request.params.entityId)
           .then(result => this.success(response, { person: result }, 200))
-          .catch(error => next(error));
+          .catch(error => next(error))
       }
-    );
+    )
 
     /**
      * @api {put} /persons/:personId Update
@@ -130,18 +130,18 @@ class PersonAPI extends API {
      *
      */
     this.router.put(
-      "/:entityId",
+      '/:entityId',
       this.formatEntityId,
-      this.introspectToken(["dcd:persons"]),
-      this.checkPolicy("persons", "update"),
+      this.introspectToken(['dcd:persons']),
+      this.checkPolicy('persons', 'update'),
       (request, response, next) => {
-        const person = new Person(request.params.entityId, request.body);
+        const person = new Person(request.params.entityId, request.body)
         this.model.persons
           .update(person)
           .then(result => this.success(response, result, 200))
-          .catch(error => next(error));
+          .catch(error => next(error))
       }
-    );
+    )
 
     /**
      * @api {delete} / Delete
@@ -155,24 +155,24 @@ class PersonAPI extends API {
      * @apiPermission Requires scope 'dcd:persons'
      */
     this.router.delete(
-      "/:entityId",
+      '/:entityId',
       this.formatEntityId,
-      this.introspectToken(["dcd:persons"]),
-      this.checkPolicy("persons", "delete"),
+      this.introspectToken(['dcd:persons']),
+      this.checkPolicy('persons', 'delete'),
       (request, response, next) => {
-        const personId = request.params.entityId;
+        const personId = request.params.entityId
         this.model.persons
           .del(personId)
           .then(nbDelete => {
             this.success(
               response,
-              { message: nbDelete + " Person(s) deleted." },
+              { message: nbDelete + ' Person(s) deleted.' },
               200
-            );
+            )
           })
-          .catch(error => next(error));
+          .catch(error => next(error))
       }
-    );
+    )
 
     /**
      * @api {post} /persons/:personId/check Check
@@ -189,19 +189,19 @@ class PersonAPI extends API {
      * @apiSuccess {object} person Person found.
      */
     this.router.post(
-      "/:entityId/check",
+      '/:entityId/check',
       this.formatEntityId,
-      this.introspectToken(["dcd:persons", "dcd:auth"]),
+      this.introspectToken(['dcd:persons', 'dcd:auth']),
       (request, response, next) => {
         if (request.body !== undefined && request.body.password !== undefined) {
           this.model.persons
             .check(request.params.entityId, request.body.password)
             .then(result => this.success(response, { person: result }, 200))
-            .catch(error => next(error));
+            .catch(error => next(error))
         }
       }
-    );
+    )
   }
 }
 
-module.exports = PersonAPI;
+module.exports = PersonAPI

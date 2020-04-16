@@ -1,17 +1,17 @@
-"use strict";
+'use strict'
 
-const API = require("./API");
-const DCDError = require("@datacentricdesign/model/lib/DCDError");
+const API = require('./API')
+const DCDError = require('@datacentricdesign/model/lib/DCDError')
 
 /**
  * StatAPI provides the routes for searching DCD Hub data.
  */
 class StatAPI extends API {
-  constructor(model) {
-    super(model);
+  constructor (model) {
+    super(model)
   }
 
-  init() {
+  init () {
     /**
      * @api {get} /stats Global
      * @apiGroup Stat
@@ -23,12 +23,12 @@ class StatAPI extends API {
      *
      * @apiSuccess {json} Json of global stats.
      */
-    this.router.get("/", this.introspectToken, (request, response, next) => {
+    this.router.get('/', this.introspectToken, (request, response, next) => {
       this.model.stats
         .getGlobalStats()
         .then(result => this.success(response, { stats: result }))
-        .catch(error => next(error));
-    });
+        .catch(error => next(error))
+    })
 
     /**
      * @api {get} /stats/propertyTypes Property Types
@@ -46,30 +46,30 @@ class StatAPI extends API {
      * @apiSuccess {json} Json of a property type stats.
      */
     this.router.get(
-      "/propertyTypes",
+      '/propertyTypes',
       this.introspectToken,
       (request, response, next) => {
         if (!request.query.types) {
-          this.next(new DCDError(400, "Add 'types' query param"));
+          this.next(new DCDError(400, 'Add \'types\' query param'))
         } else {
-          let propertyTypes = request.query.types.split(",");
-          let from;
-          let to;
+          let propertyTypes = request.query.types.split(',')
+          let from
+          let to
           if (request.query.from !== undefined) {
-            from = parseInt(request.query.from);
+            from = parseInt(request.query.from)
           }
           if (request.query.to !== undefined) {
-            to = parseInt(request.query.to);
+            to = parseInt(request.query.to)
           }
 
           this.model.stats
             .getTypesStats(propertyTypes, from, to)
             .then(result => this.success(response, { stats: result }))
-            .catch(error => next(error));
+            .catch(error => next(error))
         }
       }
-    );
+    )
   }
 }
 
-module.exports = StatAPI;
+module.exports = StatAPI

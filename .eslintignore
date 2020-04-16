@@ -1,3 +1,4 @@
-!.eslintrc.js
+!.eslintrc.json
 documentation/
 build/
+.nyc_output/

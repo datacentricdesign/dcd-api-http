@@ -1,14 +1,14 @@
-"use strict";
+'use strict'
 
-const API = require("./API");
-const Task = require("@datacentricdesign/model/entities/Task");
+const API = require('./API')
+const Task = require('@datacentricdesign/model/entities/Task')
 
 class TaskAPI extends API {
-  constructor(model) {
-    super(model);
+  constructor (model) {
+    super(model)
   }
 
-  init() {
+  init () {
     /**
      * @api {post} /tasks Create
      * @apiGroup Task
@@ -34,11 +34,11 @@ class TaskAPI extends API {
      * @apiSuccess {object} thing The created Thing
      */
     this.router.post(
-      "/",
-      this.introspectToken(["dcd:tasks"]),
-      this.checkPolicy("tasks", "create"),
+      '/',
+      this.introspectToken(['dcd:tasks']),
+      this.checkPolicy('tasks', 'create'),
       (request, response) => {
-        const actorId = request.user.sub;
+        const actorId = request.user.sub
 
         if (
           request.body === undefined ||
@@ -47,20 +47,20 @@ class TaskAPI extends API {
           this.fail(
             response,
             new Error(
-              "Missing body with actor_entity_id" +
-                " or mismatch with request user sub"
+              'Missing body with actor_entity_id' +
+              ' or mismatch with request user sub'
             )
-          );
+          )
         } else {
-          const task = new Task(request.body);
+          const task = new Task(request.body)
 
           this.model.task
             .create(task)
             .then(result => this.success(response, { task: result }))
-            .catch(error => this.fail(response, error));
+            .catch(error => this.fail(response, error))
         }
       }
-    );
+    )
 
     /**
      * @api {get} /tasks List
@@ -75,16 +75,16 @@ class TaskAPI extends API {
      * @apiSuccess {object} tasks The retrieved Tasks (actor and subject)
      */
     this.router.get(
-      "/",
-      this.introspectToken(["dcd:tasks"]),
-      this.checkPolicy("tasks", "list"),
+      '/',
+      this.introspectToken(['dcd:tasks']),
+      this.checkPolicy('tasks', 'list'),
       (request, response) => {
         this.model.tasks
           .list(request.user.sub)
           .then(result => this.success(response, { tasks: result }))
-          .catch(error => this.fail(response, error));
+          .catch(error => this.fail(response, error))
       }
-    );
+    )
 
     /**
      * @api {get} /tasks/taskId Read
@@ -101,18 +101,18 @@ class TaskAPI extends API {
      * @apiSuccess {object} task The retrieved Task
      */
     this.router.get(
-      "/:taskId",
-      this.introspectToken(["dcd:tasks"]),
-      this.checkPolicy("tasks", "read"),
+      '/:taskId',
+      this.introspectToken(['dcd:tasks']),
+      this.checkPolicy('tasks', 'read'),
       (request, response) => {
         this.model.tasks
           .read(request.params.taskId)
           .then(result => {
-            this.success(response, { task: result });
+            this.success(response, { task: result })
           })
-          .catch(error => this.fail(response, error));
+          .catch(error => this.fail(response, error))
       }
-    );
+    )
 
     /**
      * @api {delete} /tasks/taskId Delete
@@ -127,16 +127,16 @@ class TaskAPI extends API {
      * @apiParam {String} taskId Id of the Task to delete.
      */
     this.router.delete(
-      "/:taskId",
-      this.introspectToken(["dcd:tasks"]),
-      this.checkPolicy("tasks", "delete"),
+      '/:taskId',
+      this.introspectToken(['dcd:tasks']),
+      this.checkPolicy('tasks', 'delete'),
       (request, response) => {
         this.model.tasks
           .del(request.params.taskId, request.user.sub)
           .then(result => this.success(response, result))
-          .catch(error => this.fail(response, error));
+          .catch(error => this.fail(response, error))
       }
-    );
+    )
 
     /**
      * @api {get} /tasks/taskId/resources Read
@@ -154,25 +154,25 @@ class TaskAPI extends API {
      * @apiSuccess {object} task The retrieved Task
      */
     this.router.get(
-      "/:taskId/resources",
-      this.introspectToken(["dcd:resources"]),
-      this.checkPolicy("resource", "read"),
+      '/:taskId/resources',
+      this.introspectToken(['dcd:resources']),
+      this.checkPolicy('resource', 'read'),
       (request, response) => {
-        const taskId = request.params.taskId;
-        const personId = request.user.sub;
+        const taskId = request.params.taskId
+        const personId = request.user.sub
         const actor =
           request.query.actor !== undefined
-            ? request.query.actor === "true"
-            : false;
+            ? request.query.actor === 'true'
+            : false
 
         this.model.tasks
           .readResources(taskId, personId, actor)
           .then(result => {
-            this.success(response, { resources: result });
+            this.success(response, { resources: result })
           })
-          .catch(error => this.fail(response, error));
+          .catch(error => this.fail(response, error))
       }
-    );
+    )
 
     /**
      * @api {post} /tasks/:taskId/resources/:resourceId/milestones Add milestones
@@ -195,11 +195,11 @@ class TaskAPI extends API {
      * @apiSuccess {boolean} true
      */
     this.router.post(
-      "/:taskId/resources/:resourceId/milestones",
-      this.introspectToken(["dcd:milestones"]),
-      this.checkPolicy("milestones", "create"),
+      '/:taskId/resources/:resourceId/milestones',
+      this.introspectToken(['dcd:milestones']),
+      this.checkPolicy('milestones', 'create'),
       (request, response) => {
-        const subjectId = request.user.sub;
+        const subjectId = request.user.sub
 
         if (
           request.body === undefined ||
@@ -209,18 +209,18 @@ class TaskAPI extends API {
           this.fail(
             response,
             new Error(
-              "Missing body" +
-                " or missing body.shared_properties" +
-                " or missing body.status"
+              'Missing body' +
+              ' or missing body.shared_properties' +
+              ' or missing body.status'
             )
-          );
+          )
         } else {
-          let shared_properties;
+          let shared_properties
 
           if (Array.isArray(request.body.shared_properties)) {
-            shared_properties = request.body.shared_properties.join();
+            shared_properties = request.body.shared_properties.join()
           } else {
-            shared_properties = request.body.shared_properties;
+            shared_properties = request.body.shared_properties
           }
 
           const milestone = {
@@ -228,16 +228,16 @@ class TaskAPI extends API {
             timestamp: Date.now(),
             shared_properties: shared_properties,
             status: request.body.status
-          };
+          }
 
           this.model.tasks
             .addMilestone(milestone, subjectId)
             .then(() => this.success(response, { success: true }))
-            .catch(error => this.fail(response, error));
+            .catch(error => this.fail(response, error))
         }
       }
-    );
+    )
   }
 }
 
-module.exports = TaskAPI;
+module.exports = TaskAPI

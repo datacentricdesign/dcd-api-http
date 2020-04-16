@@ -1,33 +1,33 @@
-"use strict";
+'use strict'
 
-const API = require("./API");
-const Thing = require("@datacentricdesign/model/entities/Thing");
+const API = require('./API')
+const Thing = require('@datacentricdesign/model/entities/Thing')
 
 /**
  * ThingAPI provides the routes for managing Things of the DCD Hub.
  */
 class ThingAPI extends API {
-  constructor(model) {
-    super(model);
+  constructor (model) {
+    super(model)
   }
 
-  formatEntityId(request, response, next) {
+  formatEntityId (request, response, next) {
     if (request.params.entityId !== undefined) {
-      if (!request.params.entityId.startsWith("dcd:things:")) {
-        request.params.entityId = "dcd:things:" + request.params.entityId;
+      if (!request.params.entityId.startsWith('dcd:things:')) {
+        request.params.entityId = 'dcd:things:' + request.params.entityId
       }
     }
-    next();
+    next()
   }
 
-  init() {
+  init () {
     /**
      * Add the entity Type 'persons' to all request of this router.
      */
     this.router.use((req, res, next) => {
-      req.entityType = "things";
-      next();
-    });
+      req.entityType = 'things'
+      next()
+    })
 
     /**
      * @api {post} /things Create
@@ -54,32 +54,32 @@ class ThingAPI extends API {
      * @apiSuccess {object} thing The created Thing
      */
     this.router.post(
-      "/",
-      this.introspectToken(["dcd:things"]),
-      this.checkPolicy("things", "create"),
+      '/',
+      this.introspectToken(['dcd:things']),
+      this.checkPolicy('things', 'create'),
       (request, response, next) => {
         // Web forms cannot submit PUT methods, we check the flag update
         if (request.query.thingId !== undefined) {
-          request.body.entityId = request.query.thingId;
+          request.body.entityId = request.query.thingId
           return this.model.things
             .update(new Thing(request.body))
             .then(result => this.success(response, result))
-            .catch(error => next(error));
+            .catch(error => next(error))
         }
 
-        const actorId = request.user.sub;
-        const thing = new Thing(request.body);
+        const actorId = request.user.sub
+        const thing = new Thing(request.body)
         const jwt =
           request.query.jwt !== undefined
-            ? request.query.jwt === "true"
-            : false;
-        thing["pem"] = undefined;
+            ? request.query.jwt === 'true'
+            : false
+        thing['pem'] = undefined
         this.model.things
           .create(actorId, thing, jwt)
           .then(result => this.success(response, { thing: result }, 201))
-          .catch(error => next(error));
+          .catch(error => next(error))
       }
-    );
+    )
 
     /**
      * @api {get} /things List
@@ -93,16 +93,16 @@ class ThingAPI extends API {
      * @apiSuccess {object} things The retrieved Things
      */
     this.router.get(
-      "/",
-      this.introspectToken(["dcd:things"]),
-      this.checkPolicy("things", "list"),
+      '/',
+      this.introspectToken(['dcd:things']),
+      this.checkPolicy('things', 'list'),
       (request, response, next) => {
         this.model.things
           .list(request.user.sub)
           .then(result => this.success(response, { things: result }, 200))
-          .catch(error => next(error));
+          .catch(error => next(error))
       }
-    );
+    )
 
     /**
      * @api {get} /things/thingId Read
@@ -118,19 +118,19 @@ class ThingAPI extends API {
      * @apiSuccess {object} thing The retrieved Thing
      */
     this.router.get(
-      "/:entityId",
+      '/:entityId',
       this.formatEntityId,
-      this.introspectToken(["dcd:things"]),
-      this.checkPolicy("things", "read"),
+      this.introspectToken(['dcd:things']),
+      this.checkPolicy('things', 'read'),
       (request, response, next) => {
         this.model.things
           .read(request.params.entityId)
           .then(result => {
-            this.success(response, { thing: result }, 200);
+            this.success(response, { thing: result }, 200)
           })
-          .catch(error => next(error));
+          .catch(error => next(error))
       }
-    );
+    )
 
     /**
      * @api {put} /things/thingId Update
@@ -144,17 +144,17 @@ class ThingAPI extends API {
      * @apiParam {String} thingId Id of the Thing to update.
      */
     this.router.put(
-      "/:entityId",
+      '/:entityId',
       this.formatEntityId,
-      this.introspectToken(["dcd:things"]),
-      this.checkPolicy("things", "update"),
+      this.introspectToken(['dcd:things']),
+      this.checkPolicy('things', 'update'),
       (request, response, next) => {
         this.model.things
           .update(new Thing(request.body, request.params.entityId))
           .then(result => this.success(response, result, 200))
-          .catch(error => next(error));
+          .catch(error => next(error))
       }
-    );
+    )
 
     /**
      * @api {put} /things/thingId/pem Update PEM
@@ -171,17 +171,17 @@ class ThingAPI extends API {
      * @apiBody {string} pem of the Thing to update.
      */
     this.router.put(
-      "/:entityId/pem",
+      '/:entityId/pem',
       this.formatEntityId,
-      this.introspectToken(["dcd:things"]),
-      this.checkPolicy("things", "update"),
+      this.introspectToken(['dcd:things']),
+      this.checkPolicy('things', 'update'),
       (request, response, next) => {
         this.model.auth
           .setPEM(request.params.entityId, request.body.pem)
           .then(result => this.success(response, result, 200))
-          .catch(error => next(error));
+          .catch(error => next(error))
       }
-    );
+    )
 
     /**
      * @api {delete} /things/thingId Delete
@@ -195,24 +195,24 @@ class ThingAPI extends API {
      * @apiParam {String} thingId Id of the Thing to delete.
      */
     this.router.delete(
-      "/:entityId",
+      '/:entityId',
       this.formatEntityId,
-      this.introspectToken(["dcd:things"]),
-      this.checkPolicy("things", "delete"),
+      this.introspectToken(['dcd:things']),
+      this.checkPolicy('things', 'delete'),
       (request, response, next) => {
         this.model.things
           .del(request.params.entityId)
           .then(nbDelete => {
             this.success(
               response,
-              { message: nbDelete + " Thing(s) deleted." },
+              { message: nbDelete + ' Thing(s) deleted.' },
               200
-            );
+            )
           })
-          .catch(error => next(error));
+          .catch(error => next(error))
       }
-    );
+    )
   }
 }
 
-module.exports = ThingAPI;
+module.exports = ThingAPI

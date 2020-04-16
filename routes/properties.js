@@ -1,31 +1,31 @@
-"use strict";
+'use strict'
 
-const fs = require("fs");
-const path = require("path");
-const multer = require("multer");
-const multiparty = require("multiparty");
+const fs = require('fs')
+const path = require('path')
+const multer = require('multer')
+const multiparty = require('multiparty')
 
-const API = require("./API");
-const Property = require("@datacentricdesign/model/entities/Property");
-const DCDError = require("@datacentricdesign/model/lib/DCDError");
+const API = require('./API')
+const Property = require('@datacentricdesign/model/entities/Property')
+const DCDError = require('@datacentricdesign/model/lib/DCDError')
 
 /**
  * PropertyAPI provides the routes for managing Properties of the DCD Hub.
  * A Property represents a Thing or Person property.
  */
 class PropertyAPI extends API {
-  constructor(model) {
-    super(model);
+  constructor (model) {
+    super(model)
   }
 
-  init() {
+  init () {
     /**
      * Add the entity Type to all request of this router.
      */
     this.router.use((req, res, next) => {
-      req.entityType = req.params.entity;
-      next();
-    });
+      req.entityType = req.params.entity
+      next()
+    })
 
     /**
      * @api {post} /things|persons/:entityId/properties Create
@@ -51,28 +51,28 @@ class PropertyAPI extends API {
      */
     this.router.post(
       [
-        "/:entity(things|persons)/:entityId/:component(properties)",
-        "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)"
+        '/:entity(things|persons)/:entityId/:component(properties)',
+        '/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)'
       ],
       this.introspectToken([]),
-      this.checkPolicy("properties", "create"),
+      this.checkPolicy('properties', 'create'),
       (request, response, next) => {
-        this.logger.debug("POST properties");
+        this.logger.debug('POST properties')
         if (request.params.interactionId !== undefined) {
           // Looking for an interaction property
-          request.body.entityId = request.params.interactionId;
+          request.body.entityId = request.params.interactionId
         } else {
           // Looking for a Person/Thing property
-          request.body.entityId = request.params.entityId;
+          request.body.entityId = request.params.entityId
         }
-        this.logger.debug(request.body);
-        this.logger.debug(new Property(request.body));
+        this.logger.debug(request.body)
+        this.logger.debug(new Property(request.body))
         this.model.properties
           .create(new Property(request.body))
           .then(result => this.success(response, { property: result }, 201))
-          .catch(error => next(error));
+          .catch(error => next(error))
       }
-    );
+    )
 
     /**
      * @api {get} /things|persons/:entityId/properties List
@@ -89,25 +89,25 @@ class PropertyAPI extends API {
      */
     this.router.get(
       [
-        "/:entity(things|persons)/:entityId/:component(properties)",
-        "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)"
+        '/:entity(things|persons)/:entityId/:component(properties)',
+        '/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)'
       ],
       this.introspectToken([]),
-      this.checkPolicy("properties", "list"),
+      this.checkPolicy('properties', 'list'),
       (request, response, next) => {
-        let entityId = request.params.entityId;
+        let entityId = request.params.entityId
         if (request.params.interactionId !== undefined) {
-          entityId = request.params.interactionId;
+          entityId = request.params.interactionId
         }
         this.model.properties
           .list(entityId)
           .then(result => {
-            this.logger.info(result);
-            this.success(response, { properties: result }, 200);
+            this.logger.info(result)
+            this.success(response, { properties: result }, 200)
           })
-          .catch(error => next(error));
+          .catch(error => next(error))
       }
-    );
+    )
 
     /**
      * @api {get} /things|persons/:entityId/properties/:propertyId Read
@@ -133,34 +133,34 @@ class PropertyAPI extends API {
      */
     this.router.get(
       [
-        "/:entity(things|persons)/:entityId/:component(properties)/:propertyId",
-        "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)/:propertyId"
+        '/:entity(things|persons)/:entityId/:component(properties)/:propertyId',
+        '/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)/:propertyId'
       ],
       this.introspectToken([]),
-      this.checkPolicy("things", "read"),
+      this.checkPolicy('things', 'read'),
       (request, response, next) => {
-        let entityId = request.params.entityId;
+        let entityId = request.params.entityId
         if (request.params.interactionId !== undefined) {
-          entityId = request.params.interactionId;
+          entityId = request.params.interactionId
         }
-        const propertyId = request.params.propertyId;
-        let from;
-        let to;
-        let interval;
+        const propertyId = request.params.propertyId
+        let from
+        let to
+        let interval
         let fctInterval =
-          request.query.fct !== undefined ? request.query.fct : "MEAN";
+          request.query.fct !== undefined ? request.query.fct : 'MEAN'
         let fill =
-          request.query.fill !== undefined ? request.query.fill : "none";
+          request.query.fill !== undefined ? request.query.fill : 'none'
         let store =
-          request.query.store !== undefined ? request.query.store : "mysql";
+          request.query.store !== undefined ? request.query.store : 'mysql'
         if (request.query.from !== undefined) {
-          from = parseInt(request.query.from);
+          from = parseInt(request.query.from)
         }
         if (request.query.to !== undefined) {
-          to = parseInt(request.query.to);
+          to = parseInt(request.query.to)
         }
         if (request.query.interval !== undefined) {
-          interval = request.query.interval;
+          interval = request.query.interval
         }
         this.model.properties
           .read(
@@ -174,23 +174,23 @@ class PropertyAPI extends API {
             store
           )
           .then(result => {
-            this.logger.debug(result);
-            if (request.accepts("application/json")) {
-              return this.success(response, { property: result }, 200);
-            } else if (request.accepts("text/csv")) {
+            this.logger.debug(result)
+            if (request.accepts('application/json')) {
+              return this.success(response, { property: result }, 200)
+            } else if (request.accepts('text/csv')) {
               return this.success(
                 response,
                 PropertyAPI.toCSV(result),
                 200,
-                "text/csv"
-              );
+                'text/csv'
+              )
             } else {
-              return this.success(response, { property: result }, 200);
+              return this.success(response, { property: result }, 200)
             }
           })
-          .catch(error => next(error));
+          .catch(error => next(error))
       }
-    );
+    )
 
     /**
      * @api {put} /things|persons/:entityId/properties/:propertyId Update
@@ -204,44 +204,44 @@ class PropertyAPI extends API {
      */
     this.router.put(
       [
-        "/:entity(things|persons)/:entityId/:component(properties)/:propertyId",
-        "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)/:propertyId"
+        '/:entity(things|persons)/:entityId/:component(properties)/:propertyId',
+        '/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)/:propertyId'
       ],
       this.introspectToken([]),
-      this.checkPolicy("properties", "update"),
+      this.checkPolicy('properties', 'update'),
       (request, response, next) => {
-        const propertyId = request.params.propertyId;
-        const contentType = request.headers["content-type"];
-        if (contentType.indexOf("application/json") === 0) {
+        const propertyId = request.params.propertyId
+        const contentType = request.headers['content-type']
+        if (contentType.indexOf('application/json') === 0) {
           // Look for data in the body
-          const property = new Property(request.body);
-          property.entityId = request.params.entityId;
+          const property = new Property(request.body)
+          property.entityId = request.params.entityId
           if (property.id !== propertyId) {
             return next(
               new DCDError(
                 400,
-                "The property id in the request path is not matching with the id provided in the request body."
+                'The property id in the request path is not matching with the id provided in the request body.'
               )
-            );
+            )
           }
-          return this.update(property, request, response, next);
-        } else if (contentType.indexOf("multipart/form-data") === 0) {
+          return this.update(property, request, response, next)
+        } else if (contentType.indexOf('multipart/form-data') === 0) {
           // Look for data in a CSV file
           const property = new Property({
             id: propertyId,
             entityId: request.params.entityId
-          });
-          return this.uploadDataFile(property, request, response, next);
+          })
+          return this.uploadDataFile(property, request, response, next)
         }
         // No json body nor data file.
         return next(
           new DCDError(
             404,
-            "Could not find data in the body as JSON (Content-Type: application/json) nor in a data file (Content-Type: multipart/form-data)."
+            'Could not find data in the body as JSON (Content-Type: application/json) nor in a data file (Content-Type: multipart/form-data).'
           )
-        );
+        )
       }
-    );
+    )
 
     /**
      * @api {put} /things|persons/:entityId/properties/:propertyId/values/:values Update
@@ -256,25 +256,25 @@ class PropertyAPI extends API {
      */
     this.router.put(
       [
-        "/:entity(things|persons)/:entityId/:component(properties)/:propertyId/values/:values",
-        "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)/:propertyId/values/:values"
+        '/:entity(things|persons)/:entityId/:component(properties)/:propertyId/values/:values',
+        '/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)/:propertyId/values/:values'
       ],
       this.introspectToken([]),
-      this.checkPolicy("properties", "update"),
+      this.checkPolicy('properties', 'update'),
       (request, response, next) => {
-        const values = request.params.values.split(",").map(Number);
-        let entityId = request.params.entityId;
+        const values = request.params.values.split(',').map(Number)
+        let entityId = request.params.entityId
         if (request.params.interactionId !== undefined) {
-          entityId = request.params.interactionId;
+          entityId = request.params.interactionId
         }
         const property = new Property({
           id: request.params.propertyId,
           values: [values],
           entityId: entityId
-        });
-        this.update(property, request, response, next);
+        })
+        this.update(property, request, response, next)
       }
-    );
+    )
 
     /**
      * @api {get} /things/thingId Read file
@@ -291,50 +291,50 @@ class PropertyAPI extends API {
      */
     this.router.get(
       [
-        "/:entity(things|persons)/:entityId/:component(properties)/:propertyId/values/:ts",
-        "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)/:propertyId/values/:ts"
+        '/:entity(things|persons)/:entityId/:component(properties)/:propertyId/values/:ts',
+        '/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)/:propertyId/values/:ts'
       ],
       this.introspectToken([]),
-      this.checkPolicy("properties", "read"),
+      this.checkPolicy('properties', 'read'),
       (request, response, next) => {
         const path =
-          "./files/" +
+          './files/' +
           request.params.entityId +
-          "-" +
+          '-' +
           request.params.propertyId +
-          "-" +
+          '-' +
           request.params.ts +
-          ".mp4";
-        const stat = fs.statSync(path);
-        const fileSize = stat.size;
-        const range = request.headers.range;
+          '.mp4'
+        const stat = fs.statSync(path)
+        const fileSize = stat.size
+        const range = request.headers.range
 
         if (range) {
-          const parts = range.replace(/bytes=/, "").split("-");
-          const start = parseInt(parts[0], 10);
-          const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
+          const parts = range.replace(/bytes=/, '').split('-')
+          const start = parseInt(parts[0], 10)
+          const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1
 
-          const chunkSize = end - start + 1;
-          const file = fs.createReadStream(path, { start, end });
+          const chunkSize = end - start + 1
+          const file = fs.createReadStream(path, { start, end })
           const head = {
-            "Content-Range": `bytes ${start}-${end}/${fileSize}`,
-            "Accept-Ranges": "bytes",
-            "Content-Length": chunkSize,
-            "Content-Type": "video/mp4"
-          };
+            'Content-Range': `bytes ${start}-${end}/${fileSize}`,
+            'Accept-Ranges': 'bytes',
+            'Content-Length': chunkSize,
+            'Content-Type': 'video/mp4'
+          }
 
-          response.writeHead(206, head);
-          file.pipe(response);
+          response.writeHead(206, head)
+          file.pipe(response)
         } else {
           const head = {
-            "Content-Length": fileSize,
-            "Content-Type": "video/mp4"
-          };
-          response.writeHead(200, head);
-          fs.createReadStream(path).pipe(response);
+            'Content-Length': fileSize,
+            'Content-Type': 'video/mp4'
+          }
+          response.writeHead(200, head)
+          fs.createReadStream(path).pipe(response)
         }
       }
-    );
+    )
 
     /**
      * @api {get} /things|persons/:entityId/properties/:propertyId/classes Create Class
@@ -356,17 +356,17 @@ class PropertyAPI extends API {
      */
     this.router.post(
       [
-        "/:entity(things|persons)/:entityId/:component(properties)/:componentId/classes",
-        "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)/:componentId/classes"
+        '/:entity(things|persons)/:entityId/:component(properties)/:componentId/classes',
+        '/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)/:componentId/classes'
       ],
       this.introspectToken([]),
-      this.checkPolicy("classes", "create"),
+      this.checkPolicy('classes', 'create'),
       (request, response, next) => {
         if (
           request.body.classes === undefined ||
           request.body.classes.length === 0
         ) {
-          return next(new DCDError(4009, "Missing or empty classes array"));
+          return next(new DCDError(4009, 'Missing or empty classes array'))
         }
         this.model.properties
           .createClasses(
@@ -375,9 +375,9 @@ class PropertyAPI extends API {
             request.body.classes
           )
           .then(result => this.success(response, { classes: result }, 201))
-          .catch(error => next(error));
+          .catch(error => next(error))
       }
-    );
+    )
 
     /**
      * @api {delete} /things|persons/:entityId/properties/:propertyId Delete
@@ -393,13 +393,13 @@ class PropertyAPI extends API {
      */
     this.router.delete(
       [
-        "/:entity(things|persons)/:entityId/:component(properties)/:propertyId",
-        "/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)/:propertyId"
+        '/:entity(things|persons)/:entityId/:component(properties)/:propertyId',
+        '/:entity(things|persons)/:entityId/interactions/:interactionId/:component(properties)/:propertyId'
       ],
       this.introspectToken([]),
-      this.checkPolicy("properties", "delete"),
+      this.checkPolicy('properties', 'delete'),
       (request, response, next) => {
-        const propertyId = request.params.propertyId;
+        const propertyId = request.params.propertyId
         this.model.properties
           .del(propertyId)
           .then(result => {
@@ -407,136 +407,136 @@ class PropertyAPI extends API {
               this.success(
                 response,
                 {
-                  message: result.affectedRows + " Property deleted."
+                  message: result.affectedRows + ' Property deleted.'
                 },
                 200
-              );
+              )
             } else {
               next(
                 new DCDError(
                   404,
-                  "Property to delete " +
-                    propertyId +
-                    " could not be not found."
+                  'Property to delete ' +
+                  propertyId +
+                  ' could not be not found.'
                 )
-              );
+              )
             }
           })
-          .catch(error => next(error));
+          .catch(error => next(error))
       }
-    );
+    )
   }
 
-  update(property, request, response, next) {
+  update (property, request, response, next) {
     this.model.properties
       .update(property)
       .then(() => {
-        return this.model.properties.updateValues(property);
+        return this.model.properties.updateValues(property)
       })
       .then(result => {
-        const payload = {};
+        const payload = {}
         if (result !== undefined) {
-          payload.values = result;
+          payload.values = result
         }
         if (request.files === undefined || request.files.video === undefined) {
-          payload.file = false;
-          return this.success(response, payload, 200);
+          payload.file = false
+          return this.success(response, payload, 200)
         }
         upload(request, response, error => {
           if (error) {
-            return next(error);
+            return next(error)
           } else {
             if (request.file === undefined) {
-              return next(new DCDError(4042, "The file to upload is missing."));
+              return next(new DCDError(4042, 'The file to upload is missing.'))
             } else {
-              payload.file = true;
-              return this.success(response, payload, 200);
+              payload.file = true
+              return this.success(response, payload, 200)
             }
           }
-        });
+        })
       })
-      .catch(error => next(error));
+      .catch(error => next(error))
   }
 
-  uploadDataFile(property, request, response, next) {
-    const form = new multiparty.Form();
-    let dataStr = "";
+  uploadDataFile (property, request, response, next) {
+    const form = new multiparty.Form()
+    let dataStr = ''
     // listen on part event for data file
-    form.on("part", part => {
+    form.on('part', part => {
       if (!part.filename) {
-        return;
+        return
       }
-      part.on("data", buf => {
-        dataStr += buf.toString();
-      });
-    });
-    form.on("close", () => {
+      part.on('data', buf => {
+        dataStr += buf.toString()
+      })
+    })
+    form.on('close', () => {
       const propertyWithValues = updatePropertyFromCSVStr(
         property.entityId,
         property.id,
         dataStr
-      );
-      this.update(propertyWithValues, request, response, next);
-    });
-    form.on("error", next);
-    form.parse(request);
+      )
+      this.update(propertyWithValues, request, response, next)
+    })
+    form.on('error', next)
+    form.parse(request)
   }
 
-  static toCSV(property) {
-    let csv = "time";
+  static toCSV (property) {
+    let csv = 'time'
     for (let i = 0; i < property.dimensions.length; i++) {
-      csv += "," + property.dimensions[i].name;
+      csv += ',' + property.dimensions[i].name
     }
-    csv += "\n";
+    csv += '\n'
     for (let i = 0; i < property.values.length; i++) {
-      csv += property.values[i].join(",");
-      csv += "\n";
+      csv += property.values[i].join(',')
+      csv += '\n'
     }
-    return csv;
+    return csv
   }
 }
 
 // Set The Storage Engine
 const storage = multer.diskStorage({
-  destination: process.env.HOST_DATA_FOLDER + "/files/",
-  filename: function(req, file, cb) {
-    const entityId = req.params.entityId;
-    const propertyId = req.params.propertyId;
-    const values = req.params.values.split(",").map(Number);
+  destination: process.env.HOST_DATA_FOLDER + '/files/',
+  filename: function (req, file, cb) {
+    const entityId = req.params.entityId
+    const propertyId = req.params.propertyId
+    const values = req.params.values.split(',').map(Number)
     cb(
       null,
       entityId +
-        "-" +
-        propertyId +
-        "-" +
-        values[0] +
-        path.extname(file.originalname).toLowerCase()
-    );
+      '-' +
+      propertyId +
+      '-' +
+      values[0] +
+      path.extname(file.originalname).toLowerCase()
+    )
   }
-});
+})
 
 // Init Upload
 const upload = multer({
   storage: storage,
   limits: { fileSize: 1000000000 },
-  fileFilter: function(req, file, cb) {
-    checkFileType(file, cb);
+  fileFilter: function (req, file, cb) {
+    checkFileType(file, cb)
   }
-}).single("media");
+}).single('media')
 
 // Check File Type
-function checkFileType(file, cb) {
+function checkFileType (file, cb) {
   // Allowed ext
-  const fileTypes = /mp4|jpeg|jpg|mp3/;
+  const fileTypes = /mp4|jpeg|jpg|mp3/
   // Check ext
-  const extname = fileTypes.test(path.extname(file.originalname).toLowerCase());
+  const extname = fileTypes.test(path.extname(file.originalname).toLowerCase())
   // Check mime
-  const mimeType = fileTypes.test(file.mimetype);
+  const mimeType = fileTypes.test(file.mimetype)
 
   if (mimeType && extname) {
-    return cb(null, true);
+    return cb(null, true)
   } else {
-    cb(new DCDError(400, "MP4, MP3 and JPEG Only!"));
+    cb(new DCDError(400, 'MP4, MP3 and JPEG Only!'))
   }
 }
 
@@ -547,17 +547,17 @@ function checkFileType(file, cb) {
  * @param csvStr
  * @returns {{id: *, values: Array}}
  */
-function updatePropertyFromCSVStr(entityId, propertyId, csvStr) {
+function updatePropertyFromCSVStr (entityId, propertyId, csvStr) {
   const property = {
     id: propertyId,
     values: []
-  };
-  csvStr.split("\n").forEach(line => {
-    if (line !== "") {
-      property.values.push(line.split(",").map(Number));
+  }
+  csvStr.split('\n').forEach(line => {
+    if (line !== '') {
+      property.values.push(line.split(',').map(Number))
     }
-  });
-  return property;
+  })
+  return property
 }
 
-module.exports = PropertyAPI;
+module.exports = PropertyAPI
