@@ -54,6 +54,8 @@
   },
   "homepage": "https://github.com/datacentricdesign/dcd-api-http#README",
   "remarkConfig": {
-    "plugins": ["remark-preset-lint-recommended"]
+    "plugins": [
+      "remark-preset-lint-recommended"
+    ]
   }
 }
