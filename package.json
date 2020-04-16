@@ -8,6 +8,7 @@
     "start": "node index.js",
     "test": "nyc --reporter=html --reporter=text mocha --exit",
     "doc": "apidoc -i routes/ -o public/docs/",
+    "clean": "remark .",
     "production": "npm run doc && npm start"
   },
   "dependencies": {
@@ -20,7 +21,6 @@
     "express": "4.17.1",
     "express-basic-auth": "1.2.0",
     "express-jwt": "5.3.1",
-    "istanbul": "^0.4.5",
     "jwks-rsa": "1.6.0",
     "log4js": "5.0.0",
     "morgan": "1.9.1",
@@ -38,6 +38,9 @@
     "eslint": "^6.8.0",
     "eslint-plugin-mocha": "^6.3.0",
     "mocha": "^7.1.1",
+    "remark-lint": "^7.0.0",
+    "remark-cli": "^8.0.0",
+    "remark-preset-lint-recommended": "^4.0.0",
     "nyc": "^15.0.1"
   },
   "repository": {
@@ -49,5 +52,8 @@
   "bugs": {
     "url": "https://github.com/datacentricdesign/dcd-api-http/issues"
   },
-  "homepage": "https://github.com/datacentricdesign/dcd-api-http#README"
+  "homepage": "https://github.com/datacentricdesign/dcd-api-http#README",
+  "remarkConfig": {
+    "plugins": ["remark-preset-lint-recommended"]
+  }
 }

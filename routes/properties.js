@@ -154,10 +154,10 @@ class PropertyAPI extends API {
         let store =
           request.query.store !== undefined ? request.query.store : 'mysql'
         if (request.query.from !== undefined) {
-          from = parseInt(request.query.from)
+          from = parseInt(request.query.from, 10)
         }
         if (request.query.to !== undefined) {
-          to = parseInt(request.query.to)
+          to = parseInt(request.query.to, 10)
         }
         if (request.query.interval !== undefined) {
           interval = request.query.interval
@@ -518,7 +518,7 @@ const storage = multer.diskStorage({
 // Init Upload
 const upload = multer({
   storage: storage,
-  limits: { fileSize: 1000000000 },
+  limits: { fileSize: 1e9 },
   fileFilter: function (req, file, cb) {
     checkFileType(file, cb)
   }
