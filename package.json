@@ -40,7 +40,6 @@
     "mocha": "^7.1.1",
     "nyc": "^15.0.1"
   },
-  "eslintIgnore": [".nyc_output"],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/datacentricdesign/dcd-api-http.git"
