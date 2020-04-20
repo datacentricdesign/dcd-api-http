@@ -28,7 +28,7 @@ describe('Things', function () {
         .set('Authorization', 'Bearer ' + bearerToken)
         .send(testThing)
         .end((err, res) => {
-          res.should.have.status(201)
+          expect(res.status).to.equal(201)
           expect(res.body.thing.name).equal(testThing.name)
           expect(res.body.thing.id).to.be.a('string')
           testThing.id = res.body.thing.id
@@ -46,8 +46,7 @@ describe('Things', function () {
         .set('Authorization', 'Bearer ' + bearerToken)
         .send()
         .end((err, res) => {
-          res.should.have.status(200)
-          console.log('Response Body:', res.body)
+          expect(res.status).to.equal(200)
           done()
         })
     })
@@ -61,12 +60,8 @@ describe('Things', function () {
         .set('Authorization', 'Bearer ' + bearerToken)
         .send()
         .end((err, res) => {
-          //console.log (res)
-          // console.log("err",err);
-          res.should.have.status(200)
-          res.body.thing.name.should.equal(testThing.name)
-          console.log('Response Body:', res.body)
-          // console.log (result);
+          expect(res.status).to.equal(200)
+          expect(res.body.thing.name).to.equal(testThing.name)
           done()
         })
     })
@@ -76,14 +71,14 @@ describe('Things', function () {
     it('Should create a Property', function (done) {
       chai
         .request(server)
-        .post('/api/things' + testThing.id + '/properties')
+        .post('/api/things/' + testThing.id + '/properties')
         .set('Authorization', 'Bearer ' + bearerToken)
         .send(testProperty)
         .end((err, res) => {
-          res.should.have.status(201)
+          expect(res.status).to.equal(201)
           expect(res.body.property.name).equal(testProperty.name)
           expect(res.body.property.id).to.be.a('string')
-          testThing.id = res.body.thing.id
+          testProperty.id = res.body.property.id
           done()
         })
     })
@@ -97,12 +92,8 @@ describe('Things', function () {
         .set('Authorization', 'Bearer ' + bearerToken)
         .send()
         .end((err, res) => {
-          //console.log (res)
-          // console.log("err",err);
-          res.should.have.status(200)
+          expect(res.status).to.equal(200)
           expect(res.body.message).to.equal('1 Thing(s) deleted.')
-          console.log('Response Body:', res.body)
-          // console.log (result);
           done()
         })
     })

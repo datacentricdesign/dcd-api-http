@@ -19,7 +19,7 @@
     "doc": "apidoc -i routes/ -o public/docs/",
     "production": "npm run doc && npm start",
     "start": "node index.js",
-    "test": "nyc --reporter=html --reporter=text mocha --exit"
+    "test": "nyc --reporter=html --reporter=text --reporter=lcov mocha --exit"
   },
   "remarkConfig": {
     "plugins": [

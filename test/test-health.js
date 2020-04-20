@@ -1,11 +1,11 @@
 // Load environment variables
 require('dotenv').config()
 
-// const describe = require("mocha").describe;npm install --save-dev eslint-plugin-mocha
 let chai = require('chai')
 let chaiHttp = require('chai-http')
 let server = require('../app')
 chai.use(chaiHttp)
+let expect = chai.expect
 
 describe('Health', function () {
   describe('Check', function () {
@@ -15,11 +15,7 @@ describe('Health', function () {
         .get('/api/health')
         .send()
         .end((err, res) => {
-          // console.log (res)
-          // console.log("err",err);
-          res.should.have.status(200)
-          console.log('Response Body:', res.body)
-          // console.log (result);
+          expect(res.status).to.equal(200)
           done()
         })
     })
